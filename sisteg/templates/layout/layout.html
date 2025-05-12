@@ -44,7 +44,8 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item" href="#"> <i class="fa-solid fa-tags"></i> Categoría</a></li>
+                            <li><a class="dropdown-item" href="{% url 'categoria' %}"><i class="fa-solid fa-tags"></i>
+                                    Categoría</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -115,6 +116,8 @@
         <!-- --------------------- -->
 
         <!-- Cuerpo de la página -->
+        <div class="mt-2" id="alerta">
+        </div>
         {% block contenido %}
         {% endblock %}
         <!-- ----------------------- -->

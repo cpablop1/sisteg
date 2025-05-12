@@ -1,0 +1,13 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+
+{% block contenido %}
+{% include 'categoria/listar.html' %}
+{% include 'categoria/agregar.html' %}
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/categoria/main.js' %}" type="module"></script>
+{% endblock %}
