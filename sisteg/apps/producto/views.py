@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
+from django.core.paginator import Paginator
+
 from django.db.models import Q
 from django.contrib.auth.models import User
 
@@ -55,21 +57,28 @@ def listar_categoria(request):
     msg = 'Error al listar categorías.'
     data = {}
     data['data'] = []
+    data["page_range"] = []
     id = request.GET.get('id', None) or None
     buscar = request.GET.get('buscar', '').strip() or ''
+    pagina = request.GET.get('pagina', 1) or 1
+    categorias = ''
 
     try:
         if id: # Verificamos si necesitamos una categoría expecífica
             categorias = Categoria.objects.filter(id = id)
-        elif len(buscar) > 0:
+        elif len(buscar) > 0: # Verificamos si hay búsquedad
             categorias = Categoria.objects.filter(
-                Q(descripcion__icontains = buscar)
+                Q(descripcion__icontains = buscar) # Si hay buscamos por descripción
             )
         else:
             # Obtenemos todas las categorías
             categorias = Categoria.objects.all()
+        # Paginamos las categorías
+        paginador = Paginator(categorias, 10)
+        # Obtenemos la página
+        paginas = paginador.get_page(pagina)
         # Preparamos el listado
-        for cat in categorias:
+        for cat in paginas:
             data['data'].append(
                 {
                     'id': cat.id,
@@ -79,6 +88,27 @@ def listar_categoria(request):
                     'usuario': cat.usuario_id.username
                 }
             )
+        # Preparamos la visualización de las páginas
+        if paginador.num_pages > 5:
+            print('\n-----------------')
+            print(paginador.num_pages)
+            print('-----------------\n')
+            start = int(pagina)
+            end = int(pagina) + 5
+            if end > paginador.num_pages:
+                start = paginador.num_pages - 4
+                end = paginador.num_pages + 1
+            for i in range(start, end):
+                data["page_range"].append(i)
+        else:
+            for i in range(paginador.num_pages):
+                data["page_range"].append(i + 1)
+        data["num_pages"] = paginador.num_pages
+        data["has_next"] = paginas.has_next()
+        data["has_previous"] = paginas.has_previous()
+        data["count"] = paginador.count
+
+        # Preparamos mensajes de respuesta
         res = True
         msg = 'Listado de categorías.'
     except:

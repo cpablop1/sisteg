@@ -10,6 +10,10 @@ window.onload = () => {
     listar();
 }
 
+window.listar = (data) => {
+    listar(data);
+}
+
 // Evento para cambiar de vista entre el formulario y el listado de categoría
 document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
@@ -40,7 +44,7 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 document.getElementById('buscar').addEventListener('input', e => {
     let buscar = e.target.value.trim();
     if (buscar.length > 0) {
-        listar({ 'buscar': buscar });
+        listar({'pagina': 1, 'buscar': buscar });
     } else {
         listar();
     }
