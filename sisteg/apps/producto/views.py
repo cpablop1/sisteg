@@ -1,7 +1,9 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 
+from django.db.models import Q
 from django.contrib.auth.models import User
+
 from .models import Categoria
 
 #Función para renderizar la vista de producto
@@ -54,9 +56,15 @@ def listar_categoria(request):
     data = {}
     data['data'] = []
     id = request.GET.get('id', None) or None
+    buscar = request.GET.get('buscar', '').strip() or ''
+
     try:
         if id: # Verificamos si necesitamos una categoría expecífica
             categorias = Categoria.objects.filter(id = id)
+        elif len(buscar) > 0:
+            categorias = Categoria.objects.filter(
+                Q(descripcion__icontains = buscar)
+            )
         else:
             # Obtenemos todas las categorías
             categorias = Categoria.objects.all()

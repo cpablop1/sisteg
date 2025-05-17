@@ -30,10 +30,18 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
 
 // Evento para editar categoría
 document.getElementById('tbl_listar').addEventListener('click', e => {
-
     let id = parseInt(e.target.getAttribute('editar'))
-
     if (id) {
         editar(id);
+    }
+});
+
+// Evento para buscar categorías
+document.getElementById('buscar').addEventListener('input', e => {
+    let buscar = e.target.value.trim();
+    if (buscar.length > 0) {
+        listar({ 'buscar': buscar });
+    } else {
+        listar();
     }
 });

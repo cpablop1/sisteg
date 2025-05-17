@@ -1,5 +1,6 @@
-export function listar() {
-    fetch('/producto/listar-categoria/').then(res => res.json()).then(data => {
+export function listar(data = {}) {
+    let params = new URLSearchParams(data).toString();
+    fetch(`/producto/listar-categoria/?${params}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar');
         let fila = '';
         Array.from(data.data, (item, index) => {
