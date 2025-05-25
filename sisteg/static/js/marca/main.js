@@ -40,7 +40,7 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
     }
 });
 
-// Evento para buscar categorías
+// Evento para buscar marcas
 document.getElementById('buscar').addEventListener('input', e => {
     let buscar = e.target.value.trim();
     if (buscar.length > 0) {
