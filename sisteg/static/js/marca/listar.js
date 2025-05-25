@@ -1,6 +1,6 @@
 export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
     let params = new URLSearchParams(data_p).toString();
-    fetch(`/producto/listar-categoria/?${params}`).then(res => res.json()).then(data => {
+    fetch(`/producto/listar-marca/?${params}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar');
         let fila = '';
         let pages = '';

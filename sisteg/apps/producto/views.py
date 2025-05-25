@@ -156,3 +156,69 @@ def agregar_marca(request):
     else: # En caso contrario
         # Retornamos una respuesta de error
         return JsonResponse({'res': res, 'msg': msg})
+
+# Función para listar marcas
+def listar_marca(request):
+    # Mensajes de respuesta
+    res = False
+    msg = 'Error al listar marcas.'
+    data = {}
+    data['data'] = []
+    data["page_range"] = []
+    id = request.GET.get('id', None) or None
+    buscar = request.GET.get('buscar', '').strip() or ''
+    pagina = request.GET.get('pagina', 1) or 1
+    marcas = ''
+
+    try:
+        if id: # Verificamos si necesitamos una marca expecífica
+            marcas = Marca.objects.filter(id = id)
+        elif len(buscar) > 0: # Verificamos si hay búsquedad
+            marcas = Marca.objects.filter(
+                Q(descripcion__icontains = buscar) # Si hay buscamos por descripción
+            )
+        else:
+            # Obtenemos todas las marcas
+            marcas = Marca.objects.all()
+        # Paginamos las marcas
+        paginador = Paginator(marcas, 10)
+        # Obtenemos la página
+        paginas = paginador.get_page(pagina)
+        # Preparamos el listado
+        for mar in paginas:
+            data['data'].append(
+                {
+                    'id': mar.id,
+                    'descripcion': mar.descripcion,
+                    'fecha_ingreso': mar.fecha_ingreso,
+                    'fecha_actualizacion': mar.fecha_actualizacion,
+                    'usuario': mar.usuario_id.username
+                }
+            )
+        # Preparamos la visualización de las páginas
+        if paginador.num_pages > 5:
+            start = int(pagina)
+            end = int(pagina) + 5
+            if end > paginador.num_pages:
+                start = paginador.num_pages - 4
+                end = paginador.num_pages + 1
+            for i in range(start, end):
+                data["page_range"].append(i)
+        else:
+            for i in range(paginador.num_pages):
+                data["page_range"].append(i + 1)
+        data["num_pages"] = paginador.num_pages
+        data["has_next"] = paginas.has_next()
+        data["has_previous"] = paginas.has_previous()
+        data["count"] = paginador.count
+
+        # Preparamos mensajes de respuesta
+        res = True
+        msg = 'Listado de marcas.'
+    except:
+        res = False
+
+    data['res'] = res
+    data['msg'] = msg
+    # Retornamos los datos
+    return JsonResponse(data)
