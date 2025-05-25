@@ -6,4 +6,5 @@ urlpatterns = [
     path('categoria/', views.vista_categoria, name='categoria'),
     path('agregar-categoria/', views.agregar_categoria, name='agregar_categoria'),
     path('listar-categoria/', views.listar_categoria, name='listar_categoria'),
+    path('marca/', views.vista_marca, name='marca'),
 ]  

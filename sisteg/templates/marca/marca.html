@@ -1,0 +1,13 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+
+{% block contenido %}
+{% include 'marca/listar.html' %}
+{% include 'marca/agregar.html' %}
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/marca/main.js' %}" type="module"></script>
+{% endblock %}

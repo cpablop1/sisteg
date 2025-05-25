@@ -16,6 +16,10 @@ def vista_producto(request):
 def vista_categoria(request):
     return render(request, 'categoria/categoria.html')
 
+#Función para renderizar la vista de marca
+def vista_marca(request):
+    return render(request, 'marca/marca.html')
+
 # Función para agregar categoría
 def agregar_categoria(request):
     # Mensaje de respuesta
