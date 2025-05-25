@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.models import User
 
-from .models import Categoria
+from .models import Categoria, Marca
 
 #Función para renderizar la vista de producto
 def vista_producto(request):
@@ -122,3 +122,37 @@ def listar_categoria(request):
     data['msg'] = msg
     # Retornamos los datos
     return JsonResponse(data)
+
+# Función para agregar marca
+def agregar_marca(request):
+    # Mensaje de respuesta
+    res = False
+    msg = '¡Método no permitido!'
+    # Evaluamos si es llamado por POST
+    if request.method == 'POST':
+        # Capturamos los métodos por POST
+        id = request.POST.get('id', None) or None
+        descripcion = request.POST.get('descripcion', None).strip().upper() or ''
+        # Creamos la marca
+        try:
+            marca = Marca.objects.update_or_create(
+                id = id,
+                defaults = {
+                    'descripcion': descripcion,
+                    'usuario_id': User.objects.get(id = request.user.id)
+                }
+            )
+            res = True
+            # Evaluamos si fue un nuevo registro o una actualización
+            if marca[1]:
+                msg = 'Marca agregada correctamente.'
+            else:
+                msg = 'Marca actualizada correctamente.'
+        except:
+            res = False
+            msg = 'Hubo un error al agregar marca, actualice la página y vuleve a intentarlo.'
+        # Retornamos una respuesta de éxito
+        return JsonResponse({'res': res, 'msg': msg})
+    else: # En caso contrario
+        # Retornamos una respuesta de error
+        return JsonResponse({'res': res, 'msg': msg})

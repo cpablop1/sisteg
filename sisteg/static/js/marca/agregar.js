@@ -4,7 +4,7 @@ import { listar } from './listar.js';
 
 export function agregar(form) {
     let formData = new FormData(form)
-    fetch('/producto/agregar-categoria/', {
+    fetch('/producto/agregar-marca/', {
         method: 'POST',
         headers: {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value

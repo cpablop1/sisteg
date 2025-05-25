@@ -14,12 +14,12 @@ window.listar = (data) => {
     listar(data);
 }
 
-// Evento para cambiar de vista entre el formulario y el listado de categoría
+// Evento para cambiar de vista entre el formulario y el listado de marcas
 document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
 });
 
-// Evento para agregar categoría
+// Evento para agregar marca
 document.getElementById('form_agregar').addEventListener('submit', e => {
     e.preventDefault();
     let descripcion = e.target.querySelector('#descripcion');

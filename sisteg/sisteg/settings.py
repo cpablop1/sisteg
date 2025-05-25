@@ -120,9 +120,9 @@ LANGUAGE_CODE = 'es-GT'
 
 TIME_ZONE = 'America/Guatemala'
 
-USE_I18N = True
+USE_I18N = False
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
