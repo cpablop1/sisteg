@@ -32,7 +32,7 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
     }
 });
 
-// Evento para editar categoría
+// Evento para editar marca
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let id = parseInt(e.target.getAttribute('editar'))
     if (id) {

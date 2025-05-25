@@ -2,7 +2,7 @@ import { cambiar } from "./cambiar.js";
 
 export function editar(id) {
     cambiar();
-    fetch(`/producto/listar-categoria/?id=${id}`).then(res => res.json()).then(data => {
+    fetch(`/producto/listar-marca/?id=${id}`).then(res => res.json()).then(data => {
         let id = document.querySelector('#form_agregar input[name=id]');
         let descripcion = document.querySelector('#form_agregar input[name=descripcion]');
 
