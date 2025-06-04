@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 
 from django.core.paginator import Paginator
 
@@ -9,18 +10,22 @@ from django.contrib.auth.models import User
 from .models import Categoria, Marca
 
 #Función para renderizar la vista de producto
+@login_required(login_url='autenticacion')
 def vista_producto(request):
     return render(request, 'producto/producto.html')
 
 #Función para renderizar la vista de categoria
+@login_required(login_url='autenticacion')
 def vista_categoria(request):
     return render(request, 'categoria/categoria.html')
 
 #Función para renderizar la vista de marca
+@login_required(login_url='autenticacion')
 def vista_marca(request):
     return render(request, 'marca/marca.html')
 
 # Función para agregar categoría
+@login_required(login_url='autenticacion')
 def agregar_categoria(request):
     # Mensaje de respuesta
     res = False
@@ -55,6 +60,7 @@ def agregar_categoria(request):
         return JsonResponse({'res': res, 'msg': msg})
     
 # Función para listar categorías
+@login_required(login_url='autenticacion')
 def listar_categoria(request):
     # Mensajes de respuesta
     res = False
@@ -124,6 +130,7 @@ def listar_categoria(request):
     return JsonResponse(data)
 
 # Función para agregar marca
+@login_required(login_url='autenticacion')
 def agregar_marca(request):
     # Mensaje de respuesta
     res = False
@@ -158,6 +165,7 @@ def agregar_marca(request):
         return JsonResponse({'res': res, 'msg': msg})
 
 # Función para listar marcas
+@login_required(login_url='autenticacion')
 def listar_marca(request):
     # Mensajes de respuesta
     res = False

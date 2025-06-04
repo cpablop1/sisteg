@@ -1,10 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login, logout
 
 def vista_autenticacion(request):
     return render(request, 'autenticacion/login.html')
 
+# Funcionalidad para iniciar sesión
 def iniciar(request):
     res = False
     msg = 'Método inválido.'
@@ -23,3 +24,8 @@ def iniciar(request):
             msg = 'Ingrese una contraseña y usuario válido.'
 
     return JsonResponse({'res': res, 'msg': msg})
+
+# Funcionalidad para cerrar sesión
+def cerrar (request):
+    logout(request)
+    return redirect('autenticacion')
