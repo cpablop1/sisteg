@@ -230,3 +230,67 @@ def listar_marca(request):
     data['msg'] = msg
     # Retornamos los datos
     return JsonResponse(data)
+
+# Funcionalidad para crear productos
+def agregar_producto(request):
+    if request.method == 'POST':
+        # Recoger los datos por POST
+        id = request.POST.get("id", None) or None
+        descripcion = request.POST.get("descripcion", '').strip().upper() or ''
+        detalle = request.POST.get("detalle", '').strip() or ''
+        costo = request.POST.get("costo", 0).strip() or 0
+        precio = request.POST.get("precio", 0).strip() or 0
+        stock = request.POST.get("stock", 0).strip() or 0
+        img1 = request.FILES.get('img1', None) or None
+        img2 = request.FILES.get('img2', None) or None
+        marca_id = request.POST.get("marca_id", None).strip() or None
+        categoria_id = request.POST.get("categoria_id", None).strip() or None
+        usuario_id = User.objects.get(id=request.user.id)
+        eliminar_img1 = request.POST.get('eliminar_img1')
+        eliminar_img2 = request.POST.get('eliminar_img2')
+        
+        data = {
+            "descripcion": descripcion,
+            "detalle": detalle,
+            "costo": costo,
+            "precio": precio,
+            "stock": stock,
+            "marca_id": Marca.objects.get(id=marca_id),
+            "categoria_id": Categoria.objects.get(id=categoria_id),
+        }
+        # Ver si hay imáganes que agregar
+        if img1 != None:
+            data['img1'] = img1
+
+        if img2 != None:
+            data['img2'] = img2
+
+        if img3 != None:
+            data['img3'] = img3
+
+        # Ver si hay imágenes que borrar
+        if delete_img1 != None and id != None:
+            data['img1'] = ''
+        
+        if delete_img2 != None and id != None:
+            data['img2'] = ''
+        
+        if delete_img3 != None and id != None:
+            data['img3'] = ''
+        
+        # Ver si es necesario agregar el usuario y oficina
+        if id == None:
+            data['id_user'] = id_user
+            data['id_office'] = Office.objects.get(id=id_office)
+
+        try:
+            product = Product.objects.update_or_create(
+                id=id,
+                defaults=data
+            )
+            if product[1]:
+                return JsonResponse({"res": True, "msg": "Producto registrado correctamente."})
+            else:
+                return JsonResponse({"res": True, "msg": "Producto actualizado correctamente."})
+        except:
+            return JsonResponse({"res": False, "msg": "¡Hubo un error al registrar producto!"})
