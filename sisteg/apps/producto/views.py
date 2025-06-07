@@ -7,7 +7,7 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.contrib.auth.models import User
 
-from .models import Categoria, Marca
+from .models import Categoria, Marca, Producto
 
 #Función para renderizar la vista de producto
 @login_required(login_url='autenticacion')
@@ -232,6 +232,7 @@ def listar_marca(request):
     return JsonResponse(data)
 
 # Funcionalidad para crear productos
+@login_required(login_url='autenticacion')
 def agregar_producto(request):
     if request.method == 'POST':
         # Recoger los datos por POST
@@ -248,6 +249,11 @@ def agregar_producto(request):
         usuario_id = User.objects.get(id=request.user.id)
         eliminar_img1 = request.POST.get('eliminar_img1')
         eliminar_img2 = request.POST.get('eliminar_img2')
+
+        print('\n---------------------------------')
+        print(marca_id)
+        print(categoria_id)
+        print('---------------------------------\n')
         
         data = {
             "descripcion": descripcion,
@@ -265,32 +271,100 @@ def agregar_producto(request):
         if img2 != None:
             data['img2'] = img2
 
-        if img3 != None:
-            data['img3'] = img3
-
         # Ver si hay imágenes que borrar
-        if delete_img1 != None and id != None:
+        if eliminar_img1 != None and id != None:
             data['img1'] = ''
         
-        if delete_img2 != None and id != None:
+        if eliminar_img2 != None and id != None:
             data['img2'] = ''
-        
-        if delete_img3 != None and id != None:
-            data['img3'] = ''
         
         # Ver si es necesario agregar el usuario y oficina
         if id == None:
-            data['id_user'] = id_user
-            data['id_office'] = Office.objects.get(id=id_office)
+            data['usuario_id'] = usuario_id
 
         try:
-            product = Product.objects.update_or_create(
+            producto = Producto.objects.update_or_create(
                 id=id,
                 defaults=data
             )
-            if product[1]:
+            if producto[1]:
                 return JsonResponse({"res": True, "msg": "Producto registrado correctamente."})
             else:
                 return JsonResponse({"res": True, "msg": "Producto actualizado correctamente."})
         except:
             return JsonResponse({"res": False, "msg": "¡Hubo un error al registrar producto!"})
+
+# Función para listar productos
+@login_required(login_url='autenticacion')
+def listar_producto(request):
+    # Mensajes de respuesta
+    res = False
+    msg = 'Error al listar productos.'
+    data = {}
+    data['data'] = []
+    data["page_range"] = []
+    id = request.GET.get('id', None) or None
+    buscar = request.GET.get('buscar', '').strip() or ''
+    pagina = request.GET.get('pagina', 1) or 1
+    productos = ''
+
+    try:
+        if id: # Verificamos si necesitamos un producto expecífica
+            productos = Producto.objects.filter(id = id)
+        elif len(buscar) > 0: # Verificamos si hay búsquedad
+            productos = Producto.objects.filter(
+                Q(descripcion__icontains = buscar) # Si hay buscamos por descripción
+            )
+        else:
+            # Obtenemos todas los productos
+            productos = Producto.objects.all()
+        # Paginamos los productos
+        paginador = Paginator(productos, 10)
+        # Obtenemos la página
+        paginas = paginador.get_page(pagina)
+        # Preparamos el listado
+        for pro in paginas:
+            data['data'].append(
+                {
+                    'id': pro.id,
+                    'descripcion': pro.descripcion,
+                    'detalle': pro.detalle,
+                    'costo': pro.costo,
+                    'precio': pro.precio,
+                    'stock': pro.stock,
+                    'img1': pro.img1.name,
+                    'img2': pro.img2.name,
+                    'fecha_ingreso': pro.fecha_ingreso,
+                    'fecha_actualizacion': pro.fecha_actualizacion,
+                    'marca_id': pro.marca_id.id,
+                    'categoria_id': pro.categoria_id.id,
+                    'usuario': pro.usuario_id.username
+                }
+            )
+        # Preparamos la visualización de las páginas
+        if paginador.num_pages > 5:
+            start = int(pagina)
+            end = int(pagina) + 5
+            if end > paginador.num_pages:
+                start = paginador.num_pages - 4
+                end = paginador.num_pages + 1
+            for i in range(start, end):
+                data["page_range"].append(i)
+        else:
+            for i in range(paginador.num_pages):
+                data["page_range"].append(i + 1)
+        data["num_pages"] = paginador.num_pages
+        data["has_next"] = paginas.has_next()
+        data["has_previous"] = paginas.has_previous()
+        data["count"] = paginador.count
+
+        # Preparamos mensajes de respuesta
+        res = True
+        msg = 'Listado de productos.'
+    except:
+        res = False
+
+    data['res'] = res
+    data['msg'] = msg
+    # Retornamos los datos
+    return JsonResponse(data)
