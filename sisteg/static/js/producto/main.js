@@ -4,8 +4,6 @@ import { agregar } from './agregar.js';
 import { listar } from './listar.js';
 import { editar } from './editar.js';
 import { validacion } from './validacion.js';
-import { selectMarca } from './selectMarca.js';
-import { selectCategoria } from './selectCategoria.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -21,8 +19,6 @@ window.listar = (data) => {
 // Y cargar los selects correspondientes....
 document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
-    selectMarca();
-    selectCategoria();
 });
 
 // Evento para agregar producto

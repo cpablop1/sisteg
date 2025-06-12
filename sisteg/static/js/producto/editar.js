@@ -2,11 +2,12 @@ import { cambiar } from "./cambiar.js";
 
 export function editar(id) {
     cambiar();
-    fetch(`/producto/listar-marca/?id=${id}`).then(res => res.json()).then(data => {
-        let id = document.querySelector('#form_agregar input[name=id]');
-        let descripcion = document.querySelector('#form_agregar input[name=descripcion]');
-
-        id.value = data.data[0].id;
-        descripcion.value = data.data[0].descripcion;
+    fetch(`/producto/listar-producto/?id=${id}`).then(res => res.json()).then(data => {
+        let inputs = ['id', 'descripcion', 'detalle', 'costo', 'precio', 'stock', 'marca_id', 'categoria_id'];
+        Array.from(inputs, value => {
+            console.log(data.data[0][value]);
+            console.log(document.getElementById(value));
+            document.getElementById(value).value = data.data[0][value];
+        });
     });
 }

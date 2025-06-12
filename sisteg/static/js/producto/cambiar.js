@@ -1,3 +1,6 @@
+import { selectMarca } from './selectMarca.js';
+import { selectCategoria } from './selectCategoria.js';
+
 // Evento para cambiar de vista entre el formulario y el listado de categoría
 export function cambiar() {
     let btn_agregar = document.getElementById('agregar');
@@ -16,4 +19,6 @@ export function cambiar() {
         form_agregar.hidden = false;
         document.getElementById('descripcion').focus();
     }
+    selectMarca();
+    selectCategoria();
 }
