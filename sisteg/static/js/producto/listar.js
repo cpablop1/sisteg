@@ -22,24 +22,29 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
         } else {
             previous = `<li class="page-item disabled"><a class="page-link" href="#"><i class="fa-solid fa-circle-chevron-left"></i></a></li>`
         }
-        Array.from(data.page_range, (item, index) => {
+        Array.from(data.page_range, pagina => {
             let new_data = { ...data_p }
-            new_data.pagina = item
+            new_data.pagina = pagina
             let jsonData = JSON.stringify(new_data);
-            pages += `<li class="page-item" id="page-${item}"><a class="page-link" href="#" onclick='listar(${jsonData})'>${item}</a></li>`;
+            pages += `<li class="page-item" id="page-${pagina}"><a class="page-link" href="#" onclick='listar(${jsonData})'>${pagina}</a></li>`;
         });
 
 
-        Array.from(data.data, (item, index) => {
+        Array.from(data.data, (producto, indice) => {
+            console.log(producto);
             fila += `
                 <tr>
-                    <th scope="row">${index + 1}</th>
-                    <td>${item.descripcion}</td>
-                    <td>${item.usuario}</td>
-                    <td>${item.fecha_ingreso}</td>
-                    <td>${item.fecha_actualizacion}</td>
-                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar="${item.id}"></i></td>
-                    <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar="${item.id}"></i></td>
+                    <th scope="row">${indice + 1}</th>
+                    <td>${producto.descripcion}</td>
+                    <td>${producto.precio}</td>
+                    <td>${producto.stock}</td>
+                    <td>${producto.marca}</td>
+                    <td>${producto.categoria}</td>
+                    <td>${producto.usuario}</td>
+                    <td>${producto.fecha_ingreso}</td>
+                    <td>${producto.fecha_actualizacion}</td>
+                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar="${producto.id}"></i></td>
+                    <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar="${producto.id}"></i></td>
                 </tr>`;
         });
 

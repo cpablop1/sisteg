@@ -338,6 +338,8 @@ def listar_producto(request):
                     'fecha_actualizacion': pro.fecha_actualizacion,
                     'marca_id': pro.marca_id.id,
                     'categoria_id': pro.categoria_id.id,
+                    'marca': pro.marca_id.descripcion,
+                    'categoria': pro.categoria_id.descripcion,
                     'usuario': pro.usuario_id.username
                 }
             )
