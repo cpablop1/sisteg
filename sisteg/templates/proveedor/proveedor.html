@@ -1,0 +1,13 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+
+{% block contenido %}
+{% include 'proveedor/listar.html' %}
+{% include 'proveedor/agregar.html' %}
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/proveedor/main.js' %}" type="module"></script>
+{% endblock %}
