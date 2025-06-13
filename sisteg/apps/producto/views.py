@@ -71,6 +71,7 @@ def listar_categoria(request):
     id = request.GET.get('id', None) or None
     buscar = request.GET.get('buscar', '').strip() or ''
     pagina = request.GET.get('pagina', 1) or 1
+    select = request.GET.get('select', None) or None
     categorias = ''
 
     try:
@@ -83,11 +84,15 @@ def listar_categoria(request):
         else:
             # Obtenemos todas las categorías
             categorias = Categoria.objects.all()
-        # Paginamos las categorías
-        paginador = Paginator(categorias, 10)
-        # Obtenemos la página
-        paginas = paginador.get_page(pagina)
-        # Preparamos el listado
+            
+        if select:
+            paginas = categorias
+        else:
+            # Paginamos las categorías
+            paginador = Paginator(categorias, 10)
+            # Obtenemos la página
+            paginas = paginador.get_page(pagina)
+            # Preparamos el listado
         for cat in paginas:
             data['data'].append(
                 {
@@ -176,6 +181,7 @@ def listar_marca(request):
     id = request.GET.get('id', None) or None
     buscar = request.GET.get('buscar', '').strip() or ''
     pagina = request.GET.get('pagina', 1) or 1
+    select = request.GET.get('select', None) or None
     marcas = ''
 
     try:
@@ -188,11 +194,14 @@ def listar_marca(request):
         else:
             # Obtenemos todas las marcas
             marcas = Marca.objects.all()
-        # Paginamos las marcas
-        paginador = Paginator(marcas, 10)
-        # Obtenemos la página
-        paginas = paginador.get_page(pagina)
-        # Preparamos el listado
+        if select:
+            paginas = marcas
+        else:
+            # Paginamos las marcas
+            paginador = Paginator(marcas, 10)
+            # Obtenemos la página
+            paginas = paginador.get_page(pagina)
+            # Preparamos el listado
         for mar in paginas:
             data['data'].append(
                 {
