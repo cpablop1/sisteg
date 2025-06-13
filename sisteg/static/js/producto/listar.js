@@ -6,6 +6,7 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
         let pages = '';
         let previous;
         let next;
+        let img = ''
         if (data.has_next) {
             let new_data = { ...data_p }
             new_data.pagina += 1
@@ -32,9 +33,17 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
 
         Array.from(data.data, (producto, indice) => {
             console.log(producto);
+            // Comprobamos si el producto tiene una imagen
+            if (producto.img1 != '') {
+                img = `/media/${producto.img1}`;
+            } else {
+                img = "/static/img/not_img.png";
+            }
+
             fila += `
                 <tr>
                     <th scope="row">${indice + 1}</th>
+                    <th scope="row"><img src="${img}" class="img-fluid"></th>
                     <td>${producto.descripcion}</td>
                     <td>${producto.precio}</td>
                     <td>${producto.stock}</td>

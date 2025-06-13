@@ -7,14 +7,16 @@ export function cambiar() {
     let form_agregar = document.getElementById('form_agregar');
     let listar = document.getElementById('listar');
 
+    document.getElementById('ver_img1').innerHTML = '';
+    document.getElementById('ver_img2').innerHTML = '';
+    form_agregar.reset();
+
     if (listar.hidden) {
         btn_agregar.innerHTML = '<i class="fa-solid fa-square-plus"></i>';
-        form_agregar.reset();
         listar.hidden = false;
         form_agregar.hidden = true;
     } else {
         btn_agregar.innerHTML = '<i class="fa-solid fa-list"></i>';
-        form_agregar.reset();
         listar.hidden = true;
         form_agregar.hidden = false;
         document.getElementById('descripcion').focus();

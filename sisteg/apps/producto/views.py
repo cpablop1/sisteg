@@ -249,11 +249,6 @@ def agregar_producto(request):
         usuario_id = User.objects.get(id=request.user.id)
         eliminar_img1 = request.POST.get('eliminar_img1')
         eliminar_img2 = request.POST.get('eliminar_img2')
-
-        print('\n---------------------------------')
-        print(marca_id)
-        print(categoria_id)
-        print('---------------------------------\n')
         
         data = {
             "descripcion": descripcion,
