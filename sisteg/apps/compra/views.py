@@ -4,6 +4,7 @@ from django.http import JsonResponse
 
 from django.db.models import Q
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 
 from .models import Proveedor
 
@@ -63,3 +64,81 @@ def agregar_proveedor(request):
     else: # En caso contrario
         # Retornamos una respuesta de error
         return JsonResponse({'res': res, 'msg': msg})
+    
+# Función para listar proveedores
+@login_required(login_url='autenticacion')
+def listar_proveedor(request):
+    # Mensajes de respuesta
+    res = False
+    msg = 'Error al listar proveedores.'
+    data = {}
+    data['data'] = []
+    data["page_range"] = []
+    id = request.GET.get('id', None) or None
+    buscar = request.GET.get('buscar', '').strip() or ''
+    pagina = request.GET.get('pagina', 1) or 1
+    proveedores = ''
+
+    try:
+        if id: # Verificamos si necesitamos un proveedor en expecífico
+            proveedores = Proveedor.objects.filter(id = id)
+        elif len(buscar) > 0: # Verificamos si hay búsquedad
+            proveedores = Proveedor.objects.filter(
+                Q(nombres__icontains = buscar) |# Si hay buscamos por nombres
+                Q(apellidos__icontains = buscar) |# Si hay buscamos por apellidos
+                Q(nit__icontains = buscar) |# Si hay buscamos por nit
+                Q(cui__icontains = buscar) # Si hay buscamos por cui
+            )
+        else:
+            # Obtenemos todas los proveedores
+            proveedores = Proveedor.objects.all()
+            
+        # Paginamos los proveedores
+        paginador = Paginator(proveedores, 10)
+        # Obtenemos la página
+        paginas = paginador.get_page(pagina)
+        # Preparamos el listado
+        for prov in paginas:
+            data['data'].append(
+                {
+                    'id': prov.id,
+                    'nombres': prov.nombres,
+                    'apellidos': prov.apellidos,
+                    'nit': prov.nit,
+                    'cui': prov.cui,
+                    'telefono': prov.telefono,
+                    'direccion': prov.direccion,
+                    'correo': prov.correo,
+                    'empresa': prov.empresa,
+                    'fecha_ingreso': prov.fecha_ingreso,
+                    'fecha_actualizacion': prov.fecha_actualizacion,
+                    'usuario': prov.usuario_id.username
+                }
+            )
+        # Preparamos la visualización de las páginas
+        if paginador.num_pages > 5:
+            start = int(pagina)
+            end = int(pagina) + 5
+            if end > paginador.num_pages:
+                start = paginador.num_pages - 4
+                end = paginador.num_pages + 1
+            for i in range(start, end):
+                data["page_range"].append(i)
+        else:
+            for i in range(paginador.num_pages):
+                data["page_range"].append(i + 1)
+        data["num_pages"] = paginador.num_pages
+        data["has_next"] = paginas.has_next()
+        data["has_previous"] = paginas.has_previous()
+        data["count"] = paginador.count
+
+        # Preparamos mensajes de respuesta
+        res = True
+        msg = 'Listado de proveedores.'
+    except:
+        res = False
+
+    data['res'] = res
+    data['msg'] = msg
+    # Retornamos los datos
+    return JsonResponse(data)

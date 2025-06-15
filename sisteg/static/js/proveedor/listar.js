@@ -1,12 +1,11 @@
 export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
     let params = new URLSearchParams(data_p).toString();
-    fetch(`/producto/listar-producto/?${params}`).then(res => res.json()).then(data => {
+    fetch(`/compra/listar-proveedor/?${params}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar');
         let fila = '';
         let pages = '';
         let previous;
         let next;
-        let img = ''
         if (data.has_next) {
             let new_data = { ...data_p }
             new_data.pagina += 1
@@ -31,29 +30,22 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
         });
 
 
-        Array.from(data.data, (producto, indice) => {
-            console.log(producto);
-            // Comprobamos si el producto tiene una imagen
-            if (producto.img1 != '') {
-                img = `/media/${producto.img1}`;
-            } else {
-                img = "/static/img/not_img.png";
-            }
-
+        Array.from(data.data, (proveedor, indice) => {
             fila += `
                 <tr>
                     <th scope="row">${indice + 1}</th>
-                    <th scope="row"><img src="${img}" class="img-fluid"></th>
-                    <td>${producto.descripcion}</td>
-                    <td>${producto.precio}</td>
-                    <td>${producto.stock}</td>
-                    <td>${producto.marca}</td>
-                    <td>${producto.categoria}</td>
-                    <td>${producto.usuario}</td>
-                    <td>${producto.fecha_ingreso}</td>
-                    <td>${producto.fecha_actualizacion}</td>
-                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar="${producto.id}"></i></td>
-                    <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar="${producto.id}"></i></td>
+                    <td>${proveedor.nombres} ${proveedor.apellidos}</td>
+                    <td>${proveedor.nit}</td>
+                    <td>${proveedor.cui}</td>
+                    <td>${proveedor.telefono}</td>
+                    <td>${proveedor.direccion}</td>
+                    <td>${proveedor.correo}</td>
+                    <td>${proveedor.empresa}</td>
+                    <td>${proveedor.usuario}</td>
+                    <td>${proveedor.fecha_ingreso}</td>
+                    <td>${proveedor.fecha_actualizacion}</td>
+                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar="${proveedor.id}"></i></td>
+                    <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar="${proveedor.id}"></i></td>
                 </tr>`;
         });
 
