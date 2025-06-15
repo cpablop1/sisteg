@@ -1,0 +1,12 @@
+<form class="border rounded shadow-lg p-5 mt-5" id="form_agregar" hidden>
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="nombres" class="form-label">Nombres</label>
+        <input type="text" class="form-control" name="id" id="id" hidden>
+        <input type="text" class="form-control" name="nombres" id="nombres" maxlength="150">
+    </div>
+
+    <div class="mb-3 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
