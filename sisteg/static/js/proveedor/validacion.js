@@ -1,24 +1,24 @@
 export function validacion(form) {
-    let descripcion = form['descripcion'];
-    let marca = form['marca_id'];
-    let categoria = form['categoria_id'];
+    let nombres = form['nombres'];
+    let apellidos = form['apellidos'];
+    let telefono = form['telefono'];
     let valido = [true];
 
-    descripcion.classList.remove('is-invalid');
-    marca.classList.remove('is-invalid');
-    categoria.classList.remove('is-invalid');
+    nombres.classList.remove('is-invalid');
+    apellidos.classList.remove('is-invalid');
+    telefono.classList.remove('is-invalid');
 
-    if (descripcion.value.trim().length === 0) {
-        descripcion.classList.add('is-invalid');
-        descripcion.focus();
+    if (nombres.value.trim().length === 0) {
+        nombres.classList.add('is-invalid');
+        nombres.focus();
         valido.push(false);
-    } else if (marca.value.trim().length === 0) {
-        marca.classList.add('is-invalid');
-        marca.focus();
+    } else if (apellidos.value.trim().length === 0) {
+        apellidos.classList.add('is-invalid');
+        apellidos.focus();
         valido.push(false);
-    } else if (categoria.value.trim().length === 0) {
-        categoria.classList.add('is-invalid');
-        categoria.focus();
+    } else if (telefono.value.trim().length === 0) {
+        telefono.classList.add('is-invalid');
+        telefono.focus();
         valido.push(false);
     }
 

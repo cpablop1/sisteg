@@ -20,7 +20,7 @@ document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
 });
 
-// Evento para agregar producto
+// Evento para agregar proveedor
 document.getElementById('form_agregar').addEventListener('submit', e => {
     e.preventDefault();
     let form = e.target;
