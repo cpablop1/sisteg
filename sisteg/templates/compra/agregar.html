@@ -1,12 +1,67 @@
 <form class="border rounded shadow-lg p-5 mt-5" id="form_agregar" hidden>
     {% csrf_token %}
-    <div class="mb-3">
-        <label for="nombres" class="form-label">Nombres</label>
-        <input type="text" class="form-control" name="id" id="id" hidden>
-        <input type="text" class="form-control" name="nombres" id="nombres" maxlength="150">
+    <div class="row">
+        <div class="col-12 col-md-3">
+            <select name="proveedor_id" id="proveedor_id" class="form-select">
+                <option value="">Seleccione el proveedor</option>
+                <option value="1">Proveedor General</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-3">
+            <select name="tipo_pago_id" id="tipo_pago_id" class="form-select">
+                <option value="">Seleccione tipo de pago</option>
+                <option value="1">Efectivo</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-3">
+            <span class="btn btn-light" id="btn-buscar-productos">
+                <i class="fa-solid fa-magnifying-glass p-1"></i>
+                Buscar
+            </span>
+        </div>
+        <div class="col-12 col-md-3 d-flex justify-content-end">
+            <h3 class="bg-light p-2">Q. 00</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Costo</th>
+                            <th scope="col">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row">1</th>
+                            <td>Mark</td>
+                            <td>Otto</td>
+                            <td>@mdo</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">2</th>
+                            <td>Jacob</td>
+                            <td>Thornton</td>
+                            <td>@fat</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">3</th>
+                            <td colspan="2">Larry the Bird</td>
+                            <td>@twitter</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="mb-3 d-flex justify-content-end">
         <button type="submit" class="btn btn-primary">Guardar</button>
     </div>
 </form>
+
+{% include 'compra/buscar_productos.html' %}

@@ -1,24 +1,18 @@
 export function validacion(form) {
-    let nombres = form['nombres'];
-    let apellidos = form['apellidos'];
-    let telefono = form['telefono'];
+    let proveedor_id = form['proveedor_id'];
+    let tipo_pago_id = form['tipo_pago_id'];
     let valido = [true];
 
-    nombres.classList.remove('is-invalid');
-    apellidos.classList.remove('is-invalid');
-    telefono.classList.remove('is-invalid');
+    proveedor_id.classList.remove('is-invalid');
+    tipo_pago_id.classList.remove('is-invalid');
 
-    if (nombres.value.trim().length === 0) {
-        nombres.classList.add('is-invalid');
-        nombres.focus();
+    if (proveedor_id.value.trim().length === 0) {
+        proveedor_id.classList.add('is-invalid');
+        proveedor_id.focus();
         valido.push(false);
-    } else if (apellidos.value.trim().length === 0) {
-        apellidos.classList.add('is-invalid');
-        apellidos.focus();
-        valido.push(false);
-    } else if (telefono.value.trim().length === 0) {
-        telefono.classList.add('is-invalid');
-        telefono.focus();
+    } else if (tipo_pago_id.value.trim().length === 0) {
+        tipo_pago_id.classList.add('is-invalid');
+        tipo_pago_id.focus();
         valido.push(false);
     }
 
