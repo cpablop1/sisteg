@@ -16,12 +16,26 @@ window.listar = (data) => {
     listar(data);
 }
 
-// Evento para cambiar de vista entre el formulario y el listado de proveedores
+window.listarProductos = (data) => {
+    listarProductos(data);
+}
+
+// Evento para buscar productos
+document.getElementById('buscar_productos').addEventListener('input', e => {
+    let buscar = e.target.value.trim();
+    if (buscar.length > 0) {
+        listarProductos({ 'pagina': 1, 'buscar': buscar });
+    } else {
+        listarProductos();
+    }
+});
+
+// Evento para cambiar de vista entre el carrito y el listado de compras
 document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
 });
 
-// Evento para agregar proveedor
+// Evento para confirmar compra
 document.getElementById('form_agregar').addEventListener('submit', e => {
     e.preventDefault();
     let form = e.target;
@@ -38,11 +52,16 @@ document.getElementById('btn-buscar-productos').addEventListener('click', e => {
     setTimeout(() => listarProductos(), 500);
 });
 
-// Evento para editar marca
-document.getElementById('tbl_listar').addEventListener('click', e => {
-    let id = parseInt(e.target.getAttribute('editar'))
-    if (id) {
-        editar(id);
+// Evento para agregar productos al carrito
+document.getElementById('tbl_listar_productos').addEventListener('click', e => {
+    let id = parseInt(e.target.getAttribute('agregar'))
+    let form = document.getElementById('form_agregar');
+    console.log(id);
+    console.log(validacion(form));
+    if (id && validacion(form)) {
+        console.log(id);
+    } else {
+        alerta.warning('Complete el formulario para continuar.');
     }
 });
 

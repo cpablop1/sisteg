@@ -3,32 +3,35 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="staticBackdropLabel">Modal title</h5>
+                <i class="fa-solid fa-magnifying-glass btn btn-light btn-sm"></i>
+                <input type="search" class="form-control form-control-sm" id="buscar_productos" placeholder="Buscar productos">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="table-responsive">
-            <table class="table" id="tbl_listar_productos">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th></th>
-                        <th scope="col">Producto</th>
-                        <th scope="col">Precio</th>
-                        <th scope="col">Stock</th>
-                        <th scope="col">Marca</th>
-                        <th scope="col">Categoría</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
+                    <table class="table" id="tbl_listar_productos">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col"></th>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Costo</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Stock</th>
+                                <th scope="col">Marca</th>
+                                <th scope="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Understood</button>
+                <nav aria-label="Search results pages">
+                    <ul class="pagination justify-content-end me-md-3" id="pagination_buscar_productos">
+                    </ul>
+                </nav>
             </div>
         </div>
     </div>
