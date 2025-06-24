@@ -40,7 +40,7 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
     e.preventDefault();
     let form = e.target;
     if (validacion(form)) {
-        agregar(form)
+        //agregar(form)
     } else {
         alerta.warning('Complete el formulario para continuar.');
     }
@@ -54,14 +54,14 @@ document.getElementById('btn-buscar-productos').addEventListener('click', e => {
 
 // Evento para agregar productos al carrito
 document.getElementById('tbl_listar_productos').addEventListener('click', e => {
-    let id = parseInt(e.target.getAttribute('agregar'))
+    let producto_id = parseInt(e.target.getAttribute('agregar'))
     let form = document.getElementById('form_agregar');
-    console.log(id);
-    console.log(validacion(form));
-    if (id && validacion(form)) {
-        console.log(id);
-    } else {
-        alerta.warning('Complete el formulario para continuar.');
+    if (producto_id) {
+        if (validacion(form)) {
+            agregar(form, producto_id);
+        } else {
+            alerta.warning('Complete el formulario para continuar.');
+        }
     }
 });
 

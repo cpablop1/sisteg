@@ -2,9 +2,10 @@ import * as alerta from '../alertas/alertas.js';
 import { cambiar } from './cambiar.js';
 import { listar } from './listar.js';
 
-export function agregar(form) {
+export function agregar(form, producto_id) {
     let formData = new FormData(form)
-    fetch('/compra/agregar-proveedor/', {
+    formData.append('producto_id', producto_id);
+    fetch('/compra/agregar-compra/', {
         method: 'POST',
         headers: {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
@@ -13,9 +14,10 @@ export function agregar(form) {
     }).then(res => {
         return res.json();
     }).then(data => {
+            console.log(data);
         if (data.res) {
             alerta.success(data.msg);
-            cambiar();
+            //cambiar();
             setTimeout(() => {
                 listar();
             }, 500);

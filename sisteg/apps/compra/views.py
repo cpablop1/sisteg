@@ -142,3 +142,51 @@ def listar_proveedor(request):
     data['msg'] = msg
     # Retornamos los datos
     return JsonResponse(data)
+
+# Función para crear compra
+@login_required(login_url='autenticacion')
+def agregar_compra(request):
+    res = False
+    msg = 'Método no permitido'
+    if request.method == 'POST':
+        proveedor_id = request.POST.get('proveedor_id', '').strip()
+        tipo_pago_id = request.POST.get('tipo_pago_id', '').strip()
+        producto_id = request.POST.get('producto_id', '').strip()
+
+        # Validación para proveedor_id
+        if not proveedor_id:
+            return JsonResponse({'res': False, 'msg': 'Seleccione el proveedor.'})
+
+        try:
+            proveedor_id = int(proveedor_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'res': False, 'msg': 'Seleccione un proveedor válido.'})
+
+        # Validación para tipo_pago_id
+        if not tipo_pago_id:
+            return JsonResponse({'res': False, 'msg': 'Seleccione el tipo de pago.'})
+
+        try:
+            tipo_pago_id = int(tipo_pago_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'res': False, 'msg': 'Seleccione un tipo de pago válido.'})
+        
+        # Validación para producto_id
+        if not producto_id:
+            return JsonResponse({'res': False, 'msg': 'Seleccione un producto'})
+
+        try:
+            producto_id = int(producto_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'res': False, 'msg': 'Seleccione un producto válido.'})
+
+        print('\n--------------------')
+        print(proveedor_id)
+        print(tipo_pago_id)
+        print(producto_id)
+        print('--------------------\n')
+
+        res = True
+        msg = 'Compra agregada.'
+
+    return JsonResponse({'res': res, 'msg': msg})
