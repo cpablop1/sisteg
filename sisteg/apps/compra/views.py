@@ -6,7 +6,9 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 
-from .models import Proveedor
+from .models import Proveedor, Compra, DetalleCompra
+from apps.producto.models import Producto
+from apps.inicio.models import TipoPago
 
 @login_required(login_url='autenticacion')
 def vista_compra(request):
@@ -152,6 +154,7 @@ def agregar_compra(request):
         proveedor_id = request.POST.get('proveedor_id', '').strip()
         tipo_pago_id = request.POST.get('tipo_pago_id', '').strip()
         producto_id = request.POST.get('producto_id', '').strip()
+        cantidad = request.PoST.get('cantidad', '1')
 
         # Validación para proveedor_id
         if not proveedor_id:
@@ -174,6 +177,16 @@ def agregar_compra(request):
         # Validación para producto_id
         if not producto_id:
             return JsonResponse({'res': False, 'msg': 'Seleccione un producto'})
+        
+        # Validación de la cantidad que siempre sea un entero positivo
+        if cantidad.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 1
+            cantidad = 1
+        try: # Convertimos un cantidad en entero
+            cantidad = int(cantidad)
+        except ValueError: # En caso de error le asignamos 1
+            cantidad = 1
+        if cantidad <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
+            cantidad = 1
 
         try:
             producto_id = int(producto_id)
@@ -185,8 +198,38 @@ def agregar_compra(request):
         print(tipo_pago_id)
         print(producto_id)
         print('--------------------\n')
+        try:
+            producto = Producto.objects.get(id = producto_id)
+        except:
+            producto = None
 
-        res = True
-        msg = 'Compra agregada.'
+        if producto: # Comprobamos si hay producto
+            # Verificamos si existe una compra activa del usuario logeado
+            existe_compra = Compra.objects.filter(usuario_id = request.user.id, estado = False)
+            if existe_compra.exists(): # Si es así
+                print('Hay una compra activa....')
+            else: # En caso contrario
+                compra = Compra.objects.create( # Creamos la compra
+                    subtotal = producto.costo,
+                    proveedor_id = Proveedor.objects.get(id = proveedor_id),
+                    usuario_id = User.objects.get(id = request.user.id),
+                    tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id)
+                )
+                # Con su detalle
+                detalle_compra = DetalleCompra.objects.create(
+                    costo = producto.costo,
+                    cantidad = 1,
+                    total = producto.costo,
+                    producto_id = producto,
+                    compra_id = compra
+                )
+                # Gaurdamos los resgitros
+                compra.save()
+                detalle_compra.save()
+                # Prepamos respuesta
+                res = True
+                msg = 'Compra agregada.'
+        else:
+            print(producto)
 
     return JsonResponse({'res': res, 'msg': msg})
