@@ -154,7 +154,7 @@ def agregar_compra(request):
         proveedor_id = request.POST.get('proveedor_id', '').strip()
         tipo_pago_id = request.POST.get('tipo_pago_id', '').strip()
         producto_id = request.POST.get('producto_id', '').strip()
-        cantidad = request.PoST.get('cantidad', '1')
+        cantidad = request.POST.get('cantidad', '1')
 
         # Validación para proveedor_id
         if not proveedor_id:
@@ -193,11 +193,6 @@ def agregar_compra(request):
         except (ValueError, TypeError):
             return JsonResponse({'res': False, 'msg': 'Seleccione un producto válido.'})
 
-        print('\n--------------------')
-        print(proveedor_id)
-        print(tipo_pago_id)
-        print(producto_id)
-        print('--------------------\n')
         try:
             producto = Producto.objects.get(id = producto_id)
         except:
@@ -207,7 +202,39 @@ def agregar_compra(request):
             # Verificamos si existe una compra activa del usuario logeado
             existe_compra = Compra.objects.filter(usuario_id = request.user.id, estado = False)
             if existe_compra.exists(): # Si es así
-                print('Hay una compra activa....')
+                # Verificar si existe el producto en carrito
+                existe_detalle = DetalleCompra.objects.filter(compra_id = existe_compra[0].id, producto_id = producto.id)
+                if existe_detalle.exists(): # Si existe
+                    # Creamos los nuevos valores del detalle de compra
+                    cantidad_nueva = int(existe_detalle[0].cantidad) + int(cantidad)
+                    total = float(existe_detalle[0].costo) * cantidad_nueva
+                    # Actualizamos detalle de compra
+                    existe_detalle.update(
+                        cantidad = cantidad_nueva,
+                        total = total
+                    )
+                else: # En caso contrario agregar el producto al carrito (compra)
+                    detalle = DetalleCompra.objects.create(
+                        costo = producto.costo,
+                        cantidad = cantidad,
+                        total = producto.costo,
+                        producto_id = producto,
+                        compra_id = existe_compra[0]
+                    )
+                    # Gaurdamos registro
+                    detalle.save()
+                # Creamos los nuevos valores para la compra
+                todos_detalle = DetalleCompra.objects.filter(compra_id = existe_compra[0].id)
+                subtotal = sum(dc.total for dc in todos_detalle)
+                # Actualizamos la compra
+                existe_compra.update(
+                    subtotal = subtotal,
+                    proveedor_id = proveedor_id,
+                    tipo_pago_id = tipo_pago_id
+                )
+                # Datos de respuesta
+                res = True
+                msg = 'Carrito actualizado.'
             else: # En caso contrario
                 compra = Compra.objects.create( # Creamos la compra
                     subtotal = producto.costo,
@@ -218,7 +245,7 @@ def agregar_compra(request):
                 # Con su detalle
                 detalle_compra = DetalleCompra.objects.create(
                     costo = producto.costo,
-                    cantidad = 1,
+                    cantidad = cantidad,
                     total = producto.costo,
                     producto_id = producto,
                     compra_id = compra
