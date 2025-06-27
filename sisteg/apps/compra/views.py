@@ -260,3 +260,43 @@ def agregar_compra(request):
             print(producto)
 
     return JsonResponse({'res': res, 'msg': msg})
+
+# Función para listar carrito
+@login_required(login_url='autenticacion')
+def listar_carrito(request):
+        # Mensajes de respuesta
+    res = False
+    msg = 'Error al listar carrito.'
+    data = {}
+    data['data'] = []
+    try:
+        compra = Compra.objects.get(usuario_id = request.user, estado = False)
+        if compra:
+            carrito = DetalleCompra.objects.filter(compra_id = compra)
+
+            for carr in carrito:
+                data['data'].append(
+                    {
+                        'id': carr.id,
+                        'costo': carr.costo,
+                        'cantidad': carr.cantidad,
+                        'total': carr.total,
+                        'producto': carr.producto_id.descripcion
+                    }
+                )
+            data['carrito_id'] = compra.id
+            data['subtotal'] = compra.subtotal
+            data['tipo_pago_id'] = compra.tipo_pago_id.id
+            data['proveedor_id'] = compra.proveedor_id.id
+            # Preparamos mensajes de respuesta
+            res = True
+            msg = 'Elementos del carrito.'
+        else:
+            msg = 'El carrito está vació.'
+    except:
+        res = False
+
+    data['res'] = res
+    data['msg'] = msg
+    # Retornamos los datos
+    return JsonResponse(data)

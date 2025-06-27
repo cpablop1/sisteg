@@ -1,3 +1,4 @@
+import { listarCarrito } from "./listarCarrito.js";
 import { selectProveedor } from "./selectProveedor.js";
 import { selectTipoPago } from "./selectTipoPago.js";
 
@@ -17,6 +18,7 @@ export function cambiar() {
         btn_agregar.innerHTML = '<i class="fa-solid fa-list"></i>';
         listar.hidden = true;
         form_agregar.hidden = false;
+        listarCarrito();
     }
 
     selectProveedor();

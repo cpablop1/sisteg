@@ -1,6 +1,7 @@
 import * as alerta from '../alertas/alertas.js';
 import { cambiar } from './cambiar.js';
 import { listar } from './listar.js';
+import { listarCarrito } from './listarCarrito.js';
 
 export function agregar(form, producto_id) {
     let formData = new FormData(form)
@@ -14,12 +15,10 @@ export function agregar(form, producto_id) {
     }).then(res => {
         return res.json();
     }).then(data => {
-            console.log(data);
         if (data.res) {
             alerta.success(data.msg);
-            //cambiar();
             setTimeout(() => {
-                listar();
+                listarCarrito();
             }, 500);
         } else {
             alerta.danger(data.msg);
