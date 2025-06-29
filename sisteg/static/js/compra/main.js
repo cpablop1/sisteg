@@ -5,6 +5,7 @@ import { listar } from './listar.js';
 import { editar } from './editar.js';
 import { validacion } from './validacion.js';
 import { listarProductos } from './listarProductos.js';
+import { eliminarCompra } from './eliminarCompra.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -72,5 +73,21 @@ document.getElementById('buscar').addEventListener('input', e => {
         listar({ 'pagina': 1, 'buscar': buscar });
     } else {
         listar();
+    }
+});
+
+// Evento para eliminar elementos de la compra
+document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
+    let detalle_compra_id = parseInt(e.target.getAttribute('detalle_compra_id'));
+    if (detalle_compra_id){
+        eliminarCompra({'detalle_compra_id': detalle_compra_id});
+    }
+});
+
+// Evento para eliminar la compra completa
+document.getElementById('eliminar_compra').addEventListener('click', e => {
+    let compra_id = parseInt(e.target.getAttribute('compra_id'));
+    if (compra_id){
+        eliminarCompra({'compra_id': compra_id});
     }
 });

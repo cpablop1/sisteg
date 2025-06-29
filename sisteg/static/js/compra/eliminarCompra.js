@@ -1,10 +1,13 @@
 import * as alerta from '../alertas/alertas.js';
 import { listarCarrito } from './listarCarrito.js';
 
-export function agregar(form, producto_id) {
-    let formData = new FormData(form)
-    formData.append('producto_id', producto_id);
-    fetch('/compra/agregar-compra/', {
+export function eliminarCompra(datos) {
+    let formData = new FormData()
+    Object.entries(datos).forEach(([clave, valor]) => {
+        formData.append(clave, valor);
+    });
+    //formData.append('detalle_compra_id', detalle_compra_id);
+    fetch('/compra/eliminar-compra/', {
         method: 'POST',
         headers: {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value

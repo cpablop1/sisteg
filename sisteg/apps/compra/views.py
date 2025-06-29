@@ -261,6 +261,69 @@ def agregar_compra(request):
 
     return JsonResponse({'res': res, 'msg': msg})
 
+# Función para eliminar compra
+@login_required(login_url='autenticacion')
+def eliminar_compra(request):
+    # Varialbles por defectos
+    res = False
+    msg = 'Método no permitido.'
+    if request.method == 'POST':
+        # Capturamos los datos por POST
+        detalle_compra_id = request.POST.get('detalle_compra_id', '').strip()
+        compra_id = request.POST.get('compra_id', '').strip()
+        # Sanitizamos los datos capturados
+        if not detalle_compra_id:
+            detalle_compra_id = None
+        try:
+            detalle_compra_id = int(detalle_compra_id)
+        except (ValueError, TypeError):
+            detalle_compra_id = None
+
+        if not compra_id:
+            compra_id = None
+        try:
+            compra_id = int(compra_id)
+        except (ValueError, TypeError):
+            compra_id = None
+
+        # Procedemos a eliminar la compra
+        try:
+            # Primero comprobamos si hay id válido
+            if detalle_compra_id is not None:
+                # Obtenemos el registro del detalle de compra
+                detalle_compra = DetalleCompra.objects.get(id = detalle_compra_id)
+                # Obtenemos el registro de la compra como tal
+                compra = Compra.objects.get(id = detalle_compra.compra_id.id)
+                # Otenemos el total de registros en la compra
+                detalle_compra_total = DetalleCompra.objects.filter(compra_id = compra.id).count()
+                # Si solo tiene un detalle la compra
+                if detalle_compra_total == 1:
+                    compra.delete() # Eliminamos la compra completa
+                    # Mensja de respuesta
+                    msg = 'Carrito vaciado.'
+                else:
+                    # Solo eliminamos el detalle de la compra
+                    detalle_compra.delete()
+                    # Actualizamos la compra
+                    subtotal = sum(dt.total for dt in DetalleCompra.objects.filter(compra_id = compra.id))
+                    compra.subtotal = subtotal
+                    compra.save()
+                    # Mensaje de respuesta
+                    msg = 'Carrito actualizado.'
+                # Preparamos variables de respuesta
+            elif compra_id is not None:
+                # Obtenemos la compra
+                compra = Compra.objects.get(id = compra_id)
+                # Eliminamos la compra
+                compra.delete()
+                msg = 'Carrito vaciado.'
+            res = True
+        except:
+            res = False
+            msg = 'Hubo un error al eliminar el registro, actualice la página y vuelve a intentarlo.'
+
+    return JsonResponse({'res': res, 'msg': msg})
+
 # Función para listar carrito
 @login_required(login_url='autenticacion')
 def listar_carrito(request):
