@@ -1,2 +1,15 @@
+# Ignorar TODOS los archivos dentro de __pycache__
+**/__pycache__/*
+
+# Ignorar TODAS las variantes de archivos compilados de Python
+*.pyc
+*.pyo
+*.pyd
+*.py[cod]
+**/*.cpython-*.pyc
+
+# ================ #
+#   Django         #
+# ================ #
 /virtual/
 /sisteg/media/
