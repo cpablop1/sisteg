@@ -2,10 +2,10 @@ import * as alerta from '../alertas/alertas.js';
 import { cambiar } from './cambiar.js';
 import { agregar } from './agregar.js';
 import { listar } from './listar.js';
-import { editar } from './editar.js';
 import { validacion } from './validacion.js';
 import { listarProductos } from './listarProductos.js';
 import { eliminarCompra } from './eliminarCompra.js';
+import { confirmarCompra } from './confirmarCompra.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -91,3 +91,15 @@ document.getElementById('eliminar_compra').addEventListener('click', e => {
         eliminarCompra({'compra_id': compra_id});
     }
 });
+
+// Evento para confirmar la compra
+document.getElementById('confirmar_compra').addEventListener('click', e => {
+    let compra_id = parseInt(e.target.getAttribute('compra_id'));
+    let proveedor_id = parseInt(document.getElementById('proveedor_id').value);
+    let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
+    
+    if (compra_id){
+        confirmarCompra({compra_id: compra_id, proveedor_id: proveedor_id, tipo_pago_id: tipo_pago_id});
+    }
+
+})

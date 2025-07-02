@@ -2,11 +2,12 @@ export function listarCarrito() {
     fetch(`/compra/listar-carrito/`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar_carrito');
         let fila = '';
-        console.log(data.data.length);
         if (data.data.length === 0) {
             let form_agregar = document.getElementById('form_agregar');
             form_agregar.reset();
             document.getElementById('subtotal').innerHTML = `Q 0.0`;
+            document.getElementById('confirmar_compra').removeAttribute('compra_id');
+            document.getElementById('eliminar_compra').removeAttribute('compra_id');
         } else {
             Array.from(data.data, elemento => {
                 fila += `
@@ -23,6 +24,7 @@ export function listarCarrito() {
             document.getElementById('proveedor_id').value = data.proveedor_id;
             document.getElementById('tipo_pago_id').value = data.tipo_pago_id;
             document.getElementById('eliminar_compra').setAttribute('compra_id', data.carrito_id);
+            document.getElementById('confirmar_compra').setAttribute('compra_id', data.carrito_id);
         }
         tabla.childNodes[3].innerHTML = fila;
     });

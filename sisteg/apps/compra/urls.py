@@ -9,4 +9,5 @@ urlpatterns = [
     path('agregar-compra/', views.agregar_compra, name='agregar_compra'),
     path('listar-carrito/', views.listar_carrito, name='listar_carrito'),
     path('eliminar-compra/', views.eliminar_compra, name='eliminar_compra'),
+    path('confirmar-compra/', views.confirmar_compora, name='confirmar_compra'),
 ]

@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
+import json
 
 from .models import Proveedor, Compra, DetalleCompra
 from apps.producto.models import Producto
@@ -321,7 +322,6 @@ def eliminar_compra(request):
         except:
             res = False
             msg = 'Hubo un error al eliminar el registro, actualice la página y vuelve a intentarlo.'
-
     return JsonResponse({'res': res, 'msg': msg})
 
 # Función para listar carrito
@@ -363,3 +363,14 @@ def listar_carrito(request):
     data['msg'] = msg
     # Retornamos los datos
     return JsonResponse(data)
+
+@login_required(login_url='autenticacion')
+def confirmar_compora(request):
+    res = False
+    msg = 'Método no permitido.'
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print('\n----------------------------')
+        print(data)
+        print('----------------------------\n')
+    return JsonResponse({'res': res, 'msg': msg})

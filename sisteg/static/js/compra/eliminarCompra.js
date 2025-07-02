@@ -6,7 +6,6 @@ export function eliminarCompra(datos) {
     Object.entries(datos).forEach(([clave, valor]) => {
         formData.append(clave, valor);
     });
-    //formData.append('detalle_compra_id', detalle_compra_id);
     fetch('/compra/eliminar-compra/', {
         method: 'POST',
         headers: {
