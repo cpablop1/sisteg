@@ -83,6 +83,10 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
+            'OPTIONS': {
+                'init_command': "SET default_storage_engine=INNODB",
+                'isolation_level': 'read committed',  # Nivel de aislamiento
+            },
             'NAME': 'sisteg',
             'USER': 'root',
             'PASSWORD': '',

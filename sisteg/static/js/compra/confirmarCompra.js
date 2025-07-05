@@ -1,3 +1,4 @@
+import * as alerta from '../alertas/alertas.js';
 import { cambiar } from "./cambiar.js";
 
 export function confirmarCompra(data) {
@@ -8,6 +9,14 @@ export function confirmarCompra(data) {
         },
         body: JSON.stringify(data)
     }).then(res => res.json()).then(data => {
-        console.log(data);
+        if (data.res) {
+            alerta.success(data.msg);
+            cambiar();
+        } else {
+            alerta.danger(data.msg);
+        }
+    }).catch(error => {
+        console.log(error);
+        alerta.danger('Hubo un error en el servidor.');
     });
 }

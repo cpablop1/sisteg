@@ -6,6 +6,11 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 import json
+from django.db import transaction, IntegrityError, connection
+from django.db.models import F
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+import logging
+logger = logging.getLogger(__name__)
 
 from .models import Proveedor, Compra, DetalleCompra
 from apps.producto.models import Producto
@@ -366,11 +371,81 @@ def listar_carrito(request):
 
 @login_required(login_url='autenticacion')
 def confirmar_compora(request):
-    res = False
-    msg = 'Método no permitido.'
-    if request.method == 'POST':
+    def log_transaction_status():
+        """Función para registrar el estado de la transacción"""
+        try:
+            logger.info(f"Autocommit: {connection.get_autocommit()}")
+            logger.info(f"En transacción: {connection.in_atomic_block}")
+            if not connection.get_autocommit():
+                logger.info(f"Nivel de aislamiento: {connection.get_isolation_level()}")
+        except Exception as e:
+            logger.error(f"Error al verificar estado de transacción: {str(e)}")
+
+    try:
+        # Verificación inicial de transacción
+        logger.info("=== INICIO DE SOLICITUD ===")
+        log_transaction_status()
+
+        if request.method != 'POST':
+            return JsonResponse({'res': False, 'msg': 'Método no permitido.'})
+        
+        # Parseo fuera del bloque atómico
         data = json.loads(request.body)
-        print('\n----------------------------')
-        print(data)
-        print('----------------------------\n')
-    return JsonResponse({'res': res, 'msg': msg})
+        proveedor_id = data['proveedor_id']
+        tipo_pago_id = data['tipo_pago_id']
+        compra_id = data['compra_id']
+
+        with transaction.atomic():
+            # Registrar estado al entrar en bloque atómico
+            logger.info("--- DENTRO DE BLOQUE ATOMIC ---")
+            log_transaction_status()
+            
+            # Bloqueamos los registros
+            compra = Compra.objects.select_for_update().get(id=compra_id)
+            proveedor = Proveedor.objects.select_for_update().get(id=proveedor_id)
+            tipo_pago = TipoPago.objects.select_for_update().get(id=tipo_pago_id)
+            
+            detalles = DetalleCompra.objects.filter(
+                compra_id=compra.id
+            ).select_related('producto_id').select_for_update()
+            
+            # Actualización de stock con seguimiento
+            for dc in detalles:
+                producto = dc.producto_id
+                old_stock = producto.stock
+                new_stock = old_stock + dc.cantidad
+                
+                # Actualización directa
+                Producto.objects.filter(id=producto.id).update(stock=new_stock)
+                
+                logger.info(f"Stock actualizado: Producto {producto.id} "
+                            f"de {old_stock} a {new_stock}")
+            
+            # Asignación correcta
+            compra.estado = True
+            compra.proveedor_id = proveedor
+            compra.tipo_pago_id = tipo_pago
+            compra.save()
+            
+            logger.info("Compra confirmada exitosamente")
+            return JsonResponse({'res': True, 'msg': 'Compra realizada satisfactoriamente.'})
+            
+    except Exception as e:
+        logger.error(f"ERROR: {str(e)}", exc_info=True)
+        
+        # Verificación detallada del estado de transacción
+        logger.error("=== ESTADO DE TRANSACCIÓN AL PRODUCIRSE ERROR ===")
+        log_transaction_status()
+        
+        # Intento de rollback manual
+        try:
+            if connection.in_atomic_block:
+                transaction.set_rollback(True)
+                logger.warning("Rollback manual ejecutado")
+        except Exception as rollback_error:
+            logger.critical(f"Fallo en rollback manual: {str(rollback_error)}")
+        
+        return JsonResponse({
+            'res': False, 
+            'msg': f'Error: {str(e)}. Transacción revertida.'
+        }, status=500)
