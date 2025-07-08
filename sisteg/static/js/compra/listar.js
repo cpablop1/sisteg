@@ -1,6 +1,6 @@
 export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
     let params = new URLSearchParams(data_p).toString();
-    fetch(`/compra/listar-proveedor/?${params}`).then(res => res.json()).then(data => {
+    fetch(`/compra/listar-compras/?${params}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar');
         let fila = '';
         let pages = '';
@@ -30,29 +30,25 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
         });
 
 
-        Array.from(data.data, (proveedor, indice) => {
+        Array.from(data.data, (compra, indice) => {
+            console.log(compra)
             fila += `
                 <tr>
                     <th scope="row">${indice + 1}</th>
-                    <td>${proveedor.nombres} ${proveedor.apellidos}</td>
-                    <td>${proveedor.nit}</td>
-                    <td>${proveedor.cui}</td>
-                    <td>${proveedor.telefono}</td>
-                    <td>${proveedor.direccion}</td>
-                    <td>${proveedor.correo}</td>
-                    <td>${proveedor.empresa}</td>
-                    <td>${proveedor.usuario}</td>
-                    <td>${proveedor.fecha_ingreso}</td>
-                    <td>${proveedor.fecha_actualizacion}</td>
-                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar="${proveedor.id}"></i></td>
-                    <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar="${proveedor.id}"></i></td>
+                    <td>${compra.proveedor_id}</td>
+                    <td>${compra.subtotal}</td>
+                    <td>${compra.tipo_pago}</td>
+                    <td>${compra.usuario_id}</td>
+                    <td>${compra.fecha_ingreso}</td>
+                    <td>${compra.fecha_actualizacion}</td>
+                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar="${compra.id}"></i></td>
                 </tr>`;
         });
 
         tabla.childNodes[3].innerHTML = fila;
         document.getElementById('pagination').innerHTML = previous + pages + next;
-        document.getElementById(`page-${data_p.pagina}`).classList.add('active');
-        document.getElementById('count').innerHTML = `Hay ${data.count} elementos contenidas en ${data.num_pages} páginas.`;
+        /* document.getElementById(`page-${data_p.pagina}`).classList.add('active');
+        document.getElementById('count').innerHTML = `Hay ${data.count} elementos contenidas en ${data.num_pages} páginas.`; */
 
     });
 }
