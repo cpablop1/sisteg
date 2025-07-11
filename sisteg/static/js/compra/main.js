@@ -36,17 +36,6 @@ document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
 });
 
-// Evento para confirmar compra
-document.getElementById('form_agregar').addEventListener('submit', e => {
-    e.preventDefault();
-    let form = e.target;
-    if (validacion(form)) {
-        //agregar(form)
-    } else {
-        alerta.warning('Complete el formulario para continuar.');
-    }
-});
-
 // Evento para mostrar modal de buscar productos
 document.getElementById('btn-buscar-productos').addEventListener('click', e => {
     new bootstrap.Modal(document.getElementById('mdl_buscar_productos')).show();
@@ -103,3 +92,16 @@ document.getElementById('confirmar_compra').addEventListener('click', e => {
     }
 
 })
+
+// Evento para actualizar cantidad en carrito de compra
+document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
+    let form = document.getElementById('form_agregar');
+    let cantidad = ''
+    let producto_id = e.target.getAttribute('producto_idee');
+    console.log(producto_id);
+    if (validacion(form)) {
+        agregar(form)
+    } else {
+        alerta.warning('Complete el formulario para continuar.');
+    }
+});

@@ -12,7 +12,7 @@ export function listarCarrito() {
             Array.from(data.data, elemento => {
                 fila += `
                     <tr>
-                        <th scope="row">${elemento.cantidad}</th>
+                        <th scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.id}"></th>
                         <td>${elemento.producto}</td>
                         <td>${elemento.costo}</td>
                         <td>${elemento.total}</td>
