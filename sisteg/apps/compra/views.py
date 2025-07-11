@@ -376,7 +376,8 @@ def confirmar_compora(request):
         try:
             logger.info(f"Autocommit: {connection.get_autocommit()}")
             logger.info(f"En transacción: {connection.in_atomic_block}")
-            if not connection.get_autocommit():
+            # Solo intentar obtener nivel de aislamiento para PostgreSQL
+            if connection.vendor == 'postgresql' and hasattr(connection, 'get_isolation_level'):
                 logger.info(f"Nivel de aislamiento: {connection.get_isolation_level()}")
         except Exception as e:
             logger.error(f"Error al verificar estado de transacción: {str(e)}")

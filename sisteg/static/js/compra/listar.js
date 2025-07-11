@@ -31,7 +31,6 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
 
 
         Array.from(data.data, (compra, indice) => {
-            console.log(compra)
             fila += `
                 <tr>
                     <th scope="row">${indice + 1}</th>
