@@ -465,61 +465,62 @@ def listar_compras(request):
     pagina = request.GET.get('pagina', 1) or 1
     compras = ''
 
-    #try:
-    if id: # Verificamos si necesitamos una compra en expecífico
-        compras = Compra.objects.filter(id = id)
-    elif len(buscar) > 0: # Verificamos si hay búsquedad
-        compras = Compra.objects.filter(
-            Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
-            Q(proveedor_id__nombres__icontains = buscar) |# Si hay buscamos por nombre del proveedor
-            Q(proveedor_id__apellidos__icontains = buscar) # Si hay buscamos por apellidos del proveedor
-        )
-    else:
-        # Obtenemos todas las compras
-        compras = Compra.objects.all()
-        
-    # Paginamos las compras
-    paginador = Paginator(compras, 10)
-    # Obtenemos la página
-    paginas = paginador.get_page(pagina)
-    # Preparamos el listado
-    for com in paginas:
-        print(com.subtotal)
-        data['data'].append(
-            {
-                'id': com.id,
-                'subtotal': com.subtotal,
-                'fecha_ingreso': com.fecha_ingreso,
-                'fecha_actualizacion': com.fecha_actualizcion,
-                'tipo_pago': com.tipo_pago_id.descripcion,
-                'usuario_id': com.usuario_id.username,
-                'proveedor_id': com.proveedor_id.nombres
-            }
-        )
-    # Preparamos la visualización de las páginas
-    if paginador.num_pages > 5:
-        start = int(pagina)
-        end = int(pagina) + 5
-        if end > paginador.num_pages:
-            start = paginador.num_pages - 4
-            end = paginador.num_pages + 1
-        for i in range(start, end):
-            data["page_range"].append(i)
-    else:
-        for i in range(paginador.num_pages):
-            data["page_range"].append(i + 1)
-    data["num_pages"] = paginador.num_pages
-    data["has_next"] = paginas.has_next()
-    data["has_previous"] = paginas.has_previous()
-    data["count"] = paginador.count
+    try:
+        if id: # Verificamos si necesitamos una compra en expecífico
+            compras = Compra.objects.filter(id = id)
+        elif len(buscar) > 0: # Verificamos si hay búsquedad
+            compras = Compra.objects.filter(
+                Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
+                Q(proveedor_id__nombres__icontains = buscar) |# Si hay buscamos por nombre del proveedor
+                Q(proveedor_id__apellidos__icontains = buscar) # Si hay buscamos por apellidos del proveedor
+            )
+        else:
+            # Obtenemos todas las compras
+            compras = Compra.objects.all()
+            
+        # Paginamos las compras
+        paginador = Paginator(compras, 10)
+        # Obtenemos la página
+        paginas = paginador.get_page(pagina)
+        # Preparamos el listado
+        for com in paginas:
+            data['data'].append(
+                {
+                    'id': com.id,
+                    'subtotal': com.subtotal,
+                    'fecha_ingreso': com.fecha_ingreso,
+                    'fecha_actualizacion': com.fecha_actualizcion,
+                    'tipo_pago': com.tipo_pago_id.descripcion,
+                    'usuario_id': com.usuario_id.username,
+                    'proveedor': f'{com.proveedor_id.nombres} {com.proveedor_id.apellidos}'
+                }
+            )
+        # Preparamos la visualización de las páginas
+        if paginador.num_pages > 5:
+            start = int(pagina)
+            end = int(pagina) + 5
+            if end > paginador.num_pages:
+                start = paginador.num_pages - 4
+                end = paginador.num_pages + 1
+            for i in range(start, end):
+                data["page_range"].append(i)
+        else:
+            for i in range(paginador.num_pages):
+                data["page_range"].append(i + 1)
+        data["num_pages"] = paginador.num_pages
+        data["has_next"] = paginas.has_next()
+        data["has_previous"] = paginas.has_previous()
+        data["count"] = paginador.count
 
-    # Preparamos mensajes de respuesta
-    res = True
-    msg = 'Listado de compras.'
-    """ except:
-        res = False """
+        # Preparamos mensajes de respuesta
+        res = True
+        msg = 'Listado de compras.'
+    except Exception as e:
+        print(f'\nSe generó un error a listar las compras.')
+        print(f'El error es: {e}\n')
+        res = False
 
-    data['res'] = True
+    data['res'] = res
     data['msg'] = msg
     # Retornamos los datos
     return JsonResponse(data)

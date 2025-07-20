@@ -34,7 +34,7 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
             fila += `
                 <tr>
                     <th scope="row">${indice + 1}</th>
-                    <td>${compra.proveedor_id}</td>
+                    <td>${compra.proveedor}</td>
                     <td>${compra.subtotal}</td>
                     <td>${compra.tipo_pago}</td>
                     <td>${compra.usuario_id}</td>
@@ -46,8 +46,8 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
 
         tabla.childNodes[3].innerHTML = fila;
         document.getElementById('pagination').innerHTML = previous + pages + next;
-        /* document.getElementById(`page-${data_p.pagina}`).classList.add('active');
-        document.getElementById('count').innerHTML = `Hay ${data.count} elementos contenidas en ${data.num_pages} páginas.`; */
+        document.getElementById(`page-${data_p.pagina}`).classList.add('active');
+        document.getElementById('count').innerHTML = `Hay ${data.count} elementos contenidas en ${data.num_pages} páginas.`;
 
     });
 }
