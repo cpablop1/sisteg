@@ -336,7 +336,12 @@ def eliminar_compra(request):
 # Función para listar carrito
 @login_required(login_url='autenticacion')
 def listar_carrito(request):
-        # Mensajes de respuesta
+    # Capturar id de compra
+    compra_id = request.GET.get('compra_id', None) or None
+    print('\n------------------------------------')
+    print(f'Compra id: {compra_id}')
+    print('------------------------------------\n')
+    # Mensajes de respuesta
     res = False
     msg = 'Error al listar carrito.'
     data = {}

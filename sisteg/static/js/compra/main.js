@@ -113,7 +113,15 @@ document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     }
 });
 
-//
+// Evento para evetar el submit en formulario
 document.getElementById('form_agregar').addEventListener('submit', e => {
     e.preventDefault();
+});
+
+// Evento para ver detalle de compra
+document.getElementById('tbl_listar').addEventListener('click', e => {
+    let compra_id = parseInt(e.target.getAttribute('compra_id'));
+    if (compra_id){
+        console.log(compra_id);
+    }
 });
