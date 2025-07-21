@@ -46,6 +46,7 @@ document.getElementById('btn-buscar-productos').addEventListener('click', e => {
 document.getElementById('tbl_listar_productos').addEventListener('click', e => {
     let producto_id = parseInt(e.target.getAttribute('agregar'))
     let form = document.getElementById('form_agregar');
+
     if (producto_id) {
         if (validacion(form)) {
             agregar(form, producto_id);
@@ -96,12 +97,23 @@ document.getElementById('confirmar_compra').addEventListener('click', e => {
 // Evento para actualizar cantidad en carrito de compra
 document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     let form = document.getElementById('form_agregar');
-    let cantidad = ''
-    let producto_id = e.target.getAttribute('producto_idee');
-    console.log(producto_id);
+    let cantidad = parseInt(e.target.value);
+    let producto_id = parseInt(e.target.getAttribute('producto_id'));
     if (validacion(form)) {
-        agregar(form)
+        if (e.keyCode == 13){
+            if (cantidad) {
+                console.log(cantidad);
+                agregar(form, producto_id, cantidad)
+            } else {
+                alerta.danger('Ingrese una cantidad válida.');
+            }
+        }
     } else {
         alerta.warning('Complete el formulario para continuar.');
     }
+});
+
+//
+document.getElementById('form_agregar').addEventListener('submit', e => {
+    e.preventDefault();
 });

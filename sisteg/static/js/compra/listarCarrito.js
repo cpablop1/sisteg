@@ -10,9 +10,10 @@ export function listarCarrito() {
             document.getElementById('eliminar_compra').removeAttribute('compra_id');
         } else {
             Array.from(data.data, elemento => {
+                console.log(elemento);
                 fila += `
                     <tr>
-                        <th scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.id}"></th>
+                        <th scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.producto_id}"></th>
                         <td>${elemento.producto}</td>
                         <td>${elemento.costo}</td>
                         <td>${elemento.total}</td>

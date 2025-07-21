@@ -212,7 +212,11 @@ def agregar_compra(request):
                 existe_detalle = DetalleCompra.objects.filter(compra_id = existe_compra[0].id, producto_id = producto.id)
                 if existe_detalle.exists(): # Si existe
                     # Creamos los nuevos valores del detalle de compra
-                    cantidad_nueva = int(existe_detalle[0].cantidad) + int(cantidad)
+                    if cantidad == 1:
+                        #cantidad_nueva = int(existe_detalle[0].cantidad) + int(cantidad)
+                        cantidad_nueva = int(cantidad)
+                    else:
+                        cantidad_nueva = cantidad
                     total = float(existe_detalle[0].costo) * cantidad_nueva
                     # Actualizamos detalle de compra
                     existe_detalle.update(
@@ -349,7 +353,8 @@ def listar_carrito(request):
                         'costo': carr.costo,
                         'cantidad': carr.cantidad,
                         'total': carr.total,
-                        'producto': carr.producto_id.descripcion
+                        'producto': carr.producto_id.descripcion,
+                        'producto_id': carr.producto_id.id
                     }
                 )
             data['carrito_id'] = compra.id
