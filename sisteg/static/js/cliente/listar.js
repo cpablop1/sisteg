@@ -1,6 +1,6 @@
 export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
     let params = new URLSearchParams(data_p).toString();
-    fetch(`/compra/listar-proveedor/?${params}`).then(res => res.json()).then(data => {
+    fetch(`/servicio/listar-cliente/?${params}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar');
         let fila = '';
         let pages = '';
@@ -29,23 +29,21 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
             pages += `<li class="page-item" id="page-${pagina}"><a class="page-link" href="#" onclick='listar(${jsonData})'>${pagina}</a></li>`;
         });
 
-
-        Array.from(data.data, (proveedor, indice) => {
+        Array.from(data.data, (cliente, indice) => {
             fila += `
                 <tr>
                     <th scope="row">${indice + 1}</th>
-                    <td>${proveedor.nombres} ${proveedor.apellidos}</td>
-                    <td>${proveedor.nit}</td>
-                    <td>${proveedor.cui}</td>
-                    <td>${proveedor.telefono}</td>
-                    <td>${proveedor.direccion}</td>
-                    <td>${proveedor.correo}</td>
-                    <td>${proveedor.empresa}</td>
-                    <td>${proveedor.usuario}</td>
-                    <td>${proveedor.fecha_ingreso}</td>
-                    <td>${proveedor.fecha_actualizacion}</td>
-                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar="${proveedor.id}"></i></td>
-                    <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar="${proveedor.id}"></i></td>
+                    <td>${cliente.nombres} ${cliente.apellidos}</td>
+                    <td>${cliente.nit}</td>
+                    <td>${cliente.cui}</td>
+                    <td>${cliente.telefono}</td>
+                    <td>${cliente.direccion}</td>
+                    <td>${cliente.correo}</td>
+                    <td>${cliente.usuario}</td>
+                    <td>${cliente.fecha_ingreso}</td>
+                    <td>${cliente.fecha_actualizacion}</td>
+                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar="${cliente.id}"></i></td>
+                    <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar="${cliente.id}"></i></td>
                 </tr>`;
         });
 
@@ -53,6 +51,5 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
         document.getElementById('pagination').innerHTML = previous + pages + next;
         document.getElementById(`page-${data_p.pagina}`).classList.add('active');
         document.getElementById('count').innerHTML = `Hay ${data.count} elementos contenidas en ${data.num_pages} páginas.`;
-
     });
 }
