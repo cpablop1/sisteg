@@ -25,7 +25,7 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
     e.preventDefault();
     let form = e.target;
     if (validacion(form)) {
-        //agregar(form)
+        agregar(form)
     } else {
         alerta.warning('Complete el formulario para continuar.');
     }
