@@ -6,6 +6,7 @@ import { validacion } from './validacion.js';
 import { listarProductos } from './listarProductos.js';
 import { eliminarCompra } from './eliminarCompra.js';
 import { confirmarCompra } from './confirmarCompra.js';
+import { listarDetalleCompra } from './listarDetalleCompra.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -122,6 +123,7 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let compra_id = parseInt(e.target.getAttribute('compra_id'));
     if (compra_id){
-        console.log(compra_id);
+        new bootstrap.Modal(document.getElementById('mdl_detalle_compra')).show();
+        listarDetalleCompra(compra_id);
     }
 });

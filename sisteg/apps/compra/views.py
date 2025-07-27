@@ -347,10 +347,13 @@ def listar_carrito(request):
     data = {}
     data['data'] = []
     try:
-        compra = Compra.objects.get(usuario_id = request.user, estado = False)
+        if compra_id:
+            compra = Compra.objects.get(id = compra_id)
+        else:
+            compra = Compra.objects.get(usuario_id = request.user, estado = False)
+
         if compra:
             carrito = DetalleCompra.objects.filter(compra_id = compra)
-
             for carr in carrito:
                 data['data'].append(
                     {
@@ -359,6 +362,7 @@ def listar_carrito(request):
                         'cantidad': carr.cantidad,
                         'total': carr.total,
                         'producto': carr.producto_id.descripcion,
+                        'marca': carr.producto_id.marca_id.descripcion,
                         'producto_id': carr.producto_id.id
                     }
                 )

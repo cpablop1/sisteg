@@ -40,7 +40,7 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
                     <td>${compra.usuario_id}</td>
                     <td>${compra.fecha_ingreso}</td>
                     <td>${compra.fecha_actualizacion}</td>
-                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" compra_id="${compra.id}"></i></td>
+                    <td><i class="fa-solid fa-circle-info btn btn-info btn-sm" compra_id="${compra.id}"></i></td>
                 </tr>`;
         });
 
