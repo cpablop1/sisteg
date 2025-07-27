@@ -15,12 +15,12 @@ window.listar = (data) => {
     listar(data);
 }
 
-// Evento para cambiar de vista entre el formulario y el listado de proveedores
+// Evento para cambiar de vista entre el formulario y el listado de clientes
 document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
 });
 
-// Evento para agregar proveedor
+// Evento para agregar cliente
 document.getElementById('form_agregar').addEventListener('submit', e => {
     e.preventDefault();
     let form = e.target;
@@ -31,7 +31,7 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
     }
 });
 
-// Evento para editar marca
+// Evento para editar cliente
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let id = parseInt(e.target.getAttribute('editar'))
     if (id) {
