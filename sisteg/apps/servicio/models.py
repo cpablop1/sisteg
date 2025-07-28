@@ -40,6 +40,7 @@ class DetalleServicio(models.Model):
     cantidad = models.PositiveIntegerField(default = 0)
     total = models.FloatField(default = 0)
     ganancia = models.FloatField(default = 0)
+    stock = models.BooleanField(default = False)
     producto_id = models.ForeignKey(Producto, on_delete = models.PROTECT)
     servicio_id = models.ForeignKey(Servicio, on_delete = models.CASCADE)
 
