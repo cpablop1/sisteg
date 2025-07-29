@@ -12,9 +12,6 @@ class AdminRolUsuario (admin.ModelAdmin):
     readonly_fields = ['id']
 
     def obtener_nombre_rol(self, obj):
-        print('\n----------------------------------')
-        print(obj)
-        print('----------------------------------\n')
         return obj.rol_id.rol  # Ajusta el campo según el nombre real en tu modelo relacionado
     obtener_nombre_rol.admin_order_field = 'rol_id'  # Permite ordenar por este campo
     obtener_nombre_rol.short_description = 'rol'  # Nombre amigable en la tabla

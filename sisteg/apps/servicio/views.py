@@ -10,7 +10,7 @@ from django.db import transaction, IntegrityError, connection
 from django.db.models import F
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
-from .models import Cliente
+from .models import Cliente, Servicio, DetalleServicio
 from apps.producto.models import Producto
 from apps.inicio.models import TipoPago
 
@@ -18,8 +18,13 @@ from apps.inicio.models import TipoPago
 def vista_cliente(request):
     return render(request, 'cliente/cliente.html')
 
+@login_required(login_url='autenticacion')
 def vista_servicio(request):
     return render(request, 'servicio/servicio.html')
+
+@login_required(login_url='autenticacion')
+def vista_venta(request):
+    return render(request, 'venta/venta.html')
 
 # Función para agregar cliente
 @login_required(login_url='autenticacion')
@@ -144,3 +149,122 @@ def listar_cliente(request):
     data['msg'] = msg
     # Retornamos los datos
     return JsonResponse(data)
+
+# Función para crear venta
+@login_required(login_url='autenticacion')
+def agregar_servicio(request):
+    res = False
+    msg = 'Método no permitido'
+    if request.method == 'POST':
+        cliente_id = request.POST.get('cliente_id', '').strip()
+        tipo_pago_id = request.POST.get('tipo_pago_id', '').strip()
+        producto_id = request.POST.get('producto_id', '').strip()
+        cantidad = request.POST.get('cantidad', '1')
+
+        # Validación para cliente_id
+        if not cliente_id:
+            return JsonResponse({'res': False, 'msg': 'Seleccione el cliente.'})
+
+        try:
+            cliente_id = int(cliente_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'res': False, 'msg': 'Seleccione un cliente válido.'})
+
+        # Validación para tipo_pago_id
+        if not tipo_pago_id:
+            return JsonResponse({'res': False, 'msg': 'Seleccione el tipo de pago.'})
+
+        try:
+            tipo_pago_id = int(tipo_pago_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'res': False, 'msg': 'Seleccione un tipo de pago válido.'})
+        
+        # Validación para producto_id
+        if not producto_id:
+            return JsonResponse({'res': False, 'msg': 'Seleccione un producto'})
+        
+        # Validación de la cantidad que siempre sea un entero positivo
+        if cantidad.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 1
+            cantidad = 1
+        try: # Convertimos un cantidad en entero
+            cantidad = int(cantidad)
+        except ValueError: # En caso de error le asignamos 1
+            cantidad = 1
+        if cantidad <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
+            cantidad = 1
+
+        try:
+            producto_id = int(producto_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'res': False, 'msg': 'Seleccione un producto válido.'})
+
+        try:
+            producto = Producto.objects.get(id = producto_id)
+        except:
+            producto = None
+
+        if producto: # Comprobamos si hay producto
+            # Verificamos si existe una compra activa del usuario logeado
+            existe_venta = Servicio.objects.filter(usuario_id = request.user.id, estado = False)
+            if existe_venta.exists(): # Si es así
+                # Verificar si existe el producto en carrito
+                existe_detalle = DetalleServicio.objects.filter(compra_id = existe_venta[0].id, producto_id = producto.id)
+                if existe_detalle.exists(): # Si existe
+                    # Creamos los nuevos valores del detalle de compra
+                    if cantidad == 1:
+                        #cantidad_nueva = int(existe_detalle[0].cantidad) + int(cantidad)
+                        cantidad_nueva = int(cantidad)
+                    else:
+                        cantidad_nueva = cantidad
+                    total = float(existe_detalle[0].costo) * cantidad_nueva
+                    # Actualizamos detalle de compra
+                    existe_detalle.update(
+                        cantidad = cantidad_nueva,
+                        total = total
+                    )
+                else: # En caso contrario agregar el producto al carrito (compra)
+                    detalle = DetalleServicio.objects.create(
+                        costo = producto.costo,
+                        cantidad = cantidad,
+                        total = producto.costo,
+                        producto_id = producto,
+                        compra_id = existe_venta[0]
+                    )
+                    # Gaurdamos registro
+                    detalle.save()
+                # Creamos los nuevos valores para la venta
+                todos_detalle = DetalleServicio.objects.filter(compra_id = existe_venta[0].id)
+                subtotal = sum(dc.total for dc in todos_detalle)
+                # Actualizamos la venta
+                existe_venta.update(
+                    subtotal = subtotal,
+                    proveedor_id = cliente_id,
+                    tipo_pago_id = tipo_pago_id
+                )
+                # Datos de respuesta
+                res = True
+                msg = 'Carrito actualizado.'
+            else: # En caso contrario
+                compra = Servicio.objects.create( # Creamos la venta
+                    subtotal = producto.costo,
+                    proveedor_id = Cliente.objects.get(id = cliente_id),
+                    usuario_id = User.objects.get(id = request.user.id),
+                    tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id)
+                )
+                # Con su detalle
+                detalle_compra = DetalleServicio.objects.create(
+                    costo = producto.costo,
+                    cantidad = cantidad,
+                    total = producto.costo,
+                    producto_id = producto,
+                    compra_id = compra
+                )
+                # Gaurdamos los resgitros
+                compra.save()
+                detalle_compra.save()
+                # Prepamos respuesta
+                res = True
+                msg = 'Compra agregada.'
+        else:
+            print(producto)
+    return JsonResponse({'res': res, 'msg': msg})
