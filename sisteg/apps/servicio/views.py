@@ -10,7 +10,7 @@ from django.db import transaction, IntegrityError, connection
 from django.db.models import F
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
-from .models import Cliente, Servicio, DetalleServicio
+from .models import Cliente, Servicio, DetalleServicio, TipoServicio
 from apps.producto.models import Producto
 from apps.inicio.models import TipoPago
 
@@ -159,7 +159,15 @@ def agregar_servicio(request):
         cliente_id = request.POST.get('cliente_id', '').strip()
         tipo_pago_id = request.POST.get('tipo_pago_id', '').strip()
         producto_id = request.POST.get('producto_id', '').strip()
+        tipo_servicio_id = request.POST.get('tipo_servicio_id', '').strip()
         cantidad = request.POST.get('cantidad', '1')
+        print('\n----------------------------------')
+        print(f'Cliente: {cliente_id}')
+        print(f'Tipo pago: {tipo_pago_id}')
+        print(f'Producto: {producto_id}')
+        print(f'Cantidad: {cantidad}')
+        print(f'Rol usuario: {request.rol_usuario}')
+        print('----------------------------------\n')
 
         # Validación para cliente_id
         if not cliente_id:
@@ -178,6 +186,15 @@ def agregar_servicio(request):
             tipo_pago_id = int(tipo_pago_id)
         except (ValueError, TypeError):
             return JsonResponse({'res': False, 'msg': 'Seleccione un tipo de pago válido.'})
+        
+        # Validación para tipo_servicio_id
+        if not tipo_servicio_id:
+            tipo_servicio_id = 1
+
+        try:
+            tipo_pago_id = int(tipo_pago_id)
+        except (ValueError, TypeError):
+            tipo_servicio_id = 1
         
         # Validación para producto_id
         if not producto_id:
@@ -204,67 +221,67 @@ def agregar_servicio(request):
             producto = None
 
         if producto: # Comprobamos si hay producto
-            # Verificamos si existe una compra activa del usuario logeado
-            existe_venta = Servicio.objects.filter(usuario_id = request.user.id, estado = False)
-            if existe_venta.exists(): # Si es así
+            # Verificamos si existe una venta activa del usuario logeado
+            existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False)
+            if existe_servicio.exists(): # Si es así
                 # Verificar si existe el producto en carrito
-                existe_detalle = DetalleServicio.objects.filter(compra_id = existe_venta[0].id, producto_id = producto.id)
+                existe_detalle = DetalleServicio.objects.filter(servicio_id = existe_servicio[0].id, producto_id = producto.id)
                 if existe_detalle.exists(): # Si existe
-                    # Creamos los nuevos valores del detalle de compra
+                    # Creamos los nuevos valores del detalle de venta
                     if cantidad == 1:
-                        #cantidad_nueva = int(existe_detalle[0].cantidad) + int(cantidad)
                         cantidad_nueva = int(cantidad)
                     else:
                         cantidad_nueva = cantidad
-                    total = float(existe_detalle[0].costo) * cantidad_nueva
-                    # Actualizamos detalle de compra
+                    total = float(existe_detalle[0].precio) * cantidad_nueva
+                    # Actualizamos detalle de venta
                     existe_detalle.update(
                         cantidad = cantidad_nueva,
                         total = total
                     )
-                else: # En caso contrario agregar el producto al carrito (compra)
+                else: # En caso contrario agregar el producto al carrito (venta)
                     detalle = DetalleServicio.objects.create(
                         costo = producto.costo,
                         cantidad = cantidad,
                         total = producto.costo,
                         producto_id = producto,
-                        compra_id = existe_venta[0]
+                        servicio_id = existe_servicio[0]
                     )
                     # Gaurdamos registro
                     detalle.save()
                 # Creamos los nuevos valores para la venta
-                todos_detalle = DetalleServicio.objects.filter(compra_id = existe_venta[0].id)
+                todos_detalle = DetalleServicio.objects.filter(servicio_id = existe_servicio[0].id)
                 subtotal = sum(dc.total for dc in todos_detalle)
                 # Actualizamos la venta
-                existe_venta.update(
+                existe_servicio.update(
                     subtotal = subtotal,
-                    proveedor_id = cliente_id,
+                    cliente_id = cliente_id,
                     tipo_pago_id = tipo_pago_id
                 )
                 # Datos de respuesta
                 res = True
                 msg = 'Carrito actualizado.'
             else: # En caso contrario
-                compra = Servicio.objects.create( # Creamos la venta
+                servicio = Servicio.objects.create( # Creamos la servicio
                     subtotal = producto.costo,
-                    proveedor_id = Cliente.objects.get(id = cliente_id),
+                    cliente_id = Cliente.objects.get(id = cliente_id),
                     usuario_id = User.objects.get(id = request.user.id),
-                    tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id)
+                    tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id),
+                    tipo_servicio_id = TipoServicio.objects.get(id = tipo_servicio_id)
                 )
                 # Con su detalle
-                detalle_compra = DetalleServicio.objects.create(
+                detalle_servicio = DetalleServicio.objects.create(
                     costo = producto.costo,
                     cantidad = cantidad,
                     total = producto.costo,
                     producto_id = producto,
-                    compra_id = compra
+                    servicio_id = servicio
                 )
                 # Gaurdamos los resgitros
-                compra.save()
-                detalle_compra.save()
+                servicio.save()
+                detalle_servicio.save()
                 # Prepamos respuesta
                 res = True
-                msg = 'Compra agregada.'
+                msg = 'Servicio agregada.'
         else:
             print(producto)
     return JsonResponse({'res': res, 'msg': msg})

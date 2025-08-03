@@ -7,4 +7,5 @@ urlpatterns = [
     path('cliente/', views.vista_cliente, name='cliente'),
     path('agregar-cliente/', views.agregar_cliente, name='agregar_cliente'),
     path('listar-cliente/', views.listar_cliente, name='listar_cliente'),
+    path('agregar-servicio/', views.agregar_servicio, name='agregar_servicio'),
 ]

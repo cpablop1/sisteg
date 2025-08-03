@@ -1,8 +1,9 @@
 export function selectCliente() {
     fetch('/servicio/listar-cliente/?select=select').then(res => res.json()).then(data => {
-        document.getElementById('proveedor_id').innerHTML = '';
+        console.log(data);
+        document.getElementById('cliente_id').innerHTML = '';
         Array.from(data.data, item => {
-            document.getElementById('proveedor_id').add(new Option(`${item.nombres} ${item.apellidos}`, item.id));
+            document.getElementById('cliente_id').add(new Option(`${item.nombres} ${item.apellidos}`, item.id));
         });
     });
 }

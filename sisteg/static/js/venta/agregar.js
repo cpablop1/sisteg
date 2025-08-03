@@ -14,6 +14,7 @@ export function agregar(form, producto_id, cantidad) {
     }).then(res => {
         return res.json();
     }).then(data => {
+        console.log(data);
         if (data.res) {
             alerta.success(data.msg);
             setTimeout(() => {

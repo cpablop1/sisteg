@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'sisteg.middleware.GlobalDataMiddleware',
 ]
 
 ROOT_URLCONF = 'sisteg.urls'
