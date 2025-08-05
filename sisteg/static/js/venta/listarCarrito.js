@@ -2,6 +2,7 @@ export function listarCarrito() {
     fetch(`/servicio/listar-carrito/`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar_carrito');
         let fila = '';
+        console.log(data);
         if (data.data.length === 0) {
             let form_agregar = document.getElementById('form_agregar');
             form_agregar.reset();

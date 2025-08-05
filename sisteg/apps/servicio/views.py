@@ -296,16 +296,13 @@ def listar_carrito(request):
     data['data'] = []
     try:
         if servicio_id:
-            servicio = Servicio.objects.get(id = servicio_id)
+            servicio = Servicio.objects.filter(id = servicio_id)
         else:
             # Evaluamos si es una venta el servicio
-            es_venta = Servicio.objects.get(usuario_id = request.user, estado = False)
-            # Evalu
-            if (request.rol_usuario == 'recepcionista') and (es_venta.id == 1):
-                servicio = es_venta
+            servicio = Servicio.objects.filter(usuario_id = request.user, estado = False, tipo_servicio_id = 1)
 
         if servicio:
-            carrito = DetalleServicio.objects.filter(servicio_id = servicio)
+            carrito = DetalleServicio.objects.filter(servicio_id = servicio[0].id)
             for carr in carrito:
                 data['data'].append(
                     {
@@ -318,16 +315,17 @@ def listar_carrito(request):
                         'producto_id': carr.producto_id.id
                     }
                 )
-            data['carrito_id'] = servicio.id
-            data['subtotal'] = servicio.subtotal
-            data['tipo_pago_id'] = servicio.tipo_pago_id.id
-            data['proveedor_id'] = servicio.cliente_id.id
+            data['carrito_id'] = servicio[0].id
+            data['subtotal'] = servicio[0].subtotal
+            data['tipo_pago_id'] = servicio[0].tipo_pago_id.id
+            data['proveedor_id'] = servicio[0].cliente_id.id
             # Preparamos mensajes de respuesta
             res = True
             msg = 'Elementos del carrito.'
         else:
             msg = 'El carrito está vació.'
-    except:
+    except Exception as e:
+        print(e)
         res = False
 
     data['res'] = res
