@@ -161,13 +161,6 @@ def agregar_servicio(request):
         producto_id = request.POST.get('producto_id', '').strip()
         tipo_servicio_id = request.POST.get('tipo_servicio_id', '').strip()
         cantidad = request.POST.get('cantidad', '1')
-        print('\n----------------------------------')
-        print(f'Cliente: {cliente_id}')
-        print(f'Tipo pago: {tipo_pago_id}')
-        print(f'Producto: {producto_id}')
-        print(f'Cantidad: {cantidad}')
-        print(f'Rol usuario: {request.rol_usuario}')
-        print('----------------------------------\n')
 
         # Validación para cliente_id
         if not cliente_id:
@@ -240,9 +233,10 @@ def agregar_servicio(request):
                     )
                 else: # En caso contrario agregar el producto al carrito (venta)
                     detalle = DetalleServicio.objects.create(
+                        precio = producto.precio,
                         costo = producto.costo,
                         cantidad = cantidad,
-                        total = producto.costo,
+                        total = producto.precio,
                         producto_id = producto,
                         servicio_id = existe_servicio[0]
                     )
@@ -262,7 +256,7 @@ def agregar_servicio(request):
                 msg = 'Carrito actualizado.'
             else: # En caso contrario
                 servicio = Servicio.objects.create( # Creamos la servicio
-                    subtotal = producto.costo,
+                    subtotal = producto.precio,
                     cliente_id = Cliente.objects.get(id = cliente_id),
                     usuario_id = User.objects.get(id = request.user.id),
                     tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id),
@@ -270,9 +264,10 @@ def agregar_servicio(request):
                 )
                 # Con su detalle
                 detalle_servicio = DetalleServicio.objects.create(
+                    precio = producto.precio,
                     costo = producto.costo,
                     cantidad = cantidad,
-                    total = producto.costo,
+                    total = producto.precio,
                     producto_id = producto,
                     servicio_id = servicio
                 )
@@ -285,3 +280,57 @@ def agregar_servicio(request):
         else:
             print(producto)
     return JsonResponse({'res': res, 'msg': msg})
+
+# Función para listar carrito
+@login_required(login_url='autenticacion')
+def listar_carrito(request):
+    # Capturar id de servicio
+    servicio_id = request.GET.get('servicio_id', None) or None
+    print('\n------------------------------------')
+    print(f'servicio id: {servicio_id}')
+    print('------------------------------------\n')
+    # Mensajes de respuesta
+    res = False
+    msg = 'Error al listar carrito.'
+    data = {}
+    data['data'] = []
+    try:
+        if servicio_id:
+            servicio = Servicio.objects.get(id = servicio_id)
+        else:
+            # Evaluamos si es una venta el servicio
+            es_venta = Servicio.objects.get(usuario_id = request.user, estado = False)
+            # Evalu
+            if (request.rol_usuario == 'recepcionista') and (es_venta.id == 1):
+                servicio = es_venta
+
+        if servicio:
+            carrito = DetalleServicio.objects.filter(servicio_id = servicio)
+            for carr in carrito:
+                data['data'].append(
+                    {
+                        'id': carr.id,
+                        'precio': carr.precio,
+                        'cantidad': carr.cantidad,
+                        'total': carr.total,
+                        'producto': carr.producto_id.descripcion,
+                        'marca': carr.producto_id.marca_id.descripcion,
+                        'producto_id': carr.producto_id.id
+                    }
+                )
+            data['carrito_id'] = servicio.id
+            data['subtotal'] = servicio.subtotal
+            data['tipo_pago_id'] = servicio.tipo_pago_id.id
+            data['proveedor_id'] = servicio.cliente_id.id
+            # Preparamos mensajes de respuesta
+            res = True
+            msg = 'Elementos del carrito.'
+        else:
+            msg = 'El carrito está vació.'
+    except:
+        res = False
+
+    data['res'] = res
+    data['msg'] = msg
+    # Retornamos los datos
+    return JsonResponse(data)
