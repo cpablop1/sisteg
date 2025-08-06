@@ -7,8 +7,8 @@ export function listarCarrito() {
             let form_agregar = document.getElementById('form_agregar');
             form_agregar.reset();
             document.getElementById('subtotal').innerHTML = `Q 0.0`;
-            document.getElementById('confirmar_compra').removeAttribute('compra_id');
-            document.getElementById('eliminar_compra').removeAttribute('compra_id');
+            document.getElementById('confirmar_servicio').removeAttribute('servicio_id');
+            document.getElementById('eliminar_servicio').removeAttribute('servicio_id');
         } else {
             Array.from(data.data, elemento => {
                 fila += `
@@ -24,8 +24,8 @@ export function listarCarrito() {
             document.getElementById('subtotal').innerHTML = `Q ${data.subtotal}`;
             document.getElementById('cliente_id').value = data.proveedor_id;
             document.getElementById('tipo_pago_id').value = data.tipo_pago_id;
-            document.getElementById('eliminar_compra').setAttribute('compra_id', data.carrito_id);
-            document.getElementById('confirmar_compra').setAttribute('compra_id', data.carrito_id);
+            document.getElementById('eliminar_servicio').setAttribute('servicio_id', data.carrito_id);
+            document.getElementById('confirmar_servicio').setAttribute('servicio_id', data.carrito_id);
         }
         tabla.childNodes[3].innerHTML = fila;
     });

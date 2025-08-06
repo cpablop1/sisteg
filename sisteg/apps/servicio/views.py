@@ -6,13 +6,14 @@ from django.db.models import Q
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 import json
-from django.db import transaction, IntegrityError, connection
-from django.db.models import F
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.db import transaction, connection
 
 from .models import Cliente, Servicio, DetalleServicio, TipoServicio
 from apps.producto.models import Producto
 from apps.inicio.models import TipoPago
+
+import logging
+logger = logging.getLogger(__name__)
 
 @login_required(login_url='autenticacion')
 def vista_cliente(request):
@@ -156,12 +157,23 @@ def agregar_servicio(request):
     res = False
     msg = 'Método no permitido'
     if request.method == 'POST':
+        servicio_id = request.POST.get('servicio_id', '').strip()
         cliente_id = request.POST.get('cliente_id', '').strip()
         tipo_pago_id = request.POST.get('tipo_pago_id', '').strip()
         producto_id = request.POST.get('producto_id', '').strip()
         tipo_servicio_id = request.POST.get('tipo_servicio_id', '').strip()
         cantidad = request.POST.get('cantidad', '1')
+        stock = request.POST.get('stock', '').strip()
 
+        # Validación para cliente_id
+        if not servicio_id:
+            servicio_id = None
+
+        try:
+            servicio_id = int(servicio_id)
+        except (ValueError, TypeError):
+            servicio_id = None
+        
         # Validación para cliente_id
         if not cliente_id:
             return JsonResponse({'res': False, 'msg': 'Seleccione el cliente.'})
@@ -189,6 +201,19 @@ def agregar_servicio(request):
         except (ValueError, TypeError):
             tipo_servicio_id = 1
         
+        # Validación para stock si es true o false
+        if not stock:
+            stock = True
+
+        try:
+            stock = int(stock)
+            if stock == 1:
+                stock = True
+            else:
+                stock = False
+        except (ValueError, TypeError):
+            stock = True
+        
         # Validación para producto_id
         if not producto_id:
             return JsonResponse({'res': False, 'msg': 'Seleccione un producto'})
@@ -212,16 +237,19 @@ def agregar_servicio(request):
             producto = Producto.objects.get(id = producto_id)
             if cantidad > producto.stock:
                 return JsonResponse({'res': False, 'msg': f'El stock del producto es insuficiente, solo hay {producto.stock} en existencia.'})
-            print('\n---------------------------------------')
-            print(f'Stock: {producto.stock}')
-            print(f'Cantidad: {cantidad}')
-            print('---------------------------------------\n')
         except:
             producto = None
 
         if producto: # Comprobamos si hay producto
             # Verificamos si existe una venta activa del usuario logeado
-            existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False)
+            if servicio_id:
+                existe_servicio = Servicio.objects.filter(id = servicio_id)
+            else:
+                existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = 1)
+            print('\n------------------------------------------------')
+            print(existe_servicio)
+            print(f'servicio_id: {servicio_id}')
+            print('------------------------------------------------\n')
             if existe_servicio.exists(): # Si es así
                 # Verificar si existe el producto en carrito
                 existe_detalle = DetalleServicio.objects.filter(servicio_id = existe_servicio[0].id, producto_id = producto.id)
@@ -235,7 +263,9 @@ def agregar_servicio(request):
                     # Actualizamos detalle de venta
                     existe_detalle.update(
                         cantidad = cantidad_nueva,
-                        total = total
+                        total = total,
+                        ganancia = producto.precio - producto.costo,
+                        stock = stock
                     )
                 else: # En caso contrario agregar el producto al carrito (venta)
                     detalle = DetalleServicio.objects.create(
@@ -243,6 +273,8 @@ def agregar_servicio(request):
                         costo = producto.costo,
                         cantidad = cantidad,
                         total = producto.precio,
+                        ganancia = producto.precio - producto.costo,
+                        stock = stock,
                         producto_id = producto,
                         servicio_id = existe_servicio[0]
                     )
@@ -274,6 +306,8 @@ def agregar_servicio(request):
                     costo = producto.costo,
                     cantidad = cantidad,
                     total = producto.precio,
+                    ganancia = producto.precio - producto.costo,
+                    stock = stock,
                     producto_id = producto,
                     servicio_id = servicio
                 )
@@ -338,3 +372,93 @@ def listar_carrito(request):
     data['msg'] = msg
     # Retornamos los datos
     return JsonResponse(data)
+
+# Funcionalidad de confirmar servicio
+@login_required(login_url='autenticacion')
+def confirmar_servicio(request):
+    def log_transaction_status():
+        """Función para registrar el estado de la transacción"""
+        try:
+            logger.info(f"Autocommit: {connection.get_autocommit()}")
+            logger.info(f"En transacción: {connection.in_atomic_block}")
+            # Solo intentar obtener nivel de aislamiento para PostgreSQL
+            if connection.vendor == 'postgresql' and hasattr(connection, 'get_isolation_level'):
+                logger.info(f"Nivel de aislamiento: {connection.get_isolation_level()}")
+        except Exception as e:
+            logger.error(f"Error al verificar estado de transacción: {str(e)}")
+
+    try:
+        # Verificación inicial de transacción
+        logger.info("=== INICIO DE SOLICITUD ===")
+        log_transaction_status()
+
+        if request.method != 'POST':
+            return JsonResponse({'res': False, 'msg': 'Método no permitido.'})
+        
+        # Parseo fuera del bloque atómico
+        data = json.loads(request.body)
+        cliente_id = data['cliente_id']
+        tipo_pago_id = data['tipo_pago_id']
+        servicio_id = data['servicio_id']
+
+        with transaction.atomic():
+            # Registrar estado al entrar en bloque atómico
+            logger.info("--- DENTRO DE BLOQUE ATOMIC ---")
+            log_transaction_status()
+            
+            # Bloqueamos los registros
+            servicio = Servicio.objects.select_for_update().get(id=servicio_id)
+            cliente = Cliente.objects.select_for_update().get(id=cliente_id)
+            tipo_pago = TipoPago.objects.select_for_update().get(id=tipo_pago_id)
+            
+            detalles = DetalleServicio.objects.filter(
+                servicio_id=servicio.id
+            ).select_related('producto_id').select_for_update()
+            
+            # Antes de descontar el stock verificar si hay stock suficiente
+            for dc in detalles:
+                producto = dc.producto_id
+                if producto.stock < dc.cantidad:
+                    return JsonResponse({'res': False, 'msg': f'El producto {producto.descripcion} tiene stock insuficiente, solo hay {producto.stock} en existencia.'})
+
+            # Actualización de stock con seguimiento
+            for dc in detalles:
+                if dc.stock:
+                    producto = dc.producto_id
+                    old_stock = producto.stock
+                    new_stock = old_stock - dc.cantidad
+                
+                # Actualización directa
+                Producto.objects.filter(id=producto.id).update(stock=new_stock)
+                
+                logger.info(f"Stock actualizado: Producto {producto.id} "
+                            f"de {old_stock} a {new_stock}")
+            
+            # Asignación correcta
+            servicio.estado = True
+            servicio.cliente_id = cliente
+            servicio.tipo_pago_id = tipo_pago
+            servicio.save()
+            
+            logger.info("Servicio confirmada exitosamente")
+            return JsonResponse({'res': True, 'msg': 'Servicio realizada satisfactoriamente.'})
+            
+    except Exception as e:
+        logger.error(f"ERROR: {str(e)}", exc_info=True)
+        
+        # Verificación detallada del estado de transacción
+        logger.error("=== ESTADO DE TRANSACCIÓN AL PRODUCIRSE ERROR ===")
+        log_transaction_status()
+        
+        # Intento de rollback manual
+        try:
+            if connection.in_atomic_block:
+                transaction.set_rollback(True)
+                logger.warning("Rollback manual ejecutado")
+        except Exception as rollback_error:
+            logger.critical(f"Fallo en rollback manual: {str(rollback_error)}")
+        
+        return JsonResponse({
+            'res': False, 
+            'msg': f'Error: {str(e)}. Transacción revertida.'
+        }, status=500)

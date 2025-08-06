@@ -5,7 +5,7 @@ import { listar } from './listar.js';
 import { validacion } from './validacion.js';
 import { listarProductos } from './listarProductos.js';
 import { eliminarCompra } from './eliminarCompra.js';
-import { confirmarCompra } from './confirmarCompra.js';
+import { confirmarServicio } from './confirmarServicio.js';
 import { listarDetalleCompra } from './listarDetalleCompra.js';
 
 window.onload = () => {
@@ -32,7 +32,7 @@ document.getElementById('buscar_productos').addEventListener('input', e => {
     }
 });
 
-// Evento para cambiar de vista entre el carrito y el listado de compras
+// Evento para cambiar de vista entre el carrito y el listado de servicios
 document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
 });
@@ -57,7 +57,7 @@ document.getElementById('tbl_listar_productos').addEventListener('click', e => {
     }
 });
 
-// Evento para buscar marcas
+// Evento para buscar servicios
 document.getElementById('buscar').addEventListener('input', e => {
     let buscar = e.target.value.trim();
     if (buscar.length > 0) {
@@ -76,21 +76,21 @@ document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
 });
 
 // Evento para eliminar la compra completa
-document.getElementById('eliminar_compra').addEventListener('click', e => {
+document.getElementById('eliminar_servicio').addEventListener('click', e => {
     let compra_id = parseInt(e.target.getAttribute('compra_id'));
     if (compra_id){
         eliminarCompra({'compra_id': compra_id});
     }
 });
 
-// Evento para confirmar la compra
-document.getElementById('confirmar_compra').addEventListener('click', e => {
-    let compra_id = parseInt(e.target.getAttribute('compra_id'));
-    let proveedor_id = parseInt(document.getElementById('proveedor_id').value);
+// Evento para confirmar la servicio
+document.getElementById('confirmar_servicio').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
+    let cliente_id = parseInt(document.getElementById('cliente_id').value);
     let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
     
-    if (compra_id){
-        confirmarCompra({compra_id: compra_id, proveedor_id: proveedor_id, tipo_pago_id: tipo_pago_id});
+    if (servicio_id){
+        confirmarServicio({servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id});
     }
 
 })

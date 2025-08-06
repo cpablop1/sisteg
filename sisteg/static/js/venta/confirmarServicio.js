@@ -1,8 +1,8 @@
 import * as alerta from '../alertas/alertas.js';
 import { cambiar } from "./cambiar.js";
 
-export function confirmarCompra(data) {
-    fetch(`/compra/confirmar-compra/`, {
+export function confirmarServicio(data) {
+    fetch(`/servicio/confirmar-servicio/`, {
         method: 'POST',
         headers: {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
