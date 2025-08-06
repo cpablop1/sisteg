@@ -17,11 +17,14 @@ export function agregar(form, producto_id, cantidad) {
         console.log(data);
         if (data.res) {
             alerta.success(data.msg);
-            setTimeout(() => {
-                listarCarrito();
-            }, 500);
         } else {
             alerta.danger(data.msg);
         }
+    }).catch(error => {
+        console.log(error);
+    }).finally(e => {
+        setTimeout(() => {
+            listarCarrito();
+        }, 500);
     });
 }

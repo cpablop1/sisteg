@@ -210,6 +210,12 @@ def agregar_servicio(request):
 
         try:
             producto = Producto.objects.get(id = producto_id)
+            if cantidad > producto.stock:
+                return JsonResponse({'res': False, 'msg': f'El stock del producto es insuficiente, solo hay {producto.stock} en existencia.'})
+            print('\n---------------------------------------')
+            print(f'Stock: {producto.stock}')
+            print(f'Cantidad: {cantidad}')
+            print('---------------------------------------\n')
         except:
             producto = None
 
