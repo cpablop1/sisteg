@@ -1,12 +1,12 @@
 import * as alerta from '../alertas/alertas.js';
 import { listarCarrito } from './listarCarrito.js';
 
-export function eliminarCompra(datos) {
+export function eliminarServicio(datos) {
     let formData = new FormData()
     Object.entries(datos).forEach(([clave, valor]) => {
         formData.append(clave, valor);
     });
-    fetch('/compra/eliminar-compra/', {
+    fetch('/servicio/eliminar-servicio/', {
         method: 'POST',
         headers: {
             'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value

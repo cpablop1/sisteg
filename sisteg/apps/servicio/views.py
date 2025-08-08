@@ -462,3 +462,65 @@ def confirmar_servicio(request):
             'res': False, 
             'msg': f'Error: {str(e)}. Transacción revertida.'
         }, status=500)
+    
+# Función para eliminar servicio
+@login_required(login_url='autenticacion')
+def eliminar_servicio(request):
+    # Varialbles por defectos
+    res = False
+    msg = 'Método no permitido.'
+    if request.method == 'POST':
+        # Capturamos los datos por POST
+        detalle_servicio_id = request.POST.get('detalle_servicio_id', '').strip()
+        servicio_id = request.POST.get('servicio_id', '').strip()
+        # Sanitizamos los datos capturados
+        if not detalle_servicio_id:
+            detalle_servicio_id = None
+        try:
+            detalle_servicio_id = int(detalle_servicio_id)
+        except (ValueError, TypeError):
+            detalle_servicio_id = None
+
+        if not servicio_id:
+            servicio_id = None
+        try:
+            servicio_id = int(servicio_id)
+        except (ValueError, TypeError):
+            servicio_id = None
+
+        # Procedemos a eliminar el servicio
+        try:
+            # Primero comprobamos si hay id válido
+            if detalle_servicio_id is not None:
+                # Obtenemos el registro del detalle del servicio
+                detalle_servicio = DetalleServicio.objects.get(id = detalle_servicio_id)
+                # Obtenemos el registro del servicio como tal
+                servicio = Servicio.objects.get(id = detalle_servicio.servicio_id.id)
+                # Otenemos el total de registros del servicio
+                detalle_servicio_total = DetalleServicio.objects.filter(servicio_id = servicio.id).count()
+                # Si solo tiene un detalle el servicio
+                if detalle_servicio_total == 1:
+                    servicio.delete() # Eliminamos el servicio completo
+                    # Mensja de respuesta
+                    msg = 'Carrito vaciado.'
+                else:
+                    # Solo eliminamos el detalle del servicio
+                    detalle_servicio.delete()
+                    # Actualizamos el servicio
+                    subtotal = sum(dt.total for dt in DetalleServicio.objects.filter(servicio_id = servicio.id))
+                    servicio.subtotal = subtotal
+                    servicio.save()
+                    # Mensaje de respuesta
+                    msg = 'Carrito actualizado.'
+                # Preparamos variables de respuesta
+            elif servicio_id is not None:
+                # Obtenemos el servicio
+                servicio = Servicio.objects.get(id = servicio_id)
+                # Eliminamos el servicio
+                servicio.delete()
+                msg = 'Carrito vaciado.'
+            res = True
+        except:
+            res = False
+            msg = 'Hubo un error al eliminar el registro, actualice la página y vuelve a intentarlo.'
+    return JsonResponse({'res': res, 'msg': msg})

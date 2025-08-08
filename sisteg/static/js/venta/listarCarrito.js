@@ -2,7 +2,6 @@ export function listarCarrito() {
     fetch(`/servicio/listar-carrito/`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar_carrito');
         let fila = '';
-        console.log(data);
         if (data.data.length === 0) {
             let form_agregar = document.getElementById('form_agregar');
             form_agregar.reset();
@@ -17,7 +16,7 @@ export function listarCarrito() {
                         <td>${elemento.producto}</td>
                         <td>${elemento.precio}</td>
                         <td>${elemento.total}</td>
-                        <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_compra_id="${elemento.id}"></i></td>
+                        <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}"></i></td>
                     </tr>`;
             });
 

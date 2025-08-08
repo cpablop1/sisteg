@@ -4,7 +4,7 @@ import { agregar } from './agregar.js';
 import { listar } from './listar.js';
 import { validacion } from './validacion.js';
 import { listarProductos } from './listarProductos.js';
-import { eliminarCompra } from './eliminarCompra.js';
+import { eliminarServicio } from './eliminarServicio.js';
 import { confirmarServicio } from './confirmarServicio.js';
 import { listarDetalleCompra } from './listarDetalleCompra.js';
 
@@ -69,13 +69,13 @@ document.getElementById('buscar').addEventListener('input', e => {
 
 // Evento para eliminar elementos de la compra
 document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
-    let detalle_compra_id = parseInt(e.target.getAttribute('detalle_compra_id'));
-    if (detalle_compra_id){
-        eliminarCompra({'detalle_compra_id': detalle_compra_id});
+    let detalle_servicio_id = parseInt(e.target.getAttribute('detalle_servicio_id'));
+    if (detalle_servicio_id){
+        eliminarServicio({'detalle_servicio_id': detalle_servicio_id});
     }
 });
 
-// Evento para eliminar la compra completa
+// Evento para eliminar el servicio completo
 document.getElementById('eliminar_servicio').addEventListener('click', e => {
     let compra_id = parseInt(e.target.getAttribute('compra_id'));
     if (compra_id){
