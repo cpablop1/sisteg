@@ -70,16 +70,16 @@ document.getElementById('buscar').addEventListener('input', e => {
 // Evento para eliminar elementos de la compra
 document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
     let detalle_servicio_id = parseInt(e.target.getAttribute('detalle_servicio_id'));
-    if (detalle_servicio_id){
-        eliminarServicio({'detalle_servicio_id': detalle_servicio_id});
+    if (detalle_servicio_id) {
+        eliminarServicio({ 'detalle_servicio_id': detalle_servicio_id });
     }
 });
 
 // Evento para eliminar el servicio completo
 document.getElementById('eliminar_servicio').addEventListener('click', e => {
-    let compra_id = parseInt(e.target.getAttribute('compra_id'));
-    if (compra_id){
-        eliminarCompra({'compra_id': compra_id});
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
+    if (servicio_id) {
+        eliminarServicio({ 'servicio_id': servicio_id });
     }
 });
 
@@ -88,9 +88,9 @@ document.getElementById('confirmar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     let cliente_id = parseInt(document.getElementById('cliente_id').value);
     let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
-    
-    if (servicio_id){
-        confirmarServicio({servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id});
+
+    if (servicio_id) {
+        confirmarServicio({ servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id });
     }
 
 })
@@ -101,7 +101,7 @@ document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     let cantidad = parseInt(e.target.value);
     let producto_id = parseInt(e.target.getAttribute('producto_id'));
     if (validacion(form)) {
-        if (e.keyCode == 13){
+        if (e.keyCode == 13) {
             if (cantidad) {
                 console.log(cantidad);
                 agregar(form, producto_id, cantidad)
@@ -122,7 +122,7 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
 // Evento para ver detalle de compra
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let compra_id = parseInt(e.target.getAttribute('compra_id'));
-    if (compra_id){
+    if (compra_id) {
         new bootstrap.Modal(document.getElementById('mdl_detalle_compra')).show();
         listarDetalleCompra(compra_id);
     }
