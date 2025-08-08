@@ -61,7 +61,7 @@ document.getElementById('tbl_listar_productos').addEventListener('click', e => {
 document.getElementById('buscar').addEventListener('input', e => {
     let buscar = e.target.value.trim();
     if (buscar.length > 0) {
-        listar({ 'pagina': 1, 'buscar': buscar });
+        listar({'tipo_servicio': 'venta', 'pagina': 1, 'buscar': buscar });
     } else {
         listar();
     }

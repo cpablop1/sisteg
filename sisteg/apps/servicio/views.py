@@ -326,9 +326,6 @@ def agregar_servicio(request):
 def listar_carrito(request):
     # Capturar id de servicio
     servicio_id = request.GET.get('servicio_id', None) or None
-    print('\n------------------------------------')
-    print(f'servicio id: {servicio_id}')
-    print('------------------------------------\n')
     # Mensajes de respuesta
     res = False
     msg = 'Error al listar carrito.'
@@ -524,3 +521,80 @@ def eliminar_servicio(request):
             res = False
             msg = 'Hubo un error al eliminar el registro, actualice la página y vuelve a intentarlo.'
     return JsonResponse({'res': res, 'msg': msg})
+
+# Función para listar servicios
+@login_required(login_url='autenticacion')
+def listar_servicios(request):
+    # Mensajes de respuesta
+    res = False
+    msg = 'Error al listar servicios.'
+    data = {}
+    data['data'] = []
+    data["page_range"] = []
+    id = request.GET.get('id', None) or None
+    buscar = request.GET.get('buscar', '').strip() or ''
+    tipo_servicio = request.GET.get('tipo_servicio', '').strip() or ''
+    pagina = request.GET.get('pagina', 1) or 1
+    servicios = ''
+
+    try:
+        if id: # Verificamos si necesitamos un servicio en expecífico
+            servicios = Servicio.objects.filter(id = id)
+        if tipo_servicio == 'venta': # Evaluamos si sólo requiere listar los servicios tipo venta
+            servicios = Servicio.objects.filter(tipo_servicio_id = 1)
+        else: # Sino se lista todos menos los de tipo ventas
+            servicios = Servicio.objects.filter(tipo_servicio_id__gt = 1)
+        if len(buscar) > 0: # Verificamos si hay búsquedad
+            servicios = servicios.objects.filter(
+                Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
+                Q(cliente_id__nombres__icontains = buscar) |# Si hay buscamos por nombre del cliente
+                Q(cliente_id__apellidos__icontains = buscar) # Si hay buscamos por apellidos del cliente
+            )
+            
+        # Paginamos los servicios
+        paginador = Paginator(servicios, 10)
+        # Obtenemos la página
+        paginas = paginador.get_page(pagina)
+        # Preparamos el listado
+        for ser in paginas:
+            data['data'].append(
+                {
+                    'id': ser.id,
+                    'subtotal': ser.subtotal,
+                    'fecha_ingreso': ser.fecha_ingreso,
+                    'fecha_actualizacion': ser.fecha_actualizacion,
+                    'tipo_pago': ser.tipo_pago_id.descripcion,
+                    'usuario_id': ser.usuario_id.username,
+                    'proveedor': f'{ser.cliente_id.nombres} {ser.cliente_id.apellidos}',
+                    'tipo_servicio': ser.tipo_servicio_id.descripcion
+                }
+            )
+        # Preparamos la visualización de las páginas
+        if paginador.num_pages > 5:
+            start = int(pagina)
+            end = int(pagina) + 5
+            if end > paginador.num_pages:
+                start = paginador.num_pages - 4
+                end = paginador.num_pages + 1
+            for i in range(start, end):
+                data["page_range"].append(i)
+        else:
+            for i in range(paginador.num_pages):
+                data["page_range"].append(i + 1)
+        data["num_pages"] = paginador.num_pages
+        data["has_next"] = paginas.has_next()
+        data["has_previous"] = paginas.has_previous()
+        data["count"] = paginador.count
+
+        # Preparamos mensajes de respuesta
+        res = True
+        msg = 'Listado de servicios.'
+    except Exception as e:
+        print(f'\nSe generó un error a listar las servicios.')
+        print(f'El error es: {e}\n')
+        res = False
+
+    data['res'] = res
+    data['msg'] = msg
+    # Retornamos los datos
+    return JsonResponse(data)

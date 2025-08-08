@@ -1,6 +1,6 @@
-export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
+export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar': '' }) {
     let params = new URLSearchParams(data_p).toString();
-    fetch(`/compra/listar-compras/?${params}`).then(res => res.json()).then(data => {
+    fetch(`/servicio/listar-servicios/?${params}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar');
         let fila = '';
         let pages = '';
@@ -29,7 +29,6 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
             pages += `<li class="page-item" id="page-${pagina}"><a class="page-link" href="#" onclick='listar(${jsonData})'>${pagina}</a></li>`;
         });
 
-
         Array.from(data.data, (compra, indice) => {
             fila += `
                 <tr>
@@ -38,6 +37,7 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
                     <td>${compra.subtotal}</td>
                     <td>${compra.tipo_pago}</td>
                     <td>${compra.usuario_id}</td>
+                    <td>${compra.tipo_servicio}</td>
                     <td>${compra.fecha_ingreso}</td>
                     <td>${compra.fecha_actualizacion}</td>
                     <td><i class="fa-solid fa-circle-info btn btn-info btn-sm" compra_id="${compra.id}"></i></td>
