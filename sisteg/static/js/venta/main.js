@@ -6,7 +6,7 @@ import { validacion } from './validacion.js';
 import { listarProductos } from './listarProductos.js';
 import { eliminarServicio } from './eliminarServicio.js';
 import { confirmarServicio } from './confirmarServicio.js';
-import { listarDetalleCompra } from './listarDetalleCompra.js';
+import { listarDetalleServicio } from './listarDetalleServicio.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -67,7 +67,7 @@ document.getElementById('buscar').addEventListener('input', e => {
     }
 });
 
-// Evento para eliminar elementos de la compra
+// Evento para eliminar elementos del servicio
 document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
     let detalle_servicio_id = parseInt(e.target.getAttribute('detalle_servicio_id'));
     if (detalle_servicio_id) {
@@ -95,7 +95,7 @@ document.getElementById('confirmar_servicio').addEventListener('click', e => {
 
 })
 
-// Evento para actualizar cantidad en carrito de compra
+// Evento para actualizar cantidad en carrito de servicio
 document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     let form = document.getElementById('form_agregar');
     let cantidad = parseInt(e.target.value);
@@ -119,11 +119,12 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
     e.preventDefault();
 });
 
-// Evento para ver detalle de compra
+// Evento para ver detalle de servicio
 document.getElementById('tbl_listar').addEventListener('click', e => {
-    let compra_id = parseInt(e.target.getAttribute('compra_id'));
-    if (compra_id) {
-        new bootstrap.Modal(document.getElementById('mdl_detalle_compra')).show();
-        listarDetalleCompra(compra_id);
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
+    console.log(servicio_id);
+    if (servicio_id) {
+        new bootstrap.Modal(document.getElementById('mdl_detalle_servicio')).show();
+        listarDetalleServicio(servicio_id);
     }
 });

@@ -565,7 +565,7 @@ def listar_servicios(request):
                     'fecha_actualizacion': ser.fecha_actualizacion,
                     'tipo_pago': ser.tipo_pago_id.descripcion,
                     'usuario_id': ser.usuario_id.username,
-                    'proveedor': f'{ser.cliente_id.nombres} {ser.cliente_id.apellidos}',
+                    'cliente': f'{ser.cliente_id.nombres} {ser.cliente_id.apellidos}',
                     'tipo_servicio': ser.tipo_servicio_id.descripcion
                 }
             )
