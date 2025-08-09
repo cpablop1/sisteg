@@ -545,7 +545,7 @@ def listar_servicios(request):
         else: # Sino se lista todos menos los de tipo ventas
             servicios = Servicio.objects.filter(tipo_servicio_id__gt = 1)
         if len(buscar) > 0: # Verificamos si hay búsquedad
-            servicios = servicios.objects.filter(
+            servicios = servicios.filter(
                 Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
                 Q(cliente_id__nombres__icontains = buscar) |# Si hay buscamos por nombre del cliente
                 Q(cliente_id__apellidos__icontains = buscar) # Si hay buscamos por apellidos del cliente
