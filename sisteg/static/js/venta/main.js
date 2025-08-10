@@ -127,3 +127,14 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
         listarDetalleServicio(servicio_id);
     }
 });
+
+// Evento para crear servicio
+document.getElementById('crear_servicio').addEventListener('click', e => {
+    let form = document.getElementById('form_agregar');
+
+        if (validacion(form)) {
+            agregar(form);
+        } else {
+            alerta.warning('Complete el formulario para continuar.');
+        }
+});

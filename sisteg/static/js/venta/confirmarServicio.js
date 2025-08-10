@@ -11,7 +11,7 @@ export function confirmarServicio(data) {
     }).then(res => res.json()).then(data => {
         if (data.res) {
             alerta.success(data.msg);
-            cambiar();
+            //cambiar();
         } else {
             alerta.danger(data.msg);
         }

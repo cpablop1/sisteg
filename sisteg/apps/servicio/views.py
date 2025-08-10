@@ -151,6 +151,48 @@ def listar_cliente(request):
     # Retornamos los datos
     return JsonResponse(data)
 
+# Función para listar tipos de servicio
+@login_required(login_url='autenticacion')
+def listar_tipo_servicio(request):
+    # Mensajes de respuesta
+    res = False
+    msg = 'Error al listar tipo servicios.'
+    data = {}
+    data['data'] = []
+    id = request.GET.get('id', None) or None
+    buscar = request.GET.get('buscar', '').strip() or ''
+    tipo_sercicios = ''
+
+    try:
+        if id: # Verificamos si necesitamos un tipo servicio en expecífico
+            tipo_sercicios = TipoServicio.objects.filter(id = id)
+        elif len(buscar) > 0: # Verificamos si hay búsquedad
+            tipo_sercicios = TipoServicio.objects.filter(
+                Q(descripcion__icontains = buscar) # Si hay buscamos por descripción
+            )
+        else:
+            # Obtenemos todas los tipos de servicios
+            tipo_sercicios = TipoServicio.objects.all()
+        # Preparamos listado de los tipos de servicios
+        for ts in tipo_sercicios:
+            data['data'].append(
+                {
+                    'id': ts.id,
+                    'descripcion': ts.descripcion
+                }
+            )
+
+        # Preparamos mensajes de respuesta
+        res = True
+        msg = 'Listado de tipos de servicios.'
+    except:
+        res = False
+
+    data['res'] = res
+    data['msg'] = msg
+    # Retornamos los datos
+    return JsonResponse(data)
+
 # Función para crear venta
 @login_required(login_url='autenticacion')
 def agregar_servicio(request):
@@ -164,6 +206,18 @@ def agregar_servicio(request):
         tipo_servicio_id = request.POST.get('tipo_servicio_id', '').strip()
         cantidad = request.POST.get('cantidad', '1')
         stock = request.POST.get('stock', '').strip()
+        observacion = request.POST.get('observacion', '').strip()
+        print('\n-------------------------------')
+        print(f'Tipo servicio: {tipo_servicio_id}')
+        print('-------------------------------\n')
+        # Validación para tipo_servicio_id
+        if not tipo_servicio_id:
+            return JsonResponse({'res': False, 'msg': 'Seleccione el tipo de servicio'})
+
+        try:
+            tipo_servicio_id = int(tipo_servicio_id)
+        except (ValueError, TypeError):
+            return JsonResponse({'res': False, 'msg': 'Seleccione el tipo de servicio'})
 
         # Validación para cliente_id
         if not servicio_id:
@@ -192,15 +246,6 @@ def agregar_servicio(request):
         except (ValueError, TypeError):
             return JsonResponse({'res': False, 'msg': 'Seleccione un tipo de pago válido.'})
         
-        # Validación para tipo_servicio_id
-        if not tipo_servicio_id:
-            tipo_servicio_id = 1
-
-        try:
-            tipo_pago_id = int(tipo_pago_id)
-        except (ValueError, TypeError):
-            tipo_servicio_id = 1
-        
         # Validación para stock si es true o false
         if not stock:
             stock = True
@@ -214,10 +259,6 @@ def agregar_servicio(request):
         except (ValueError, TypeError):
             stock = True
         
-        # Validación para producto_id
-        if not producto_id:
-            return JsonResponse({'res': False, 'msg': 'Seleccione un producto'})
-        
         # Validación de la cantidad que siempre sea un entero positivo
         if cantidad.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 1
             cantidad = 1
@@ -228,10 +269,15 @@ def agregar_servicio(request):
         if cantidad <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
             cantidad = 1
 
+        # Validación para producto_id
+        if not producto_id:
+            #return JsonResponse({'res': False, 'msg': 'Seleccione un producto'})
+            producto_id = None
+
         try:
             producto_id = int(producto_id)
         except (ValueError, TypeError):
-            return JsonResponse({'res': False, 'msg': 'Seleccione un producto válido.'})
+            producto_id = None
 
         try:
             producto = Producto.objects.get(id = producto_id)
@@ -245,11 +291,8 @@ def agregar_servicio(request):
             if servicio_id:
                 existe_servicio = Servicio.objects.filter(id = servicio_id)
             else:
-                existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = 1)
-            print('\n------------------------------------------------')
-            print(existe_servicio)
-            print(f'servicio_id: {servicio_id}')
-            print('------------------------------------------------\n')
+                existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = tipo_servicio_id)
+
             if existe_servicio.exists(): # Si es así
                 # Verificar si existe el producto en carrito
                 existe_detalle = DetalleServicio.objects.filter(servicio_id = existe_servicio[0].id, producto_id = producto.id)
@@ -318,7 +361,25 @@ def agregar_servicio(request):
                 res = True
                 msg = 'Servicio agregada.'
         else:
-            print(producto)
+            existe_servicio = None
+            if servicio_id:
+                existe_servicio = Servicio.objects.filter(id = servicio_id)
+            if existe_servicio:
+                print('\n---------------------------------------')
+                print('No existe servicio y tampoco producto...')
+                print('---------------------------------------\n')
+            else:
+                if tipo_servicio_id == 1:
+                    return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.'})
+                else:
+                    servicio = Servicio.objects.create( # Creamos la servicio
+                        subtotal = 0,
+                        observacion = observacion,
+                        cliente_id = Cliente.objects.get(id = cliente_id),
+                        usuario_id = User.objects.get(id = request.user.id),
+                        tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id),
+                        tipo_servicio_id = TipoServicio.objects.get(id = tipo_servicio_id)
+                    )
     return JsonResponse({'res': res, 'msg': msg})
 
 # Función para listar carrito
@@ -336,7 +397,7 @@ def listar_carrito(request):
             servicio = Servicio.objects.filter(id = servicio_id)
         else:
             # Evaluamos si es una venta el servicio
-            servicio = Servicio.objects.filter(usuario_id = request.user, estado = False, tipo_servicio_id = 1)
+            servicio = Servicio.objects.filter(usuario_id = request.user, estado = False)
 
         if servicio:
             carrito = DetalleServicio.objects.filter(servicio_id = servicio[0].id)
@@ -545,15 +606,14 @@ def listar_servicios(request):
     try:
         if id: # Verificamos si necesitamos un servicio en expecífico
             servicios = Servicio.objects.filter(id = id)
-        if tipo_servicio == 'venta': # Evaluamos si sólo requiere listar los servicios tipo venta
-            servicios = Servicio.objects.filter(tipo_servicio_id = 1)
         else: # Sino se lista todos menos los de tipo ventas
-            servicios = Servicio.objects.filter(tipo_servicio_id__gt = 1)
+            servicios = Servicio.objects.all()
         if len(buscar) > 0: # Verificamos si hay búsquedad
             servicios = servicios.filter(
                 Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
                 Q(cliente_id__nombres__icontains = buscar) |# Si hay buscamos por nombre del cliente
-                Q(cliente_id__apellidos__icontains = buscar) # Si hay buscamos por apellidos del cliente
+                Q(cliente_id__apellidos__icontains = buscar) |# Si hay buscamos por apellidos del cliente
+                Q(tipo_servicio_id__descripcion__icontains = buscar) # Si hay buscamos por tipo servicio
             )
             
         # Paginamos los servicios

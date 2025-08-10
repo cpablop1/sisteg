@@ -2,6 +2,7 @@ import { listarCarrito } from "./listarCarrito.js";
 import { selectCliente } from "./selectCliente.js";
 import { selectTipoPago } from "./selectTipoPago.js";
 import { listar as listado} from './listar.js';
+import { selectTipoServicio } from "./selectTipoServicio.js";
 
 // Evento para cambiar de vista entre el formulario y el listado de categoría
 export function cambiar() {
@@ -25,4 +26,5 @@ export function cambiar() {
 
     selectCliente();
     selectTipoPago();
+    selectTipoServicio();
 }
