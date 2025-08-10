@@ -122,7 +122,6 @@ document.getElementById('form_agregar').addEventListener('submit', e => {
 // Evento para ver detalle de servicio
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
-    console.log(servicio_id);
     if (servicio_id) {
         new bootstrap.Modal(document.getElementById('mdl_detalle_servicio')).show();
         listarDetalleServicio(servicio_id);

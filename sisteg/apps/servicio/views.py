@@ -340,11 +340,15 @@ def listar_carrito(request):
 
         if servicio:
             carrito = DetalleServicio.objects.filter(servicio_id = servicio[0].id)
+            ganancia = 0
             for carr in carrito:
+                ganancia += carr.ganancia
                 data['data'].append(
                     {
                         'id': carr.id,
                         'precio': carr.precio,
+                        'costo': carr.costo,
+                        'ganancia': carr.ganancia,
                         'cantidad': carr.cantidad,
                         'total': carr.total,
                         'producto': carr.producto_id.descripcion,
@@ -354,6 +358,7 @@ def listar_carrito(request):
                 )
             data['carrito_id'] = servicio[0].id
             data['subtotal'] = servicio[0].subtotal
+            data['ganancia'] = ganancia
             data['tipo_pago_id'] = servicio[0].tipo_pago_id.id
             data['proveedor_id'] = servicio[0].cliente_id.id
             # Preparamos mensajes de respuesta

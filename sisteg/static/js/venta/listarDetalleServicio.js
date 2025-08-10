@@ -16,10 +16,13 @@ export function listarDetalleServicio(servicio_id) {
                         <td>${elemento.producto}</td>
                         <td>${elemento.marca}</td>
                         <td>${elemento.precio}</td>
+                        <td>${elemento.costo}</td>
+                        <td>${elemento.ganancia}</td>
                         <td>${elemento.total}</td>
                     </tr>`;
             });
-            document.getElementById('subtotal_detalle_servicio').innerHTML = `Q ${data.subtotal}`;
+            document.getElementById('subtotal_detalle_servicio').innerHTML = `Subtotal Q ${data.subtotal}`;
+            document.getElementById('ganancia_detalle_servicio').innerHTML = `Ganancia Q ${data.ganancia}`;
         }
         tabla.childNodes[3].innerHTML = fila;
     });
