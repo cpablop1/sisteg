@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 import json
 from django.db import transaction, connection
 
-from .models import Cliente, Servicio, DetalleServicio, TipoServicio
+from .models import Cliente, Servicio, DetalleServicio, TipoServicio, ServicioUsuario
 from apps.producto.models import Producto
 from apps.inicio.models import TipoPago
 
@@ -204,12 +204,20 @@ def agregar_servicio(request):
         tipo_pago_id = request.POST.get('tipo_pago_id', '').strip()
         producto_id = request.POST.get('producto_id', '').strip()
         tipo_servicio_id = request.POST.get('tipo_servicio_id', '').strip()
+        rol_usuario_id = request.POST.get('rol_usuario_id', '').strip()
         cantidad = request.POST.get('cantidad', '1')
         stock = request.POST.get('stock', '').strip()
         observacion = request.POST.get('observacion', '').strip()
-        print('\n-------------------------------')
-        print(f'Tipo servicio: {tipo_servicio_id}')
-        print('-------------------------------\n')
+
+        # Validación para rol_usuario_id
+        if not rol_usuario_id:
+            rol_usuario_id = None
+
+        try:
+            rol_usuario_id = int(rol_usuario_id)
+        except (ValueError, TypeError):
+            rol_usuario_id = None
+        
         # Validación para tipo_servicio_id
         if not tipo_servicio_id:
             return JsonResponse({'res': False, 'msg': 'Seleccione el tipo de servicio'})
@@ -372,6 +380,8 @@ def agregar_servicio(request):
                 if tipo_servicio_id == 1:
                     return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.'})
                 else:
+                    if not rol_usuario_id:
+                        return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.'})
                     servicio = Servicio.objects.create( # Creamos la servicio
                         subtotal = 0,
                         observacion = observacion,
@@ -380,13 +390,26 @@ def agregar_servicio(request):
                         tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id),
                         tipo_servicio_id = TipoServicio.objects.get(id = tipo_servicio_id)
                     )
+                    # Y creamos el registro a quién se le asignó el servicio
+                    ServicioUsuario.objects.create(
+                        usuario_id = User.objects.get(id = rol_usuario_id),
+                        servicio_id = servicio
+                    )
+                    return JsonResponse({'res': True, 'msg': 'Servicio creado exitosamente.'})
     return JsonResponse({'res': res, 'msg': msg})
 
 # Función para listar carrito
 @login_required(login_url='autenticacion')
 def listar_carrito(request):
     # Capturar id de servicio
-    servicio_id = request.GET.get('servicio_id', None) or None
+    servicio_id = request.GET.get('servicio_id', '').strip()
+    # Validación para servicio_id
+    if not servicio_id:
+        servicio_id = None
+    try:
+        servicio_id = int(servicio_id)
+    except (ValueError, TypeError):
+        servicio_id = None
     # Mensajes de respuesta
     res = False
     msg = 'Error al listar carrito.'
@@ -397,7 +420,7 @@ def listar_carrito(request):
             servicio = Servicio.objects.filter(id = servicio_id)
         else:
             # Evaluamos si es una venta el servicio
-            servicio = Servicio.objects.filter(usuario_id = request.user, estado = False)
+            servicio = Servicio.objects.filter(usuario_id = request.user, estado = False, tipo_servicio_id = 1)
 
         if servicio:
             carrito = DetalleServicio.objects.filter(servicio_id = servicio[0].id)
@@ -599,7 +622,6 @@ def listar_servicios(request):
     data["page_range"] = []
     id = request.GET.get('id', None) or None
     buscar = request.GET.get('buscar', '').strip() or ''
-    tipo_servicio = request.GET.get('tipo_servicio', '').strip() or ''
     pagina = request.GET.get('pagina', 1) or 1
     servicios = ''
 
@@ -631,7 +653,8 @@ def listar_servicios(request):
                     'tipo_pago': ser.tipo_pago_id.descripcion,
                     'usuario_id': ser.usuario_id.username,
                     'cliente': f'{ser.cliente_id.nombres} {ser.cliente_id.apellidos}',
-                    'tipo_servicio': ser.tipo_servicio_id.descripcion
+                    'tipo_servicio': ser.tipo_servicio_id.descripcion,
+                    'estado': 'Finalizado' if ser.estado else 'Abierto'
                 }
             )
         # Preparamos la visualización de las páginas
