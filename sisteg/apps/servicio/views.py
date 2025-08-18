@@ -209,6 +209,11 @@ def agregar_servicio(request):
         stock = request.POST.get('stock', '').strip()
         observacion = request.POST.get('observacion', '').strip()
 
+        print('\n---------------------------------')
+        print(f'servicio_id: {servicio_id}')
+        print(f'cliente_id: {cliente_id}')
+        print('---------------------------------\n')
+
         # Validación para rol_usuario_id
         if not rol_usuario_id:
             rol_usuario_id = None
@@ -369,33 +374,42 @@ def agregar_servicio(request):
                 res = True
                 msg = 'Servicio agregada.'
         else:
-            existe_servicio = None
-            if servicio_id:
-                existe_servicio = Servicio.objects.filter(id = servicio_id)
-            if existe_servicio:
-                print('\n---------------------------------------')
-                print('No existe servicio y tampoco producto...')
-                print('---------------------------------------\n')
+            servicio_usuario_id = None
+            if tipo_servicio_id == 1:
+                return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.'})
+            if not rol_usuario_id:
+                return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.'})
+            
+            servicio = Servicio.objects.update_or_create( # Creamos el servicio
+                id = servicio_id,
+                defaults ={
+                    'subtotal': 0,
+                    'observacion': observacion,
+                    'cliente_id': Cliente.objects.get(id = cliente_id),
+                    'usuario_id': User.objects.get(id = request.user.id),
+                    'tipo_pago_id': TipoPago.objects.get(id = tipo_pago_id),
+                    'tipo_servicio_id': TipoServicio.objects.get(id = tipo_servicio_id)
+                }
+            )
+            # Evaluamos si fue un nuevo registro o una actualización
+            print('\n----------------------------------------')
+            print(servicio)
+            print('----------------------------------------\n')
+            if servicio[1]:
+                msg = 'Servicio agregada correctamente.'
             else:
-                if tipo_servicio_id == 1:
-                    return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.'})
-                else:
-                    if not rol_usuario_id:
-                        return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.'})
-                    servicio = Servicio.objects.create( # Creamos la servicio
-                        subtotal = 0,
-                        observacion = observacion,
-                        cliente_id = Cliente.objects.get(id = cliente_id),
-                        usuario_id = User.objects.get(id = request.user.id),
-                        tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id),
-                        tipo_servicio_id = TipoServicio.objects.get(id = tipo_servicio_id)
-                    )
-                    # Y creamos el registro a quién se le asignó el servicio
-                    ServicioUsuario.objects.create(
-                        usuario_id = User.objects.get(id = rol_usuario_id),
-                        servicio_id = servicio
-                    )
-                    return JsonResponse({'res': True, 'msg': 'Servicio creado exitosamente.'})
+                servicio_usuario_id = ServicioUsuario.objects.get(servicio_id = servicio[0].id).id
+                msg = 'Servicio actualizada correctamente.'
+            
+            # Y creamos el registro a quién se le asignó el servicio
+            ServicioUsuario.objects.update_or_create(
+                id = servicio_usuario_id,
+                defaults = {
+                    'usuario_id': User.objects.get(id = rol_usuario_id),
+                    'servicio_id': servicio[0]
+                }
+            )
+            return JsonResponse({'res': True, 'msg': msg})
     return JsonResponse({'res': res, 'msg': msg})
 
 # Función para listar carrito

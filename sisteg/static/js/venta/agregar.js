@@ -5,6 +5,7 @@ export function agregar(form, producto_id, cantidad) {
     let formData = new FormData(form)
     formData.append('producto_id', producto_id);
     formData.append('cantidad', cantidad);
+    formData.append('servicio_id', document.getElementById('actualizar_servicio').getAttribute('servicio_id'));
     fetch('/servicio/agregar-servicio/', {
         method: 'POST',
         headers: {

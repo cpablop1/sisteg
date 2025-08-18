@@ -12,6 +12,7 @@ export function cambiar() {
     let listar = document.getElementById('listar');
 
     form_agregar.reset();
+    document.getElementById('actualizar_servicio').removeAttribute('servicio_id');
 
     if (listar.hidden) {
         btn_agregar.innerHTML = '<i class="fa-solid fa-square-plus"></i>';

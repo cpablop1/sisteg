@@ -15,6 +15,7 @@ export function editarServicio(servicio_id) {
         let tipo_servicio_id = document.getElementById('tipo_servicio_id');
         let observacion = document.getElementById('observacion');
         let rol_usuario_id = document.getElementById('rol_usuario_id');
+        let actualizar_servicio = document.getElementById('actualizar_servicio');
         let subtotal = document.getElementById('subtotal');
         // Mostar datos
         setTimeout(() => {
@@ -23,7 +24,7 @@ export function editarServicio(servicio_id) {
             tipo_servicio_id.value = data.tipo_servicio_id;
             observacion.value = data.observacion;
             rol_usuario_id.value = data.rol_usuario_id;
+            actualizar_servicio.setAttribute('servicio_id', data.carrito_id);
         }, 500);
-        console.log(data);
     });
 }

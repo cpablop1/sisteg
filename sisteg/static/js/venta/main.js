@@ -147,3 +147,15 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
         editarServicio(servicio_id);
     }
 });
+
+// Evento para editar servicio
+document.getElementById('actualizar_servicio').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
+    let form = document.getElementById('form_agregar');
+    if (servicio_id) {
+        //editarServicio(servicio_id);
+        console.log(servicio_id);
+        agregar(form);
+        cambiar();
+    }
+});
