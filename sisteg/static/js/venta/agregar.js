@@ -16,14 +16,11 @@ export function agregar(form, producto_id, cantidad) {
     }).then(data => {
         if (data.res) {
             alerta.success(data.msg);
+            listarCarrito();
         } else {
             alerta.danger(data.msg);
         }
     }).catch(error => {
         console.log(error);
-    }).finally(e => {
-        setTimeout(() => {
-            listarCarrito();
-        }, 500);
-    });
+    })
 }

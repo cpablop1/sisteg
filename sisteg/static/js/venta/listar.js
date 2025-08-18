@@ -42,6 +42,7 @@ export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar'
                     <td>${servicio.fecha_ingreso}</td>
                     <td>${servicio.fecha_actualizacion}</td>
                     <td><i class="fa-solid fa-circle-info btn btn-info btn-sm" servicio_id="${servicio.id}"></i></td>
+                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar_servicio_id="${servicio.id}"></i></td>
                 </tr>`;
         });
 

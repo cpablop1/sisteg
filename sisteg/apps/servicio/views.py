@@ -444,7 +444,10 @@ def listar_carrito(request):
             data['subtotal'] = servicio[0].subtotal
             data['ganancia'] = ganancia
             data['tipo_pago_id'] = servicio[0].tipo_pago_id.id
-            data['proveedor_id'] = servicio[0].cliente_id.id
+            data['cliente_id'] = servicio[0].cliente_id.id
+            data['tipo_servicio_id'] = servicio[0].tipo_servicio_id.id
+            data['observacion'] = servicio[0].observacion
+            data['rol_usuario_id'] = ServicioUsuario.objects.filter(servicio_id = servicio[0].id)[0].usuario_id.id
             # Preparamos mensajes de respuesta
             res = True
             msg = 'Elementos del carrito.'

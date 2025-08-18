@@ -7,6 +7,7 @@ import { listarProductos } from './listarProductos.js';
 import { eliminarServicio } from './eliminarServicio.js';
 import { confirmarServicio } from './confirmarServicio.js';
 import { listarDetalleServicio } from './listarDetalleServicio.js';
+import { editarServicio } from './EditarServicio.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -137,4 +138,12 @@ document.getElementById('crear_servicio').addEventListener('click', e => {
         } else {
             alerta.warning('Complete el formulario para continuar.');
         }
+});
+
+// Evento para editar servicio
+document.getElementById('tbl_listar').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('editar_servicio_id'));
+    if (servicio_id) {
+        editarServicio(servicio_id);
+    }
 });
