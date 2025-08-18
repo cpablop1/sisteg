@@ -21,7 +21,7 @@ export function listarCarrito(servicio_id) {
             });
 
             document.getElementById('subtotal').innerHTML = `Q ${data.subtotal}`;
-            document.getElementById('cliente_id').value = data.proveedor_id;
+            document.getElementById('cliente_id').value = data.cliente_id;
             document.getElementById('tipo_pago_id').value = data.tipo_pago_id;
             document.getElementById('eliminar_servicio').setAttribute('servicio_id', data.carrito_id);
             document.getElementById('confirmar_servicio').setAttribute('servicio_id', data.carrito_id);

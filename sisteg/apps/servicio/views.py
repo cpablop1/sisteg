@@ -209,11 +209,6 @@ def agregar_servicio(request):
         stock = request.POST.get('stock', '').strip()
         observacion = request.POST.get('observacion', '').strip()
 
-        print('\n---------------------------------')
-        print(f'servicio_id: {servicio_id}')
-        print(f'cliente_id: {cliente_id}')
-        print('---------------------------------\n')
-
         # Validación para rol_usuario_id
         if not rol_usuario_id:
             rol_usuario_id = None
@@ -304,6 +299,8 @@ def agregar_servicio(request):
             if servicio_id:
                 existe_servicio = Servicio.objects.filter(id = servicio_id)
             else:
+                if (request.rol_usuario == 'recepcionista' and (tipo_servicio_id != 1)):
+                    return JsonResponse({'res': False, 'msg': 'No puedes agregar productos a un servicio de tipo mantenimiento'})
                 existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = tipo_servicio_id)
 
             if existe_servicio.exists(): # Si es así
