@@ -8,6 +8,7 @@ import { eliminarServicio } from './eliminarServicio.js';
 import { confirmarServicio } from './confirmarServicio.js';
 import { listarDetalleServicio } from './listarDetalleServicio.js';
 import { editarServicio } from './EditarServicio.js';
+import { ticketPdf } from './ticketPdf.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -171,5 +172,13 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
         setTimeout(() => {
             listar();
         }, 500);
+    }
+}); 
+
+// Evento para imprimir ticket
+document.getElementById('tbl_listar').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('ticket_servicio_id'));
+    if (servicio_id) {
+        ticketPdf(servicio_id);
     }
 }); 

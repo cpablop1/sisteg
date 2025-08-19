@@ -15,6 +15,10 @@ from apps.inicio.models import TipoPago
 import logging
 logger = logging.getLogger(__name__)
 
+from django.http import HttpResponse
+from reportlab.pdfgen import canvas
+from io import BytesIO
+
 @login_required(login_url='autenticacion')
 def vista_cliente(request):
     return render(request, 'cliente/cliente.html')
@@ -709,3 +713,26 @@ def listar_servicios(request):
     data['msg'] = msg
     # Retornamos los datos
     return JsonResponse(data)
+
+# Endpoint para crear ticket en PDF
+def ticket_pdf(request):
+    servicio_id = request.GET.get('servicio_id', '')
+    print('\n---------------')
+    print(servicio_id)
+    print('---------------\n')
+        # Crear buffer para el PDF
+    buffer = BytesIO()
+    
+    # Crear PDF
+    p = canvas.Canvas(buffer)
+    p.drawString(100, 750, "Informe Ejemplo")
+    p.drawString(100, 730, f"Fecha: 2023-11-15")
+    p.drawString(100, 710, "Datos del sistema...")
+    p.showPage()
+    p.save()
+    
+    # Preparar respuesta
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="informe.pdf"'
+    return response
