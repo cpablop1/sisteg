@@ -1,7 +1,7 @@
 import { listarCarrito } from "./listarCarrito.js";
 import { selectCliente } from "./selectCliente.js";
 import { selectTipoPago } from "./selectTipoPago.js";
-import { listar as listado} from './listar.js';
+import { listar as listado } from './listar.js';
 import { selectTipoServicio } from "./selectTipoServicio.js";
 import { selectRolUsuario } from "./selectRolUsuario.js";
 
@@ -13,6 +13,12 @@ export function cambiar() {
 
     form_agregar.reset();
     document.getElementById('actualizar_servicio').removeAttribute('servicio_id');
+
+    // Obtener buttons
+    document.getElementById('confirmar_servicio').hidden = false;
+    document.getElementById('crear_servicio').hidden = false;
+    document.getElementById('eliminar_servicio').hidden = false;
+    document.getElementById('actualizar_servicio').hidden = true;
 
     if (listar.hidden) {
         btn_agregar.innerHTML = '<i class="fa-solid fa-square-plus"></i>';

@@ -157,5 +157,19 @@ document.getElementById('actualizar_servicio').addEventListener('click', e => {
         console.log(servicio_id);
         agregar(form);
         cambiar();
+        setTimeout(() => {
+            listar();
+        }, 500);
     }
 });
+
+// Evento para eliminar el servicio tipo mantenimiento
+document.getElementById('tbl_listar').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('eliminar_servicio_id'));
+    if (servicio_id) {
+        eliminarServicio({ 'servicio_id': servicio_id });
+        setTimeout(() => {
+            listar();
+        }, 500);
+    }
+}); 

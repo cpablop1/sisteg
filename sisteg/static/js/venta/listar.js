@@ -30,6 +30,16 @@ export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar'
         });
 
         Array.from(data.data, (servicio, indice) => {
+            let editar = '';
+            let eliminar = '';
+            // Evaluar si es diferente a una venta o servicio confirmado para poder editar
+            if ((!servicio.estado_servicio) && (servicio.tipo_servicio_id != 1)){
+                editar = `<i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar_servicio_id="${servicio.id}"></i>`;
+            }
+            // Evaluar si servicio es diferente a venta para poder eliminar
+            if ((!servicio.estado_servicio) && (servicio.tipo_servicio_id != 1)){
+                eliminar = `<i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar_servicio_id="${servicio.id}"></i>`;
+            }
             fila += `
                 <tr>
                     <th scope="row">${indice + 1}</th>
@@ -42,7 +52,8 @@ export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar'
                     <td>${servicio.fecha_ingreso}</td>
                     <td>${servicio.fecha_actualizacion}</td>
                     <td><i class="fa-solid fa-circle-info btn btn-info btn-sm" servicio_id="${servicio.id}"></i></td>
-                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar_servicio_id="${servicio.id}"></i></td>
+                    <td>${editar}</td>
+                    <td>${eliminar}</td>
                 </tr>`;
         });
 

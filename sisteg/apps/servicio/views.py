@@ -616,11 +616,18 @@ def eliminar_servicio(request):
             elif servicio_id is not None:
                 # Obtenemos el servicio
                 servicio = Servicio.objects.get(id = servicio_id)
+                if servicio.tipo_servicio_id.id != 1: # Evaluamos primero si existe una referencia en servicioUsuario
+                    # Para luego eliminarla
+                    servicio_usuario = ServicioUsuario.objects.get(servicio_id = servicio_id)
+                    servicio_usuario.delete()
                 # Eliminamos el servicio
                 servicio.delete()
                 msg = 'Carrito vaciado.'
             res = True
-        except:
+        except Exception as ex:
+            print('\n--------------------------------')
+            print(ex)
+            print('--------------------------------\n')
             res = False
             msg = 'Hubo un error al eliminar el registro, actualice la página y vuelve a intentarlo.'
     return JsonResponse({'res': res, 'msg': msg})
@@ -668,7 +675,9 @@ def listar_servicios(request):
                     'usuario_id': ser.usuario_id.username,
                     'cliente': f'{ser.cliente_id.nombres} {ser.cliente_id.apellidos}',
                     'tipo_servicio': ser.tipo_servicio_id.descripcion,
-                    'estado': 'Finalizado' if ser.estado else 'Abierto'
+                    'tipo_servicio_id': ser.tipo_servicio_id.id,
+                    'estado': 'Finalizado' if ser.estado else 'Abierto',
+                    'estado_servicio': ser.estado
                 }
             )
         # Preparamos la visualización de las páginas
