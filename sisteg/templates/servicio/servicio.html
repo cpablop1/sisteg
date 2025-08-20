@@ -3,12 +3,12 @@
 {% load static %}
 
 {% block contenido %}
-{% include 'compra/listar.html' %}
-{% include 'compra/agregar.html' %}
-{% include 'compra/detalle_servicio.html' %}
+{% include 'servicio/listar.html' %}
+{% include 'servicio/agregar.html' %}
+{% include 'servicio/detalle_servicio.html' %}
 {% endblock %}
 
 
 {% block script %}
-<script src="{% static 'js/compra/main.js' %}" type="module"></script>
+<script src="{% static 'js/servicio/main.js' %}" type="module"></script>
 {% endblock %}

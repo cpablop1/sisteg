@@ -16,14 +16,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 from django.http import HttpResponse
-from reportlab.pdfgen import canvas
+#from reportlab.pdfgen import canvas
 from io import BytesIO
 
 from reportlab.lib.pagesizes import mm, landscape
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph, Spacer, SimpleDocTemplate, Table
-from reportlab.lib.units import inch
-from reportlab.lib import colors
+#from reportlab.lib.units import inch
+#from reportlab.lib import colors
 
 @login_required(login_url='autenticacion')
 def vista_cliente(request):

@@ -2,9 +2,9 @@
     {% csrf_token %}
     <div class="row">
         <div class="col-12 col-md-3">
-            <select name="proveedor_id" id="proveedor_id" class="form-select">
-                <option value="">Seleccione el proveedor</option>
-                <option value="0">Proveedor General</option>
+            <select name="cliente_id" id="cliente_id" class="form-select">
+                <option value="">Seleccione el cliente</option>
+                <option value="0">Consumidor final</option>
             </select>
         </div>
         <div class="col-12 col-md-3">
@@ -14,13 +14,31 @@
             </select>
         </div>
         <div class="col-12 col-md-3">
+            <select name="tipo_servicio_id" id="tipo_servicio_id" class="form-select">
+                <option value="">Seleccione servicio</option>
+                <option value="1">Venta</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-3">
             <span class="btn btn-light" id="btn-buscar-productos">
                 <i class="fa-solid fa-magnifying-glass p-1"></i>
                 Buscar
             </span>
         </div>
-        <div class="col-12 col-md-3 d-flex justify-content-end">
-            <h3 class="bg-light p-2" id="subtotal">Q. 00</h3>
+    </div>
+    <div class="row my-2">
+        <div class="col-12 col-md-4">
+            <textarea class="form-control" rows="3" name="observacion" id="observacion"
+                placeholder="Espacio para observaciones o detalles (Opcional)"></textarea>
+        </div>
+        <div class="col-12 col-md-4">
+            <select name="rol_usuario_id" id="rol_usuario_id" class="form-select">
+                <option value="">Seleccione el técnico</option>
+                <option value="1">Técnico</option>
+            </select>
+        </div>
+        <div class="col-12 col-md-4 d-flex justify-content-end align-items-center">
+            <h4 class="bg-light p-2" id="subtotal">Q. 00</h3>
         </div>
     </div>
     <div class="row">
@@ -31,7 +49,7 @@
                         <tr>
                             <th scope="col">Cantidad</th>
                             <th scope="col">Producto</th>
-                            <th scope="col">Costo</th>
+                            <th scope="col">Precio</th>
                             <th scope="col">Total</th>
                         </tr>
                     </thead>
@@ -60,8 +78,14 @@
     </div>
 
     <div class="mb-3 d-flex justify-content-end">
-        <button type="button" class="btn btn-primary mx-2" id="confirmar_compra"><i class="fa-solid fa-square-check"></i> Confirmar</button>
-        <button type="button" class="btn btn-secondary" id="eliminar_compra"><i class="fa-solid fa-trash"></i> Vaciar</button>
+        <button type="button" class="btn btn-primary mx-2" id="confirmar_servicio"><i
+                class="fa-solid fa-square-check"></i> Confirmar venta</button>
+        <button type="button" class="btn btn-primary mx-2" id="crear_servicio"><i class="fa-solid fa-square-check"></i>
+            Crear servicio</button>
+        <button type="button" class="btn btn-primary mx-2" id="actualizar_servicio" hidden><i class="fa-solid fa-square-check"></i>
+            Actualizar servicio</button>
+        <button type="button" class="btn btn-secondary" id="eliminar_servicio"><i class="fa-solid fa-trash"></i>
+            Vaciar</button>
     </div>
 </form>
 

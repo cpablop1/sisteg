@@ -1,0 +1,35 @@
+import { selectCliente } from "./selectCliente.js";
+import { selectTipoPago } from "./selectTipoPago.js";
+import { selectTipoServicio } from "./selectTipoServicio.js";
+import { selectRolUsuario } from "./selectRolUsuario.js";
+
+// Evento para cambiar de vista entre el formulario y el listado de categoría
+export function cambiar() {
+    let btn_agregar = document.getElementById('agregar');
+    let form_agregar = document.getElementById('form_agregar');
+    let listar = document.getElementById('listar');
+
+    form_agregar.reset();
+    //document.getElementById('actualizar_servicio').removeAttribute('servicio_id');
+
+    // Obtener buttons
+    /* document.getElementById('confirmar_servicio').hidden = false;
+    document.getElementById('crear_servicio').hidden = false;
+    document.getElementById('eliminar_servicio').hidden = false;
+    document.getElementById('actualizar_servicio').hidden = true; */
+
+    if (listar.hidden) {
+        btn_agregar.innerHTML = '<i class="fa-solid fa-square-plus"></i>';
+        listar.hidden = false;
+        form_agregar.hidden = true;
+    } else {
+        btn_agregar.innerHTML = '<i class="fa-solid fa-list"></i>';
+        listar.hidden = true;
+        form_agregar.hidden = false;
+    }
+
+    selectCliente();
+    selectTipoPago();
+    selectTipoServicio();
+    selectRolUsuario();
+}
