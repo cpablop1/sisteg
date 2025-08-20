@@ -19,6 +19,12 @@ from django.http import HttpResponse
 from reportlab.pdfgen import canvas
 from io import BytesIO
 
+from reportlab.lib.pagesizes import mm, landscape
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.platypus import Paragraph, Spacer, SimpleDocTemplate, Table
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+
 @login_required(login_url='autenticacion')
 def vista_cliente(request):
     return render(request, 'cliente/cliente.html')
@@ -717,22 +723,163 @@ def listar_servicios(request):
 # Endpoint para crear ticket en PDF
 def ticket_pdf(request):
     servicio_id = request.GET.get('servicio_id', '')
-    print('\n---------------')
-    print(servicio_id)
-    print('---------------\n')
-        # Crear buffer para el PDF
-    buffer = BytesIO()
+    servicio = None
+    detalle_servicio = None
+    try:
+        servicio = Servicio.objects.get(id=servicio_id)
+    except Servicio.DoesNotExist:
+        return HttpResponse("Servicio no encontrado", status=404)
+    try:
+        detalle_servicio = DetalleServicio.objects.filter(servicio_id = servicio_id)
+    except:
+        detalle_servicio = None
+
     
-    # Crear PDF
-    p = canvas.Canvas(buffer)
-    p.drawString(100, 750, "Informe Ejemplo")
-    p.drawString(100, 730, f"Fecha: 2023-11-15")
-    p.drawString(100, 710, "Datos del sistema...")
-    p.showPage()
-    p.save()
+    # Tamaño para impresora térmica (80mm x altura variable)
+    page_width = 80 * mm
+    page_height = 300 * mm  # Altura suficiente para contenido
+    custom_page_size = (page_width, page_height)
+    
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=custom_page_size, 
+                           rightMargin=2*mm, leftMargin=2*mm, 
+                           topMargin=2*mm, bottomMargin=2*mm)
+    elements = []
+    
+    # Estilos personalizados
+    styles = {
+        'title': ParagraphStyle(
+            name='Title',
+            fontName='Helvetica-Bold',
+            fontSize=10,
+            leading=12,
+            alignment=1,  # Centrado
+            spaceAfter=6
+        ),
+        'header': ParagraphStyle(
+            name='Header',
+            fontName='Helvetica-Bold',
+            fontSize=8,
+            leading=9,
+            alignment=1,
+            spaceAfter=3
+        ),
+        'normal': ParagraphStyle(
+            name='Normal',
+            fontName='Helvetica',
+            fontSize=7,
+            leading=8,
+            alignment=1,
+        ),
+        'small': ParagraphStyle(
+            name='Small',
+            fontName='Helvetica',
+            fontSize=6,
+            leading=7,
+            alignment=1,
+        ),
+        'left': ParagraphStyle(
+            name='Left',
+            fontName='Helvetica',
+            fontSize=7,
+            leading=8,
+            alignment=0,  # Izquierda
+        ),
+        'right': ParagraphStyle(
+            name='Right',
+            fontName='Helvetica',
+            fontSize=8,
+            leading=9,
+            alignment=2,  # Derecha
+        ),
+        'center': ParagraphStyle(
+            name='Center',
+            fontName='Helvetica',
+            fontSize=8,
+            leading=9,
+            alignment=1,  # Derecha
+        )
+    }
+    
+    # Encabezado de la empresa
+    elements.append(Paragraph("ELECTROSISTEMAS GÓMEZ", styles['title']))
+    elements.append(Paragraph("RFC: {:010}".format(servicio.id), styles['header']))
+    elements.append(Paragraph("Régimen fiscal: 2046:Pequeño Contribuyente", styles['normal']))
+    elements.append(Paragraph("Emitido en: Calle Al Cementario 4-14 Zona 1, Zacualpa, Quiché, ", styles['normal']))
+    elements.append(Paragraph("Tel. 7736-6271", styles['normal']))
+    elements.append(Spacer(1, 5))
+    
+    # Línea separadora
+    elements.append(Paragraph("_________________________________________", styles['normal']))
+    elements.append(Spacer(1, 5))
+    
+    # Información de cajero y fecha
+    elements.append(Paragraph(f"CAJA: {servicio.usuario_id.username if (servicio.usuario_id.username != '') else 'Raymundo Gómez'}".upper(), styles['left']))
+    elements.append(Paragraph(f"CLIENTE: {servicio.cliente_id.nombres} {servicio.cliente_id.apellidos}".upper(), styles['left']))
+    elements.append(Paragraph(f"TIPO: {servicio.tipo_servicio_id.descripcion}".upper(), styles['left']))
+    elements.append(Paragraph(f"T{servicio.id}-01322    {servicio.fecha_ingreso.strftime('%H:%M %d/%m/%Y')}", styles['left']))
+    elements.append(Spacer(1, 5))
+    
+    # Productos (ejemplo con un producto)
+    # Para múltiples productos, harías un loop aquí
+    print('\n--------------------')
+    print(detalle_servicio)
+    print('añfdjsdalñjdslkñjfksdl')
+    print('--------------------\n')
+    for ds in detalle_servicio:
+        elements.append(Paragraph(f"{ds.producto_id.descripcion}", styles['left']))
+        elements.append(Table([
+            [
+                Paragraph(f"Cant: {ds.cantidad}", styles['left']),
+                Paragraph(f"Precio: {ds.precio}", styles['center']),
+                Paragraph(f"Total: {ds.total}", styles['right']),
+            ]
+        ], colWidths=[doc.width*0.3, doc.width*0.4, doc.width*0.3]))
+        elements.append(Spacer(1, 5))
+    
+    # Totales
+    #elements.append(Paragraph("1 artículo", styles['left']))
+    # Línea separadora
+    elements.append(Paragraph("_________________________________________", styles['normal']))
+    elements.append(Spacer(1, 5))
+    total_data = [
+        [Paragraph("SUBTOTAL:", styles['left']), 
+         Paragraph(f"Q {servicio.subtotal}", styles['right'])]
+    ]
+    total_table = Table(total_data, colWidths=[doc.width*0.7, doc.width*0.3])
+    elements.append(total_table)
+    elements.append(Spacer(1, 5))
+    
+    # Pago
+    #elements.append(Paragraph("Pago en efectivo:    $180.00", styles['left']))
+    #elements.append(Spacer(1, 10))
+    
+    # Términos y condiciones
+    terms = "No ofrecemos cambios y devoluciones de los productos adquiridos."
+    elements.append(Paragraph(terms, styles['small']))
+    elements.append(Spacer(1, 10))
+    
+    # Información de contacto
+    #elements.append(Paragraph("Visitenos en", styles['normal']))
+    #elements.append(Paragraph("www.proscai.com", styles['normal']))
+    #elements.append(Spacer(1, 10))
+    
+    # Información de facturación
+    #elements.append(Paragraph("Obtenga su factura con su celular:", styles['normal']))
+    #elements.append(Paragraph("También puede obtener su factura en", styles['normal']))
+    #elements.append(Paragraph("www.proscai.com", styles['normal']))
+    #elements.append(Paragraph("Clave para facturar: XFB ZXS NJY FTS", styles['normal']))
+    #elements.append(Paragraph("Dispone de 30 días para solicitarla.", styles['normal']))
+    #elements.append(Spacer(1, 10))
+    
+    # Pie de página
+    elements.append(Paragraph("¡GRACIAS POR SU COMPRA!", styles['title']))
+    
+    # Construir PDF
+    doc.build(elements)
     
     # Preparar respuesta
     buffer.seek(0)
     response = HttpResponse(buffer, content_type='application/pdf')
-    response['Content-Disposition'] = 'attachment; filename="informe.pdf"'
+    response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
     return response
