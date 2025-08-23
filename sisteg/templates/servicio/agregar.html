@@ -32,13 +32,16 @@
                 placeholder="Espacio para observaciones o detalles (Opcional)"></textarea>
         </div>
         <div class="col-12 col-md-4">
-            <select name="rol_usuario_id" id="rol_usuario_id" class="form-select">
-                <option value="">Seleccione el técnico</option>
-                <option value="1">Técnico</option>
-            </select>
+            <input type="number" name="costo_servicio" id="costo_servicio" class="form-control">
         </div>
         <div class="col-12 col-md-4 d-flex justify-content-end align-items-center">
             <h4 class="bg-light p-2" id="subtotal">Q. 00</h3>
+        </div>
+        <div>
+            <select name="rol_usuario_id" id="rol_usuario_id" hidden>
+                <option value="">Seleccione el técnico</option>
+                <option value="1">Técnico</option>
+            </select>
         </div>
     </div>
     <div class="row">
@@ -78,14 +81,9 @@
     </div>
 
     <div class="mb-3 d-flex justify-content-end">
-        <button type="button" class="btn btn-primary mx-2" id="confirmar_servicio"><i
-                class="fa-solid fa-square-check"></i> Confirmar venta</button>
-        <button type="button" class="btn btn-primary mx-2" id="crear_servicio"><i class="fa-solid fa-square-check"></i>
-            Crear servicio</button>
-        <button type="button" class="btn btn-primary mx-2" id="actualizar_servicio" hidden><i class="fa-solid fa-square-check"></i>
+        <button type="button" class="btn btn-primary mx-2" id="actualizar_servicio"><i
+                class="fa-solid fa-square-check"></i>
             Actualizar servicio</button>
-        <button type="button" class="btn btn-secondary" id="eliminar_servicio"><i class="fa-solid fa-trash"></i>
-            Vaciar</button>
     </div>
 </form>
 

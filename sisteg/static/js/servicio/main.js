@@ -13,6 +13,7 @@ import { ticketPdf } from './ticketPdf.js';
 window.onload = () => {
     let titulo = document.getElementById('titulo');
     titulo.innerHTML = `<i class="fa-solid fa-gear"></i> Servicio`;
+    document.getElementById('agregar').hidden = true;
     listar();
 }
 
@@ -77,26 +78,6 @@ document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
     }
 });
 
-// Evento para eliminar el servicio completo
-document.getElementById('eliminar_servicio').addEventListener('click', e => {
-    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
-    if (servicio_id) {
-        eliminarServicio({ 'servicio_id': servicio_id });
-    }
-});
-
-// Evento para confirmar la servicio
-document.getElementById('confirmar_servicio').addEventListener('click', e => {
-    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
-    let cliente_id = parseInt(document.getElementById('cliente_id').value);
-    let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
-
-    if (servicio_id) {
-        confirmarServicio({ servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id });
-    }
-
-})
-
 // Evento para actualizar cantidad en carrito de servicio
 document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     let form = document.getElementById('form_agregar');
@@ -128,17 +109,6 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
         new bootstrap.Modal(document.getElementById('mdl_detalle_servicio')).show();
         listarDetalleServicio(servicio_id);
     }
-});
-
-// Evento para crear servicio
-document.getElementById('crear_servicio').addEventListener('click', e => {
-    let form = document.getElementById('form_agregar');
-
-        if (validacion(form)) {
-            agregar(form);
-        } else {
-            alerta.warning('Complete el formulario para continuar.');
-        }
 });
 
 // Evento para editar servicio

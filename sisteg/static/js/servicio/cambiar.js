@@ -10,13 +10,6 @@ export function cambiar() {
     let listar = document.getElementById('listar');
 
     form_agregar.reset();
-    //document.getElementById('actualizar_servicio').removeAttribute('servicio_id');
-
-    // Obtener buttons
-    /* document.getElementById('confirmar_servicio').hidden = false;
-    document.getElementById('crear_servicio').hidden = false;
-    document.getElementById('eliminar_servicio').hidden = false;
-    document.getElementById('actualizar_servicio').hidden = true; */
 
     if (listar.hidden) {
         btn_agregar.innerHTML = '<i class="fa-solid fa-square-plus"></i>';

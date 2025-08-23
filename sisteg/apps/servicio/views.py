@@ -218,6 +218,7 @@ def agregar_servicio(request):
         cantidad = request.POST.get('cantidad', '1')
         stock = request.POST.get('stock', '').strip()
         observacion = request.POST.get('observacion', '').strip()
+        costo_servicio = request.POST.get('costo_servicio', '0').strip()
 
         # Validación para rol_usuario_id
         if not rol_usuario_id:
@@ -286,6 +287,16 @@ def agregar_servicio(request):
             cantidad = 1
         if cantidad <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
             cantidad = 1
+        
+        # Validación de la costo del servicio que siempre sea una decimal o un entero positivo
+        if costo_servicio.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 0
+            costo_servicio = 0
+        try: # Convertimos un costo_servicio en decimal
+            costo_servicio = float(costo_servicio)
+        except ValueError: # En caso de error le asignamos 0
+            costo_servicio = 0
+        if costo_servicio <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
+            cantidad = 0
 
         # Validación para producto_id
         if not producto_id:
@@ -350,7 +361,8 @@ def agregar_servicio(request):
                 existe_servicio.update(
                     subtotal = subtotal,
                     cliente_id = cliente_id,
-                    tipo_pago_id = tipo_pago_id
+                    tipo_pago_id = tipo_pago_id,
+                    costo_servicio = costo_servicio
                 )
                 # Datos de respuesta
                 res = True
@@ -386,22 +398,22 @@ def agregar_servicio(request):
                 return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.'})
             if not rol_usuario_id:
                 return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.'})
+            datos = {
+                'subtotal': costo_servicio,
+                'observacion': observacion,
+                'costo_servicio': costo_servicio,
+                'cliente_id': Cliente.objects.get(id = cliente_id),
+                'tipo_pago_id': TipoPago.objects.get(id = tipo_pago_id),
+                'tipo_servicio_id': TipoServicio.objects.get(id = tipo_servicio_id)
+            }
+            if not servicio_id:
+                datos['usuario_id'] = User.objects.get(id = request.user.id)
             
             servicio = Servicio.objects.update_or_create( # Creamos el servicio
                 id = servicio_id,
-                defaults ={
-                    'subtotal': 0,
-                    'observacion': observacion,
-                    'cliente_id': Cliente.objects.get(id = cliente_id),
-                    'usuario_id': User.objects.get(id = request.user.id),
-                    'tipo_pago_id': TipoPago.objects.get(id = tipo_pago_id),
-                    'tipo_servicio_id': TipoServicio.objects.get(id = tipo_servicio_id)
-                }
+                defaults = datos
             )
             # Evaluamos si fue un nuevo registro o una actualización
-            print('\n----------------------------------------')
-            print(servicio)
-            print('----------------------------------------\n')
             if servicio[1]:
                 msg = 'Servicio agregada correctamente.'
             else:
@@ -468,6 +480,7 @@ def listar_carrito(request):
             data['cliente_id'] = servicio[0].cliente_id.id
             data['tipo_servicio_id'] = servicio[0].tipo_servicio_id.id
             data['observacion'] = servicio[0].observacion
+            data['costo_servicio'] = servicio[0].costo_servicio
             data['rol_usuario_id'] = ServicioUsuario.objects.filter(servicio_id = servicio[0].id)[0].usuario_id.id
             # Preparamos mensajes de respuesta
             res = True
@@ -660,7 +673,16 @@ def listar_servicios(request):
         if id: # Verificamos si necesitamos un servicio en expecífico
             servicios = Servicio.objects.filter(id = id)
         else: # Sino se lista todos menos los de tipo ventas
-            servicios = Servicio.objects.all()
+            if request.rol_usuario == 'tecnico': # Filtramos los registros is el usuario es ténico
+                servicios = []
+                # Obtener todos los servicios asociados al usuario técnico
+                servicio_usuario = ServicioUsuario.objects.filter(usuario_id = request.user.id)
+                # Extraer los IDs de los servicios en una lista
+                servicio_ids = servicio_usuario.values_list('servicio_id', flat=True)
+                # Filtrar todos los servicios cuyos IDs están en la lista
+                servicios = Servicio.objects.filter(id__in=servicio_ids)
+            else:
+                servicios = Servicio.objects.all()
         if len(buscar) > 0: # Verificamos si hay búsquedad
             servicios = servicios.filter(
                 Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
