@@ -1,4 +1,5 @@
 import * as alerta from '../alertas/alertas.js';
+import { editarServicio } from './EditarServicio.js';
 
 export function agregar(form, producto_id, cantidad) {
     let formData = new FormData(form)
@@ -16,6 +17,7 @@ export function agregar(form, producto_id, cantidad) {
     }).then(data => {
         if (data.res) {
             alerta.success(data.msg);
+            editarServicio(formData.get('servicio_id'));
         } else {
             alerta.danger(data.msg);
         }

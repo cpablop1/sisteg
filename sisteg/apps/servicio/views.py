@@ -357,12 +357,13 @@ def agregar_servicio(request):
                 # Creamos los nuevos valores para la venta
                 todos_detalle = DetalleServicio.objects.filter(servicio_id = existe_servicio[0].id)
                 subtotal = sum(dc.total for dc in todos_detalle)
+                subtotal += costo_servicio
                 # Actualizamos la venta
                 existe_servicio.update(
                     subtotal = subtotal,
+                    costo_servicio = costo_servicio,
                     cliente_id = cliente_id,
                     tipo_pago_id = tipo_pago_id,
-                    costo_servicio = costo_servicio
                 )
                 # Datos de respuesta
                 res = True
@@ -398,8 +399,17 @@ def agregar_servicio(request):
                 return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.'})
             if not rol_usuario_id:
                 return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.'})
+            # Actualizar subtotal
+            detalle_servicio = ''
+            subtotal = 0
+            try:
+                detalle_servicio = DetalleServicio.objects.filter(servicio_id = servicio_id)
+                subtotal = sum(ds.total for ds in detalle_servicio)
+                subtotal += costo_servicio
+            except:
+                subtotal = costo_servicio
             datos = {
-                'subtotal': costo_servicio,
+                'subtotal': subtotal,
                 'observacion': observacion,
                 'costo_servicio': costo_servicio,
                 'cliente_id': Cliente.objects.get(id = cliente_id),
@@ -623,7 +633,13 @@ def eliminar_servicio(request):
                 detalle_servicio_total = DetalleServicio.objects.filter(servicio_id = servicio.id).count()
                 # Si solo tiene un detalle el servicio
                 if detalle_servicio_total == 1:
-                    servicio.delete() # Eliminamos el servicio completo
+                    if request.rol_usuario == 'tecnico':
+                        detalle_servicio.delete()
+                        subtotal = servicio.costo_servicio
+                        servicio.subtotal = subtotal
+                        servicio.save()
+                    else:
+                        servicio.delete() # Eliminamos el servicio completo
                     # Mensja de respuesta
                     msg = 'Carrito vaciado.'
                 else:
@@ -631,6 +647,7 @@ def eliminar_servicio(request):
                     detalle_servicio.delete()
                     # Actualizamos el servicio
                     subtotal = sum(dt.total for dt in DetalleServicio.objects.filter(servicio_id = servicio.id))
+                    subtotal += servicio.costo_servicio
                     servicio.subtotal = subtotal
                     servicio.save()
                     # Mensaje de respuesta
@@ -844,13 +861,10 @@ def ticket_pdf(request):
     
     # Productos (ejemplo con un producto)
     # Para múltiples productos, harías un loop aquí
-    print('\n--------------------')
-    print(detalle_servicio)
-    print('añfdjsdalñjdslkñjfksdl')
-    print('--------------------\n')
     for ds in detalle_servicio:
         elements.append(Paragraph(f"{ds.producto_id.descripcion}", styles['left']))
-        elements.append(Table([
+        elements.append(
+            Table([
             [
                 Paragraph(f"Cant: {ds.cantidad}", styles['left']),
                 Paragraph(f"Precio: {ds.precio}", styles['center']),
@@ -858,6 +872,26 @@ def ticket_pdf(request):
             ]
         ], colWidths=[doc.width*0.3, doc.width*0.4, doc.width*0.3]))
         elements.append(Spacer(1, 5))
+    if servicio.tipo_servicio_id.id != 1:
+        # En caso de servicio por mantenimiento colocar descripción
+        # Línea separadora
+        elements.append(Paragraph("_________________________________________", styles['normal']))
+        elements.append(Spacer(1, 5))
+        elements.append(
+            Table([
+                [
+                    Paragraph(f"Costo del servicio:", styles['left']),
+                    Paragraph(f"Q {servicio.costo_servicio}", styles['right'])
+                ]
+            ])
+        )
+        elements.append(
+            Table([
+                [
+                    Paragraph(f"{servicio.observacion}", styles['center'])
+                ]
+            ])
+        )
     
     # Totales
     #elements.append(Paragraph("1 artículo", styles['left']))

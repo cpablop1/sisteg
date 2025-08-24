@@ -35,18 +35,13 @@ document.getElementById('buscar_productos').addEventListener('input', e => {
     }
 });
 
-// Evento para cambiar de vista entre el carrito y el listado de servicios
-document.getElementById('agregar').addEventListener('click', e => {
-    cambiar();
-});
-
 // Evento para mostrar modal de buscar productos
 document.getElementById('btn-buscar-productos').addEventListener('click', e => {
     new bootstrap.Modal(document.getElementById('mdl_buscar_productos')).show();
     setTimeout(() => listarProductos(), 500);
 });
 
-// Evento para agregar productos al carrito
+// Evento para agregar productos al servicio
 document.getElementById('tbl_listar_productos').addEventListener('click', e => {
     let producto_id = parseInt(e.target.getAttribute('agregar'))
     let form = document.getElementById('form_agregar');
@@ -86,7 +81,6 @@ document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     if (validacion(form)) {
         if (e.keyCode == 13) {
             if (cantidad) {
-                console.log(cantidad);
                 agregar(form, producto_id, cantidad)
             } else {
                 alerta.danger('Ingrese una cantidad válida.');
@@ -115,6 +109,7 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('editar_servicio_id'));
     if (servicio_id) {
+        cambiar();
         editarServicio(servicio_id);
     }
 });

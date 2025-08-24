@@ -2,8 +2,6 @@ import { cambiar } from "./cambiar.js";
 
 export function editarServicio(servicio_id) {
     fetch(`/servicio/listar-carrito/?servicio_id=${servicio_id}`).then(res => res.json()).then(data => {
-        // Cambiamos de vista
-        cambiar();
         // Obtener inputs para rellenar
         let cliente_id = document.getElementById('cliente_id');
         let tipo_pago_id = document.getElementById('tipo_pago_id');
