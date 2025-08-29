@@ -219,6 +219,8 @@ def agregar_servicio(request):
         stock = request.POST.get('stock', '').strip()
         observacion = request.POST.get('observacion', '').strip()
         costo_servicio = request.POST.get('costo_servicio', '0').strip()
+        precio = request.POST.get('precio', '0').strip()
+        costo = request.POST.get('costo', '0').strip()
 
         # Validación para rol_usuario_id
         if not rol_usuario_id:
@@ -287,7 +289,9 @@ def agregar_servicio(request):
             cantidad = 1
         if cantidad <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
             cantidad = 1
-        
+        print('\n----------------------')
+        print(f'Costo servicio: {costo_servicio}')
+        print('----------------------\n')
         # Validación de la costo del servicio que siempre sea una decimal o un entero positivo
         if costo_servicio.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 0
             costo_servicio = 0
@@ -296,7 +300,27 @@ def agregar_servicio(request):
         except ValueError: # En caso de error le asignamos 0
             costo_servicio = 0
         if costo_servicio <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
-            cantidad = 0
+            costo_servicio = 0
+        
+        # Validación de la precio del detalle del servicio que siempre sea una decimal o un entero positivo
+        if precio.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 0
+            precio = 0
+        try: # Convertimos un precio_servicio en decimal
+            precio = float(precio)
+        except ValueError: # En caso de error le asignamos 0
+            precio = 0
+        if precio <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
+            precio = 0
+        
+        # Validación de la costo del detalle del servicio que siempre sea una decimal o un entero positivo
+        if costo.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 0
+            costo = 0
+        try: # Convertimos un precio_servicio en decimal
+            costo = float(costo)
+        except ValueError: # En caso de error le asignamos 0
+            costo = 0
+        if costo <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
+            costo = 0
 
         # Validación para producto_id
         if not producto_id:
@@ -312,6 +336,8 @@ def agregar_servicio(request):
             producto = Producto.objects.get(id = producto_id)
             if cantidad > producto.stock:
                 return JsonResponse({'res': False, 'msg': f'El stock del producto es insuficiente, solo hay {producto.stock} en existencia.'})
+            if costo > precio:
+                return JsonResponse({'res': False, 'msg': 'El costo debe ser menor al precio del servicio.'})
         except:
             producto = None
 
@@ -333,10 +359,19 @@ def agregar_servicio(request):
                         cantidad_nueva = int(cantidad)
                     else:
                         cantidad_nueva = cantidad
-                    total = float(existe_detalle[0].precio) * cantidad_nueva
+                    total = precio * cantidad_nueva
+                    # Creamos los nevos valores del los costo y precio del servicio
+                    print('\n------------------------------')
+                    print(f'Costo servicio: {costo_servicio}')
+                    print(f'Costo detalle servicio: {costo}')
+                    print(f'Precio: {precio}')
+                    print(f'Cantidd: {cantidad}')
+                    print('------------------------------\n')
                     # Actualizamos detalle de venta
                     existe_detalle.update(
                         cantidad = cantidad_nueva,
+                        costo = costo,
+                        precio = precio,
                         total = total,
                         ganancia = producto.precio - producto.costo,
                         stock = stock
@@ -357,6 +392,9 @@ def agregar_servicio(request):
                 # Creamos los nuevos valores para la venta
                 todos_detalle = DetalleServicio.objects.filter(servicio_id = existe_servicio[0].id)
                 subtotal = sum(dc.total for dc in todos_detalle)
+                print('\n---------------------')
+                print(f'Subtotal: {subtotal}')
+                print('---------------------\n')
                 subtotal += costo_servicio
                 # Actualizamos la venta
                 existe_servicio.update(
@@ -401,6 +439,9 @@ def agregar_servicio(request):
                 return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.'})
             # Actualizar subtotal
             detalle_servicio = ''
+            print('\n------------------')
+            print(costo_servicio)
+            print('------------------\n')
             subtotal = 0
             try:
                 detalle_servicio = DetalleServicio.objects.filter(servicio_id = servicio_id)

@@ -11,7 +11,6 @@ export function editarServicio(servicio_id) {
         let rol_usuario_id = document.getElementById('rol_usuario_id');
         let actualizar_servicio = document.getElementById('actualizar_servicio');
         let subtotal = document.getElementById('subtotal');
-        console.log(data);
         // Mostar datos
         setTimeout(() => {
             cliente_id.value = data.cliente_id;
@@ -29,9 +28,10 @@ export function editarServicio(servicio_id) {
                 Array.from(data.data, elemento => {
                     fila += `
                     <tr>
-                        <th scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.producto_id}"></th>
+                        <td scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.producto_id}" id="cantidad${elemento.producto_id}"></td>
                         <td>${elemento.producto}</td>
-                        <td>${elemento.precio}</td>
+                        <td><input type="number" step="0.1" value="${elemento.costo}" class="form-control" producto_id="${elemento.producto_id}" id="costo${elemento.producto_id}"></td>
+                        <td><input type="number" step="0.1" value="${elemento.precio}" class="form-control" producto_id="${elemento.producto_id}" id="precio${elemento.producto_id}"></td>
                         <td>${elemento.total}</td>
                         <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}"></i></td>
                     </tr>`;

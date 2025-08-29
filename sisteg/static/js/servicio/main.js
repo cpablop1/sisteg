@@ -59,7 +59,7 @@ document.getElementById('tbl_listar_productos').addEventListener('click', e => {
 document.getElementById('buscar').addEventListener('input', e => {
     let buscar = e.target.value.trim();
     if (buscar.length > 0) {
-        listar({'tipo_servicio': 'venta', 'pagina': 1, 'buscar': buscar });
+        listar({ 'tipo_servicio': 'venta', 'pagina': 1, 'buscar': buscar });
     } else {
         listar();
     }
@@ -73,17 +73,25 @@ document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
     }
 });
 
-// Evento para actualizar cantidad en carrito de servicio
+// Evento para actualizar cantidad, costo y precio en carrito de servicio
 document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     let form = document.getElementById('form_agregar');
-    let cantidad = parseInt(e.target.value);
     let producto_id = parseInt(e.target.getAttribute('producto_id'));
+
+    let cantidad = parseInt(document.getElementById(`cantidad${producto_id}`).value);
+    let costo = parseFloat(document.getElementById(`costo${producto_id}`).value);
+    let precio = parseFloat(document.getElementById(`precio${producto_id}`).value);
+
+    console.log(cantidad);
+    console.log(costo);
+    console.log(precio);
+
     if (validacion(form)) {
         if (e.keyCode == 13) {
-            if (cantidad) {
-                agregar(form, producto_id, cantidad)
+            if (cantidad && (costo < precio)) {
+                agregar(form, producto_id, cantidad, costo, precio)
             } else {
-                alerta.danger('Ingrese una cantidad válida.');
+                alerta.danger('Verifique la cantidad que se válida o el costo se que se menor a precio.');
             }
         }
     } else {
@@ -138,7 +146,7 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
             listar();
         }, 500);
     }
-}); 
+});
 
 // Evento para imprimir ticket
 document.getElementById('tbl_listar').addEventListener('click', e => {
