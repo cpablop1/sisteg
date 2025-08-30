@@ -520,6 +520,7 @@ def listar_carrito(request):
                         'cantidad': carr.cantidad,
                         'total': carr.total,
                         'producto': carr.producto_id.descripcion,
+                        'stock': carr.stock,
                         'marca': carr.producto_id.marca_id.descripcion,
                         'producto_id': carr.producto_id.id
                     }

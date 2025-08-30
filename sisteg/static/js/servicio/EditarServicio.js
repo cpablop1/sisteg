@@ -26,13 +26,27 @@ export function editarServicio(servicio_id) {
             let fila = '';
             if (data.data.length !== 0) {
                 Array.from(data.data, elemento => {
+                    let stock = '';
+                    if (elemento.stock) {
+                        stock = `<div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" checked>
+                                    <label class="form-check-label" for="stock">Descontar</label>
+                                </div>`;
+                    } else {
+                        stock = `<div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}">
+                                    <label class="form-check-label" for="stock">No descontar</label>
+                                </div>`;
+                    }
                     fila += `
                     <tr>
-                        <td scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.producto_id}" id="cantidad${elemento.producto_id}"></td>
+                        <td scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" id="cantidad${elemento.producto_id}"></td>
                         <td>${elemento.producto}</td>
-                        <td><input type="number" step="0.1" value="${elemento.costo}" class="form-control" producto_id="${elemento.producto_id}" id="costo${elemento.producto_id}"></td>
-                        <td><input type="number" step="0.1" value="${elemento.precio}" class="form-control" producto_id="${elemento.producto_id}" id="precio${elemento.producto_id}"></td>
+                        <td>${stock}</td>
+                        <td><input type="number" step="0.1" value="${elemento.costo}" class="form-control" id="costo${elemento.producto_id}"></td>
+                        <td><input type="number" step="0.1" value="${elemento.precio}" class="form-control" id="precio${elemento.producto_id}"></td>
                         <td>${elemento.total}</td>
+                        <td><i class="fa-solid fa-arrow-rotate-right btn btn-info" producto_id="${elemento.producto_id}"></i></td>
                         <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}"></i></td>
                     </tr>`;
                 });

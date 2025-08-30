@@ -32,7 +32,8 @@
                 placeholder="Espacio para observaciones o detalles (Opcional)"></textarea>
         </div>
         <div class="col-12 col-md-4">
-            <input type="number" name="costo_servicio" id="costo_servicio" class="form-control" placeholder="Ingrese costo del servicio">
+            <input type="number" name="costo_servicio" id="costo_servicio" class="form-control"
+                placeholder="Ingrese costo del servicio">
         </div>
         <div class="col-12 col-md-4 d-flex justify-content-end align-items-center">
             <h4 class="bg-light p-2" id="subtotal">Q. 00</h3>
@@ -52,6 +53,7 @@
                         <tr>
                             <th scope="col">Cantidad</th>
                             <th scope="col">Producto</th>
+                            <th scope="col">Stock</th>
                             <th scope="col">Costo</th>
                             <th scope="col">Precio</th>
                             <th scope="col">Total</th>
@@ -82,8 +84,11 @@
     </div>
 
     <div class="mb-3 d-flex justify-content-end">
-        <button type="button" class="btn btn-primary mx-2" id="actualizar_servicio"><i
+        <button type="button" class="btn btn-primary mx-2" id="finalizar_servicio"><i
                 class="fa-solid fa-square-check"></i>
+            Finalizar servicio</button>
+        <button type="button" class="btn btn-warning mx-2" id="actualizar_servicio"><i
+                class="fa-solid fa-arrow-rotate-right"></i>
             Actualizar servicio</button>
     </div>
 </form>

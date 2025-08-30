@@ -74,28 +74,26 @@ document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
 });
 
 // Evento para actualizar cantidad, costo y precio en carrito de servicio
-document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
-    let form = document.getElementById('form_agregar');
+document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
     let producto_id = parseInt(e.target.getAttribute('producto_id'));
+    if (producto_id) {
+        let form = document.getElementById('form_agregar');
+        let cantidad = parseInt(document.getElementById(`cantidad${producto_id}`).value);
+        let costo = parseFloat(document.getElementById(`costo${producto_id}`).value);
+        let precio = parseFloat(document.getElementById(`precio${producto_id}`).value);
+        let stock = document.getElementById(`stock${producto_id}`).checked ? 1 : 0;
 
-    let cantidad = parseInt(document.getElementById(`cantidad${producto_id}`).value);
-    let costo = parseFloat(document.getElementById(`costo${producto_id}`).value);
-    let precio = parseFloat(document.getElementById(`precio${producto_id}`).value);
-
-    console.log(cantidad);
-    console.log(costo);
-    console.log(precio);
-
-    if (validacion(form)) {
-        if (e.keyCode == 13) {
+        if (validacion(form)) {
             if (cantidad && (costo < precio)) {
-                agregar(form, producto_id, cantidad, costo, precio)
+                agregar(form, producto_id, cantidad, costo, precio, stock)
             } else {
                 alerta.danger('Verifique la cantidad que se válida o el costo se que se menor a precio.');
             }
+        } else {
+            alerta.warning('Complete el formulario para continuar.');
         }
     } else {
-        alerta.warning('Complete el formulario para continuar.');
+        console.log('Evento nada que ver...');
     }
 });
 
@@ -127,11 +125,10 @@ document.getElementById('actualizar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     let form = document.getElementById('form_agregar');
     if (servicio_id) {
-        //editarServicio(servicio_id);
-        console.log(servicio_id);
         agregar(form);
-        cambiar();
+        //cambiar();
         setTimeout(() => {
+            editarServicio(servicio_id);
             listar();
         }, 500);
     }

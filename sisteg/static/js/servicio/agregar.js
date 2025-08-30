@@ -1,12 +1,13 @@
 import * as alerta from '../alertas/alertas.js';
 import { editarServicio } from './EditarServicio.js';
 
-export function agregar(form, producto_id, cantidad, costo, precio) {
+export function agregar(form, producto_id, cantidad, costo, precio, stock) {
     let formData = new FormData(form)
     formData.append('producto_id', producto_id);
     formData.append('cantidad', cantidad);
     formData.append('costo', costo);
     formData.append('precio', precio);
+    formData.append('stock', stock);
     formData.append('servicio_id', document.getElementById('actualizar_servicio').getAttribute('servicio_id'));
     fetch('/servicio/agregar-servicio/', {
         method: 'POST',
