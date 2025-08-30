@@ -5,7 +5,7 @@ import { listar } from './listar.js';
 import { validacion } from './validacion.js';
 import { listarProductos } from './listarProductos.js';
 import { eliminarServicio } from './eliminarServicio.js';
-import { confirmarServicio } from './confirmarServicio.js';
+import { finalizarServicio } from './finalizarServicio.js';
 import { listarDetalleServicio } from './listarDetalleServicio.js';
 import { editarServicio } from './EditarServicio.js';
 import { ticketPdf } from './ticketPdf.js';
@@ -111,7 +111,7 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
     }
 });
 
-// Evento para editar servicio
+// Evento para mostrar servicio a editar
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('editar_servicio_id'));
     if (servicio_id) {
@@ -152,3 +152,15 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
         ticketPdf(servicio_id);
     }
 }); 
+
+
+// Evento para finalizar la servicio
+document.getElementById('finalizar_servicio').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
+    let cliente_id = parseInt(document.getElementById('cliente_id').value);
+    let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
+
+    if (servicio_id) {
+        finalizarServicio({ servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id });
+    }
+})

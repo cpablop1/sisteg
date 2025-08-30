@@ -1,7 +1,8 @@
 import * as alerta from '../alertas/alertas.js';
 import { cambiar } from "./cambiar.js";
+import { listar } from './listar.js';
 
-export function confirmarServicio(data) {
+export function finalizarServicio(data) {
     fetch(`/servicio/confirmar-servicio/`, {
         method: 'POST',
         headers: {
@@ -12,6 +13,9 @@ export function confirmarServicio(data) {
         if (data.res) {
             alerta.success(data.msg);
             cambiar();
+            setTimeout(() => {
+                listar()
+            }, 500);
         } else {
             alerta.danger(data.msg);
         }

@@ -10,6 +10,7 @@ export function editarServicio(servicio_id) {
         let costo_servicio = document.getElementById('costo_servicio');
         let rol_usuario_id = document.getElementById('rol_usuario_id');
         let actualizar_servicio = document.getElementById('actualizar_servicio');
+        let finalizar_servicio = document.getElementById('finalizar_servicio');
         let subtotal = document.getElementById('subtotal');
         // Mostar datos
         setTimeout(() => {
@@ -21,6 +22,7 @@ export function editarServicio(servicio_id) {
             rol_usuario_id.value = data.rol_usuario_id;
             subtotal.innerHTML = `Q ${data.subtotal}`;
             actualizar_servicio.setAttribute('servicio_id', data.carrito_id);
+            finalizar_servicio.setAttribute('servicio_id', data.carrito_id);
             // Listamos los detalles del servicio
             let tabla = document.getElementById('tbl_listar_carrito');
             let fila = '';

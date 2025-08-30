@@ -598,6 +598,8 @@ def confirmar_servicio(request):
 
             # Actualización de stock con seguimiento
             for dc in detalles:
+                new_stock = 0
+                old_stock = 0
                 if dc.stock:
                     producto = dc.producto_id
                     old_stock = producto.stock
