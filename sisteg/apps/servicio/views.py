@@ -361,12 +361,6 @@ def agregar_servicio(request):
                         cantidad_nueva = cantidad
                     total = precio * cantidad_nueva
                     # Creamos los nevos valores del los costo y precio del servicio
-                    print('\n------------------------------')
-                    print(f'Costo servicio: {costo_servicio}')
-                    print(f'Costo detalle servicio: {costo}')
-                    print(f'Precio: {precio}')
-                    print(f'Cantidd: {cantidad}')
-                    print('------------------------------\n')
                     # Actualizamos detalle de venta
                     existe_detalle.update(
                         cantidad = cantidad_nueva,
@@ -392,10 +386,8 @@ def agregar_servicio(request):
                 # Creamos los nuevos valores para la venta
                 todos_detalle = DetalleServicio.objects.filter(servicio_id = existe_servicio[0].id)
                 subtotal = sum(dc.total for dc in todos_detalle)
-                print('\n---------------------')
-                print(f'Subtotal: {subtotal}')
-                print('---------------------\n')
                 subtotal += costo_servicio
+                subtotal += existe_servicio[0].costo_servicio
                 # Actualizamos la venta
                 existe_servicio.update(
                     subtotal = subtotal,
@@ -407,7 +399,7 @@ def agregar_servicio(request):
                 res = True
                 msg = 'Carrito actualizado.'
             else: # En caso contrario
-                servicio = Servicio.objects.create( # Creamos la servicio
+                servicio = Servicio.objects.create( # Creamos el servicio
                     subtotal = producto.precio,
                     cliente_id = Cliente.objects.get(id = cliente_id),
                     usuario_id = User.objects.get(id = request.user.id),
@@ -439,9 +431,6 @@ def agregar_servicio(request):
                 return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.'})
             # Actualizar subtotal
             detalle_servicio = ''
-            print('\n------------------')
-            print(costo_servicio)
-            print('------------------\n')
             subtotal = 0
             try:
                 detalle_servicio = DetalleServicio.objects.filter(servicio_id = servicio_id)
@@ -527,9 +516,11 @@ def listar_carrito(request):
                 )
             data['carrito_id'] = servicio[0].id
             data['subtotal'] = servicio[0].subtotal
-            data['ganancia'] = ganancia
+            data['ganancia'] = ganancia + servicio[0].costo_servicio
             data['tipo_pago_id'] = servicio[0].tipo_pago_id.id
             data['cliente_id'] = servicio[0].cliente_id.id
+            data['cliente'] = f'{servicio[0].cliente_id.nombres} {servicio[0].cliente_id.apellidos}'
+            data['contacto'] = servicio[0].cliente_id.telefono
             data['tipo_servicio_id'] = servicio[0].tipo_servicio_id.id
             data['observacion'] = servicio[0].observacion
             data['costo_servicio'] = servicio[0].costo_servicio

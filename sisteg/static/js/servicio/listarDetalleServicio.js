@@ -2,13 +2,8 @@ export function listarDetalleServicio(servicio_id) {
     fetch(`/servicio/listar-carrito/?servicio_id=${servicio_id}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_detalle_servicio');
         let fila = '';
-        if (data.data.length === 0) {
-            let form_agregar = document.getElementById('form_agregar');
-            form_agregar.reset();
-            document.getElementById('subtotal').innerHTML = `Q 0.0`;
-            document.getElementById('confirmar_servicio').removeAttribute('servicio_id');
-            document.getElementById('eliminar_servicio').removeAttribute('servicio_id');
-        } else {
+        console.log(data);
+        if (data.data.length !== 0) {
             Array.from(data.data, elemento => {
                 fila += `
                     <tr>
@@ -21,9 +16,13 @@ export function listarDetalleServicio(servicio_id) {
                         <td>${elemento.total}</td>
                     </tr>`;
             });
-            document.getElementById('subtotal_detalle_servicio').innerHTML = `Subtotal Q ${data.subtotal}`;
-            document.getElementById('ganancia_detalle_servicio').innerHTML = `Ganancia Q ${data.ganancia}`;
         }
+        document.getElementById('subtotal_detalle_servicio').innerHTML = `Subtotal Q ${data.subtotal}`;
+        document.getElementById('ganancia_detalle_servicio').innerHTML = `Ganancia Q ${data.ganancia}`;
+        document.getElementById('descripcion').innerHTML = `<b>Descripción:</b> ${data.observacion}`;
+        document.getElementById('cliente').innerHTML = `<b>Cliente:</b> ${data.cliente}`;
+        document.getElementById('contacto').innerHTML = `<b>Contacto:</b> ${data.contacto}`;
+        document.getElementById('mano_obra').innerHTML = `<b>Mano de obra:</b> Q ${data.costo_servicio}`;
         tabla.childNodes[3].innerHTML = fila;
     });
 }
