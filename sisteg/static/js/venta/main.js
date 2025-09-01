@@ -182,3 +182,11 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
         ticketPdf(servicio_id);
     }
 }); 
+
+// Evento para mostra modal de garantía
+document.getElementById('tbl_detalle_servicio').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
+    if (servicio_id){
+        new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
+    }
+});
