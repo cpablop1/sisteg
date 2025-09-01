@@ -2,7 +2,6 @@ export function listarDetalleServicio(servicio_id) {
     fetch(`/servicio/listar-carrito/?servicio_id=${servicio_id}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_detalle_servicio');
         let fila = '';
-        console.log(data);
         if (data.data.length !== 0) {
             Array.from(data.data, elemento => {
                 fila += `
