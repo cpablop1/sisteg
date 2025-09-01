@@ -13,6 +13,7 @@ export function listarDetalleServicio(servicio_id) {
                         <td>${elemento.costo}</td>
                         <td>${elemento.ganancia}</td>
                         <td>${elemento.total}</td>
+                        <td><i class="fa-solid fa-square-plus btn btn-warning"></i></td>
                     </tr>`;
             });
         }
