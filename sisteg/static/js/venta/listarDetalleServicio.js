@@ -6,14 +6,14 @@ export function listarDetalleServicio(servicio_id) {
             Array.from(data.data, elemento => {
                 fila += `
                     <tr>
-                        <td>${elemento.cantidad}</td>
+                        <td class="text-center">${elemento.cantidad}</td>
                         <td>${elemento.producto}</td>
                         <td>${elemento.marca}</td>
-                        <td>${elemento.precio}</td>
-                        <td>${elemento.costo}</td>
-                        <td>${elemento.ganancia}</td>
-                        <td>${elemento.total}</td>
-                        <td><i class="fa-solid fa-square-plus btn btn-warning"></i></td>
+                        <td class="text-center">${elemento.precio}</td>
+                        <td class="text-center">${elemento.costo}</td>
+                        <td class="text-center">${elemento.ganancia}</td>
+                        <td class="text-center">${elemento.total}</td>
+                        <td class="text-center"><i class="fa-solid fa-square-plus btn btn-warning"></i></td>
                     </tr>`;
             });
         }
