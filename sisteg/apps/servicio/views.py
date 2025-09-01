@@ -289,9 +289,6 @@ def agregar_servicio(request):
             cantidad = 1
         if cantidad <= 0: # Caso de que cantidad sea 0 o menor que cero, le asignamos 1
             cantidad = 1
-        print('\n----------------------')
-        print(f'Costo servicio: {costo_servicio}')
-        print('----------------------\n')
         # Validación de la costo del servicio que siempre sea una decimal o un entero positivo
         if costo_servicio.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 0
             costo_servicio = 0
@@ -367,7 +364,7 @@ def agregar_servicio(request):
                         costo = costo,
                         precio = precio,
                         total = total,
-                        ganancia = producto.precio - producto.costo,
+                        ganancia = precio - costo,
                         stock = stock
                     )
                 else: # En caso contrario agregar el producto al carrito (venta)
@@ -589,18 +586,16 @@ def confirmar_servicio(request):
 
             # Actualización de stock con seguimiento
             for dc in detalles:
-                new_stock = 0
-                old_stock = 0
                 if dc.stock:
                     producto = dc.producto_id
                     old_stock = producto.stock
                     new_stock = old_stock - dc.cantidad
                 
-                # Actualización directa
-                Producto.objects.filter(id=producto.id).update(stock=new_stock)
-                
-                logger.info(f"Stock actualizado: Producto {producto.id} "
-                            f"de {old_stock} a {new_stock}")
+                    # Actualización directa
+                    Producto.objects.filter(id=producto.id).update(stock=new_stock)
+                    
+                    logger.info(f"Stock actualizado: Producto {producto.id} "
+                                f"de {old_stock} a {new_stock}")
             
             # Asignación correcta
             servicio.estado = True

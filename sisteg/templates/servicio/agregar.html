@@ -1,24 +1,26 @@
 <form class="border rounded shadow-lg p-5 mt-5" id="form_agregar" hidden>
     {% csrf_token %}
     <div class="row">
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3 text-center">
             <label for="cliente_id" class="form-label">Cliente:</label>
             <select name="cliente_id" id="cliente_id" class="form-select"></select>
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3 text-center">
             <label for="tipo_pago_id" class="form-label">Tipo de pago:</label>
             <select name="tipo_pago_id" id="tipo_pago_id" class="form-select"></select>
         </div>
-        <div class="col-12 col-md-3">
+        <div class="col-12 col-md-3 text-center">
             <label for="tipo_servicio_id" class="form-label">Tipo de servicio:</label>
             <select name="tipo_servicio_id" id="tipo_servicio_id" class="form-select"></select>
         </div>
         <div class="col-12 col-md-3">
-            <label for="btn-buscar-productos" class="form-label">Agregar productos:</label>
-            <span class="btn btn-light" id="btn-buscar-productos">
-                <i class="fa-solid fa-magnifying-glass p-1"></i>
-                Buscar
-            </span>
+            <div class="d-flex flex-column text-center">
+                <label for="btn-buscar-productos" class="form-label">Agregar productos:</label>
+                <span class="btn btn-light" id="btn-buscar-productos">
+                    <i class="fa-solid fa-magnifying-glass p-1"></i>
+                    Buscar
+                </span>
+            </div>
         </div>
     </div>
     <div class="row my-2">
