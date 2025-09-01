@@ -12,19 +12,20 @@ export function listarCarrito(servicio_id) {
             Array.from(data.data, elemento => {
                 fila += `
                     <tr>
-                        <th scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.producto_id}"></th>
+                        <th scope="row"><input type="number" class="form-control text-center" value="${elemento.cantidad}" producto_id="${elemento.producto_id}"></th>
                         <td>${elemento.producto}</td>
-                        <td>${elemento.precio}</td>
-                        <td>${elemento.total}</td>
-                        <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}"></i></td>
+                        <td class="text-center">${elemento.precio}</td>
+                        <td class="text-center">${elemento.total}</td>
+                        <td class="text-center"><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}"></i></td>
                     </tr>`;
             });
-
+            console.log(data);
             document.getElementById('subtotal').innerHTML = `Q ${data.subtotal}`;
             document.getElementById('cliente_id').value = data.cliente_id;
             document.getElementById('tipo_pago_id').value = data.tipo_pago_id;
             document.getElementById('eliminar_servicio').setAttribute('servicio_id', data.carrito_id);
             document.getElementById('confirmar_servicio').setAttribute('servicio_id', data.carrito_id);
+            document.getElementById('telefono').innerHTML = `<b>Contacto:</b> ${data.contacto}`;
         }
         tabla.childNodes[3].innerHTML = fila;
     });

@@ -17,10 +17,7 @@ export function iniciar(form) {
             return res.json();
         }).then(data => {
             if (data.res) {
-                alerta.success(data.msg);
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 500);
+                window.location.href = '/';
             } else {
                 alerta.danger(data.msg);
             }

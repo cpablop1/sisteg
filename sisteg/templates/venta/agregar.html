@@ -1,44 +1,50 @@
 <form class="border rounded shadow-lg p-5 mt-5" id="form_agregar" hidden>
     {% csrf_token %}
     <div class="row">
-        <div class="col-12 col-md-3">
-            <select name="cliente_id" id="cliente_id" class="form-select">
-                <option value="">Seleccione el cliente</option>
-                <option value="0">Consumidor final</option>
-            </select>
+        <div class="col-12 col-md-3 text-center">
+            <label for="cliente_id" class="form-label">Cliente:</label>
+            <select name="cliente_id" id="cliente_id" class="form-select"></select>
+        </div>
+        <div class="col-12 col-md-3 text-center">
+            <label for="tipo_pago_id" class="form-label">Tipo de pago:</label>
+            <select name="tipo_pago_id" id="tipo_pago_id" class="form-select"></select>
+        </div>
+        <div class="col-12 col-md-3 text-center">
+            <label for="tipo_servicio_id" class="form-label">Tipo de servicio:</label>
+            <select name="tipo_servicio_id" id="tipo_servicio_id" class="form-select"></select>
         </div>
         <div class="col-12 col-md-3">
-            <select name="tipo_pago_id" id="tipo_pago_id" class="form-select">
-                <option value="">Seleccione tipo de pago</option>
-                <option value="1">Efectivo</option>
-            </select>
-        </div>
-        <div class="col-12 col-md-3">
-            <select name="tipo_servicio_id" id="tipo_servicio_id" class="form-select">
-                <option value="">Seleccione servicio</option>
-                <option value="1">Venta</option>
-            </select>
-        </div>
-        <div class="col-12 col-md-3">
-            <span class="btn btn-light" id="btn-buscar-productos">
-                <i class="fa-solid fa-magnifying-glass p-1"></i>
-                Buscar
-            </span>
+            <div class="d-flex flex-column text-center">
+                <label for="btn-buscar-productos" class="form-label">Agregar productos:</label>
+                <span class="btn btn-light" id="btn-buscar-productos">
+                    <i class="fa-solid fa-magnifying-glass p-1"></i>
+                    Buscar
+                </span>
+            </div>
         </div>
     </div>
     <div class="row my-2">
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-12">
+            <p id="telefono"></p>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="col-12 col-md-12">
+            <label for="observacion" class="form-label">Espacio para agregar observaciones del servicio:</label>
             <textarea class="form-control" rows="3" name="observacion" id="observacion"
                 placeholder="Espacio para observaciones o detalles (Opcional)"></textarea>
         </div>
-        <div class="col-12 col-md-4">
-            <select name="rol_usuario_id" id="rol_usuario_id" class="form-select">
-                <option value="">Seleccione el técnico</option>
-                <option value="1">Técnico</option>
-            </select>
+    </div>
+    <div class="row my-2">
+        <div class="col-12 col-md-6">
+            <label for="rol_usuario_id" class="form-label">Seleccione técnico:</label>
+            <select name="rol_usuario_id" id="rol_usuario_id" class="form-select"></select>
         </div>
-        <div class="col-12 col-md-4 d-flex justify-content-end align-items-center">
-            <h4 class="bg-light p-2" id="subtotal">Q. 00</h3>
+        <div class="col-12 col-md-6 d-flex justify-content-end align-items-center">
+            <div>
+                <label for="subtotal" class="form-label text-center">Subtotal del servicio:</label>
+                <h4 class="bg-light p-2 text-center" id="subtotal">Q. 00</h3>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -46,32 +52,15 @@
             <div class="table-responsive">
                 <table class="table" id="tbl_listar_carrito">
                     <thead>
-                        <tr>
+                        <tr class="text-center">
                             <th scope="col">Cantidad</th>
                             <th scope="col">Producto</th>
                             <th scope="col">Precio</th>
                             <th scope="col">Total</th>
+                            <th scope="col">Eliminar</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row">1</th>
-                            <td>Mark</td>
-                            <td>Otto</td>
-                            <td>@mdo</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">2</th>
-                            <td>Jacob</td>
-                            <td>Thornton</td>
-                            <td>@fat</td>
-                        </tr>
-                        <tr>
-                            <th scope="row">3</th>
-                            <td colspan="2">Larry the Bird</td>
-                            <td>@twitter</td>
-                        </tr>
-                    </tbody>
+                    <tbody></tbody>
                 </table>
             </div>
         </div>

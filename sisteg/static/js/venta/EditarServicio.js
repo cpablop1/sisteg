@@ -9,22 +9,16 @@ export function editarServicio(servicio_id) {
         document.getElementById('crear_servicio').hidden = true;
         document.getElementById('eliminar_servicio').hidden = true;
         document.getElementById('actualizar_servicio').hidden = false;
-        // Obtener inputs para rellenar
-        let cliente_id = document.getElementById('cliente_id');
-        let tipo_pago_id = document.getElementById('tipo_pago_id');
-        let tipo_servicio_id = document.getElementById('tipo_servicio_id');
-        let observacion = document.getElementById('observacion');
-        let rol_usuario_id = document.getElementById('rol_usuario_id');
-        let actualizar_servicio = document.getElementById('actualizar_servicio');
-        let subtotal = document.getElementById('subtotal');
         // Mostar datos
         setTimeout(() => {
-            cliente_id.value = data.cliente_id;
-            tipo_pago_id.value = data.tipo_pago_id;
-            tipo_servicio_id.value = data.tipo_servicio_id;
-            observacion.value = data.observacion;
-            rol_usuario_id.value = data.rol_usuario_id;
-            actualizar_servicio.setAttribute('servicio_id', data.carrito_id);
+            document.getElementById('cliente_id').value = data.cliente_id;
+            document.getElementById('tipo_pago_id').value = data.tipo_pago_id;
+            document.getElementById('tipo_servicio_id').value = data.tipo_servicio_id;
+            document.getElementById('observacion').value = data.observacion;
+            document.getElementById('rol_usuario_id').value = data.rol_usuario_id;
+            document.getElementById('actualizar_servicio').setAttribute('servicio_id', data.carrito_id);
+            document.getElementById('subtotal').innerHTML = `Q ${data.subtotal}`;
+            document.getElementById('telefono').innerHTML = `<b>Contacto:</b> ${data.contacto}`;
         }, 500);
     });
 }
