@@ -6,12 +6,30 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- <div>
-                    <p id="cliente"></p>
-                    <p id="contacto"></p>
-                    <p id="mano_obra"></p>
-                    <p id="descripcion"></p>
-                </div> -->
+                <form id="form_garantia">
+                    <div class="mb-3">
+                        <label for="observacion" class="form-label">Obersevaciones sobre la garantía:</label>
+                        <textarea name="observacion" id="observacion" class="form-control" rows="5"></textarea>
+                    </div>
+                    <div class="mb-3" hidden>
+                        <label for="servicio_id" class="form-label">Id servicio:</label>
+                        <input type="text" name="servicio_id" id="servicio_id" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-12 col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="es_perdida" id="es_perdida">
+                                    <label class="form-check-label" for="es_perdida">Marque si fue una pérdida</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label for="detalle_servicio_id" class="form-label">Seleccione los productos:</label>
+                                <select name="detalle_servicio_id" id="detalle_servicio_id" class="form-control"></select>
+                            </div>
+                        </div>
+                    </div>
+                </form>
                 <div class="table-responsive">
                     <table class="table" id="tbl_garantia">
                         <thead>
@@ -29,6 +47,8 @@
                 </div>
             </div>
             <div class="modal-footer justify-content-end me-md-3">
+                <button id="actualizar_servicio" class="btn btn-warning"><i class="fa-solid fa-arrow-rotate-left"></i> Actualizar</button>
+                <button id="crear_servicio" class="btn btn-primary"><i class="fa-solid fa-square-plus"></i> Crear</button>
                 <h4 class="bg-light p-2" id="subtotal_garantia">Q 0.0</h4>
             </div>
         </div>

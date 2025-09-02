@@ -63,7 +63,7 @@ document.getElementById('tbl_listar_productos').addEventListener('click', e => {
 document.getElementById('buscar').addEventListener('input', e => {
     let buscar = e.target.value.trim();
     if (buscar.length > 0) {
-        listar({'tipo_servicio': 'venta', 'pagina': 1, 'buscar': buscar });
+        listar({ 'tipo_servicio': 'venta', 'pagina': 1, 'buscar': buscar });
     } else {
         listar();
     }
@@ -134,11 +134,11 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 document.getElementById('crear_servicio').addEventListener('click', e => {
     let form = document.getElementById('form_agregar');
 
-        if (validacion(form)) {
-            agregar(form);
-        } else {
-            alerta.warning('Complete el formulario para continuar.');
-        }
+    if (validacion(form)) {
+        agregar(form);
+    } else {
+        alerta.warning('Complete el formulario para continuar.');
+    }
 });
 
 // Evento para editar servicio
@@ -173,7 +173,7 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
             listar();
         }, 500);
     }
-}); 
+});
 
 // Evento para imprimir ticket
 document.getElementById('tbl_listar').addEventListener('click', e => {
@@ -181,12 +181,9 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
     if (servicio_id) {
         ticketPdf(servicio_id);
     }
-}); 
+});
 
 // Evento para mostra modal de garantía
-document.getElementById('tbl_detalle_servicio').addEventListener('click', e => {
-    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
-    if (servicio_id){
-        new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
-    }
+document.getElementById('garantia_servicio').addEventListener('click', e => {
+    new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
 });

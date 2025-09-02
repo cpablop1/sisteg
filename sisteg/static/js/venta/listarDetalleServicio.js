@@ -14,7 +14,6 @@ export function listarDetalleServicio(servicio_id) {
                         <td class="text-center">${elemento.costo}</td>
                         <td class="text-center">${elemento.ganancia}</td>
                         <td class="text-center">${elemento.total}</td>
-                        <td class="text-center"><i class="fa-solid fa-square-plus btn btn-warning btn-sm" servicio_id="${data.carrito_id}"></i></td>
                     </tr>`;
             });
         }

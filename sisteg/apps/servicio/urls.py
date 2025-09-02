@@ -14,4 +14,5 @@ urlpatterns = [
     path('listar-servicios/', views.listar_servicios, name='listar_servicios'),
     path('listar-tipo-servicios/', views.listar_tipo_servicio, name='listar_tipo_servicios'),
     path('ticket-pdf/', views.ticket_pdf, name='ticket_pdf'),
+    path('garantia-servicio/', views.garantia_servicio, name='garantia_servicio'),
 ]

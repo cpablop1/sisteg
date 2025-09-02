@@ -8,7 +8,7 @@ from django.core.paginator import Paginator
 import json
 from django.db import transaction, connection
 
-from .models import Cliente, Servicio, DetalleServicio, TipoServicio, ServicioUsuario
+from .models import Cliente, Servicio, DetalleServicio, TipoServicio, ServicioUsuario, Garantia, DetalleGarantia
 from apps.producto.models import Producto
 from apps.inicio.models import TipoPago
 
@@ -969,3 +969,99 @@ def ticket_pdf(request):
     response = HttpResponse(buffer, content_type='application/pdf')
     response['Content-Disposition'] = 'inline; filename="ticket.pdf"'
     return response
+
+# Endpoint para crear garantía para el servicio
+def garantia_servicio(request):
+    if request.method == 'POST':
+        # Guardamos los datos que viene por post
+        observacion = request.POST.get('observacion', '').strip()
+        es_perdida = request.POST.get('es_perdida', '').strip()
+        servicio_id = request.POST.get('servicio_id', '').strip()
+        cantidad = request.POST.get('cantidad', '').strip()
+        detalle_servicio_id = request.POST.get('detalle_servicio_id', '').strip()
+        garantia_id = request.POST.get('garantia_id', '').strip()
+        detalle_garantia_id = request.POST.get('detalle_garantia_id', '').strip()
+
+        # Validadmos es_perdida
+        if not es_perdida:
+            es_perdida = False
+        try:
+            es_perdida = int(es_perdida)
+        except:
+            es_perdida = False
+        # Validamos servicio_id
+        if not servicio_id:
+            return JsonResponse({'res': False, 'msg': 'Id servicio incorrecto.'})
+        try:
+            servicio_id = int(servicio_id)
+        except:
+            return JsonResponse({'res': False, 'msg': 'Id servicio incorrecto.'})
+        # Validamos cantidad
+        if not cantidad:
+            cantidad = 1
+        try:
+            cantidad = int(cantidad)
+        except:
+            cantidad = 1
+        if cantidad < 0:
+            cantidad = 1
+        # Validamos detalle_servicio_id
+        if not detalle_servicio_id:
+            producto_id = None
+        try:
+            detalle_servicio_id = int(producto_id)
+        except:
+            detalle_servicio_id = None
+        # Validamos garantia_id
+        if not garantia_id:
+            garantia_id = None
+        try:
+            garantia_id = int(garantia_id)
+        except:
+            garantia_id = None
+        # Validamos detalle_garantia_id
+        if not detalle_garantia_id:
+            detalle_garantia_id = None
+        try:
+            detalle_garantia_id = int(detalle_garantia_id)
+        except:
+            detalle_garantia_id = None
+        
+        
+        # Accedemos al servicio
+        try:
+            servicio = Servicio.objects.get(id = servicio_id)
+        except:
+            return JsonResponse({'res': False, 'msg': 'Código de servicio inválido.'})
+        # Accedemos al detalle del servicio
+        try:
+            detalle_servicio = DetalleServicio.objects.get(id = detalle_servicio_id)
+        except:
+            detalle_servicio_id = None
+        # Crear o editar garantía
+        subtotal = 0
+
+        garantia = Garantia.objects.update_or_create(
+            id = garantia_id,
+            defaults = {
+                'subtotal': subtotal,
+                'observacion': observacion,
+                'perdida': es_perdida,
+                'servicio_id': servicio,
+                'usuario_id': User.objects.get(id = request.user.id)
+            }
+        )
+        if detalle_servicio_id != None:
+            DetalleGarantia.objects.update_or_create(
+                id = detalle_garantia_id,
+                defaults = {
+                    'precio': detalle_servicio.precio,
+                    'costo': detalle_servicio.costo,
+                    'cantidad': cantidad,
+                    'total': cantidad * detalle_servicio.precio,
+                    'producto_id': detalle_servicio.producto_id,
+                    'garantia_id': garantia
+                }
+            )
+
+        return JsonResponse({'res': True, 'mgs': 'Creando garantía...'})
