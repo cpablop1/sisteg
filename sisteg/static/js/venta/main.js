@@ -9,6 +9,8 @@ import { confirmarServicio } from './confirmarServicio.js';
 import { listarDetalleServicio } from './listarDetalleServicio.js';
 import { editarServicio } from './EditarServicio.js';
 import { ticketPdf } from './ticketPdf.js';
+import { garantiaServicio } from './garantiaServicio.js';
+import { verGarantia } from './verGarantia.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -185,5 +187,19 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 
 // Evento para mostra modal de garantía
 document.getElementById('garantia_servicio').addEventListener('click', e => {
-    new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'))
+    let garantia_id = parseInt(e.target.getAttribute('garantia_id'))
+    document.getElementById('form_garantia').reset();
+    if (servicio_id) {
+        new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
+        if (garantia_id) {
+            setTimeout(() => verGarantia(garantia_id), 500);
+        }
+    }
+});
+
+
+// Evento para agregar garantía
+document.getElementById('crear_garantia').addEventListener('click', e => {
+    garantiaServicio();
 });

@@ -1,9 +1,8 @@
 import * as alerta from '../alertas/alertas.js';
 
-export function garantiaServicio(datos) {
+export function garantiaServicio() {
+    let form = document.getElementById('form_garantia');
     let formData = new FormData(form)
-    formData.append('producto_id', '');
-    formData.append('cantidad', '');
     fetch('/servicio/garantia-servicio/', {
         method: 'POST',
         headers: {

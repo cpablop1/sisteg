@@ -522,6 +522,11 @@ def listar_carrito(request):
             data['observacion'] = servicio[0].observacion
             data['costo_servicio'] = servicio[0].costo_servicio
             data['rol_usuario_id'] = ServicioUsuario.objects.filter(servicio_id = servicio[0].id)[0].usuario_id.id
+            try:
+                data['garantia_id'] = Garantia.objects.get(servicio_id = servicio[0].id).id
+            except:
+                data['garantia_id'] = False
+                
             # Preparamos mensajes de respuesta
             res = True
             msg = 'Elementos del carrito.'
@@ -981,6 +986,15 @@ def garantia_servicio(request):
         detalle_servicio_id = request.POST.get('detalle_servicio_id', '').strip()
         garantia_id = request.POST.get('garantia_id', '').strip()
         detalle_garantia_id = request.POST.get('detalle_garantia_id', '').strip()
+        print('\n--------------------------')
+        print(f'observacion: {observacion}')
+        print(f'es_perdida: {es_perdida}')
+        print(f'servicio_id: {servicio_id}')
+        print(f'cantidad: {cantidad}')
+        print(f'garantia_id: {garantia_id}')
+        print(f'detalle_servicio_id: {detalle_servicio_id}')
+        print(f'detalle_garantia_id: {detalle_garantia_id}')
+        print('--------------------------\n')
 
         # Validadmos es_perdida
         if not es_perdida:
@@ -1027,7 +1041,6 @@ def garantia_servicio(request):
         except:
             detalle_garantia_id = None
         
-        
         # Accedemos al servicio
         try:
             servicio = Servicio.objects.get(id = servicio_id)
@@ -1065,3 +1078,54 @@ def garantia_servicio(request):
             )
 
         return JsonResponse({'res': True, 'mgs': 'Creando garantía...'})
+    
+# Endponint para ver garantía
+def listar_garantia(request):
+    # Obtenemos los datos por GET
+    garantia_id = request.GET.get('garantia_id', '').strip()
+    # Validar garantia_id
+    if not garantia_id:
+        return JsonResponse({'res': False, 'msg': 'Id de garantía inválida.'})
+    try:
+        garantia_id = int(garantia_id)
+    except:
+        return JsonResponse({'res': False, 'msg': 'Id de garantía inválida.'})
+    # Accedemos al registro Garantia
+    try:
+        garantia = Garantia.objects.get(id = garantia_id)
+    except:
+        return JsonResponse({'res': False, 'msg': 'Error al acceder a la garantía'})
+    # Accdemos a los detalles de la garantía
+    try:
+        detalle_garantia = DetalleGarantia.objects.filter(garantia_id = garantia.id)
+    except:
+        detalle_garantia = []
+    # Preparamos los datos de respuesta
+    data = {}
+    data['dg'] = []
+    try:
+        for dg in detalle_garantia:
+            data['dg'].append(
+                {
+                    'precio': dg.precio,
+                    'costo': dg.costo,
+                    'cantidad': dg.cantidad,
+                    'total': dg.total,
+                    'producto_id': dg.producto_id.id,
+                    'producto': dg.producto_id.descripcion
+                }
+            )
+        data['garantia_id'] = garantia.id
+        data['subtotal'] = garantia.subtotal
+        data['observacion'] = garantia.observacion
+        data['perdida'] = garantia.perdida
+        data['fecha_ingreso'] = garantia.fecha_ingreso
+        data['servicio_id'] = garantia.servicio_id.id
+        data['usuario'] = garantia.usuario_id.username
+        data['res'] = True
+        data['msg'] = 'Garantía obtenida.'
+    except:
+        data['res'] = False
+        data['msg'] = 'Hubo al prepara la garantía'
+
+    return JsonResponse(data)
