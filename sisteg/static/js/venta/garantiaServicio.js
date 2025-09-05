@@ -1,4 +1,5 @@
 import * as alerta from '../alertas/alertas.js';
+import { verGarantia } from './verGarantia.js';
 
 export function garantiaServicio() {
     let form = document.getElementById('form_garantia');
@@ -14,6 +15,10 @@ export function garantiaServicio() {
     }).then(data => {
         if (data.res) {
             alerta.success(data.msg);
+            console.log(data);
+            setTimeout(() => {
+                verGarantia(data.garantia_id);
+            }, 500);
         } else {
             alerta.danger(data.msg);
         }
