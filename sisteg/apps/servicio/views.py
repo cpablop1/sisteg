@@ -986,12 +986,11 @@ def garantia_servicio(request):
         detalle_servicio_id = request.POST.get('detalle_servicio_id', '').strip()
         garantia_id = request.POST.get('garantia_id', '').strip()
         detalle_garantia_id = request.POST.get('detalle_garantia_id', '').strip()
+        
         # Validadmos es_perdida
-        if not es_perdida:
-            es_perdida = False
-        try:
-            es_perdida = int(es_perdida)
-        except:
+        if es_perdida == 'on':
+            es_perdida = True
+        else:
             es_perdida = False
         # Validamos servicio_id
         if not servicio_id:
@@ -1032,6 +1031,16 @@ def garantia_servicio(request):
             print('\nERROR con detalle_garantia_id')
             print(error)
             detalle_garantia_id = None
+
+        print('\n--------------------------')
+        print(f'observacion: {observacion}')
+        print(f'es_perdida: {es_perdida}')
+        print(f'servicio_id: {servicio_id}')
+        print(f'cantidad: {cantidad}')
+        print(f'garantia_id: {garantia_id}')
+        print(f'detalle_servicio_id: {detalle_servicio_id}')
+        print(f'detalle_garantia_id: {detalle_garantia_id}')
+        print('--------------------------\n')
         
         # Accedemos al servicio
         try:
@@ -1044,15 +1053,6 @@ def garantia_servicio(request):
             detalle_servicio = DetalleServicio.objects.get(id = detalle_servicio_id)
         except Exception as error:
             detalle_servicio = None
-        print('\n--------------------------')
-        print(f'observacion: {observacion}')
-        print(f'es_perdida: {es_perdida}')
-        print(f'servicio_id: {servicio_id}')
-        print(f'cantidad: {cantidad}')
-        print(f'garantia_id: {garantia_id}')
-        print(f'detalle_servicio_id: {detalle_servicio_id}')
-        print(f'detalle_garantia_id: {detalle_garantia_id}')
-        print('--------------------------\n')
         # Variables de respuestas
         msg = 'Error al crear Garantía.'
         res = False
@@ -1085,6 +1085,10 @@ def garantia_servicio(request):
                 detalle_garantia_id = detalle_garantia[0].id
             except Exception as error:
                 detalle_garantia_id = None
+            # Verificar que la cantidad no sea mayor
+            # a la cantidad que se encuentra en el detalle del serivicio
+            if cantidad > detalle_servicio.cantidad:
+                return JsonResponse({'res': False, 'msg': f'Sólo puedes aplicar garantía a {detalle_servicio.cantidad} productos.'})
 
             try:
                 DetalleGarantia.objects.update_or_create(
@@ -1101,6 +1105,13 @@ def garantia_servicio(request):
                 res = True
             except:
                 JsonResponse({'res': False, 'msg': 'Hubo un error al agregar detalle de garantía'})
+        # Actualizamos el subtotal de la garantía
+        subtotal = sum(dg.total for dg in DetalleGarantia.objects.filter(garantia_id = garantia[0].id))
+        print('\n-------------------------------')
+        print(f'Subtotal: {subtotal}')
+        print('-------------------------------\n')
+        garantia[0].subtotal = subtotal
+        garantia[0].save()
 
         return JsonResponse({'res': res, 'msg': msg, 'garantia_id': garantia[0].id})
     
@@ -1147,6 +1158,8 @@ def listar_garantia(request):
         for dg in detalle_garantia:
             data['dg'].append(
                 {
+                    'garantia_id': dg.garantia_id.id,
+                    'detalle_garantia_id': dg.id,
                     'precio': dg.precio,
                     'costo': dg.costo,
                     'cantidad': dg.cantidad,
@@ -1170,3 +1183,52 @@ def listar_garantia(request):
         data['msg'] = 'Hubo al prepara la garantía'
 
     return JsonResponse(data)
+
+# Endpoint para eliminar garantía
+def eliminar_garantia(request):
+    if request.method == 'POST':
+        # Obtener los datos por POST
+        detalle_garantia_id = request.POST.get('detalle_garantia_id', '').strip()
+        garantia_id = request.POST.get('garantia_id', '').strip()
+
+        # Validar detalle_garantia_id
+        if not detalle_garantia_id:
+            detalle_garantia_id = None
+        try:
+            detalle_garantia_id = int(detalle_garantia_id)
+        except:
+            detalle_garantia_id = None
+
+        # Validar garantia_id
+        if not garantia_id:
+            garantia_id = None
+        try:
+            garantia_id = int(garantia_id)
+        except:
+            garantia_id = None
+        
+        # Eliminar detalle de garantía
+        if detalle_garantia_id:
+            try:
+                # Obtemos el detalle de la garantía
+                detalle_garantia = DetalleGarantia.objects.get(id = detalle_garantia_id)
+                # Obtenemos la garantía
+                garantia = detalle_garantia.garantia_id
+                # Eliminamos el detalle de garantía
+                detalle_garantia.delete()
+                # Actualizamos el subtotal de la garantía
+                subtotal = sum(dg.total for dg in DetalleGarantia.objects.filter(garantia_id = garantia.id))
+                garantia.subtotal = subtotal
+                garantia.save()
+                return JsonResponse({'res': True, 'msg': 'Registro eliminado correctamente.'})
+            except:
+                return JsonResponse({'res': False, 'msg': 'Error al eliminar registro.'})
+            
+        # Eliminar garantía completa
+        if garantia_id:
+            try:
+                Garantia.objects.get(id = garantia_id).delete()
+                return JsonResponse({'res': True, 'msg': 'Registro eliminado correctamente.'})
+            except:
+                return JsonResponse({'res': False, 'msg': 'Error al eliminar registro.'})
+        return JsonResponse({'res': False, 'msg': 'Método no permitido.'})

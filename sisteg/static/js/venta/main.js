@@ -11,6 +11,7 @@ import { editarServicio } from './EditarServicio.js';
 import { ticketPdf } from './ticketPdf.js';
 import { garantiaServicio } from './garantiaServicio.js';
 import { verGarantia } from './verGarantia.js';
+import { eliminarGarantia } from './eliminarGarantia.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -194,6 +195,11 @@ document.getElementById('garantia_servicio').addEventListener('click', e => {
         new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
         if (garantia_id) {
             setTimeout(() => verGarantia(garantia_id), 500);
+        } else {
+            let crear_garantia = document.getElementById('crear_garantia');
+            crear_garantia.innerHTML = '<i class="fa-solid fa-square-plus"></i> Crear';
+            crear_garantia.classList.remove('btn-warning');
+            crear_garantia.classList.add('btn-primary');
         }
     }
 });
@@ -202,4 +208,15 @@ document.getElementById('garantia_servicio').addEventListener('click', e => {
 // Evento para agregar garantía
 document.getElementById('crear_garantia').addEventListener('click', e => {
     garantiaServicio();
+});
+
+// Evento para eliminar un detalle de garantía
+document.getElementById('tbl_garantia').addEventListener('click', e => {
+    let detalle_garantia_id = parseInt(e.target.getAttribute('detalle_garantia_id'));
+    let garantia_id = parseInt(e.target.getAttribute('garantia_id'));
+    console.log(garantia_id);
+    if (detalle_garantia_id){
+        eliminarGarantia({detalle_garantia_id: detalle_garantia_id});
+        setTimeout(() => verGarantia(garantia_id), 500);
+    }
 });

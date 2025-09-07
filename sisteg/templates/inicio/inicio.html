@@ -1,5 +1,78 @@
 {% extends 'layout/layout.html' %}
 
+{% load static %}
+
 {% block contenido %}
-    <h1>Principal</h1>
+<div class="row" id="estadistica">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Compras</div>
+            <div class="card-body">
+                <h5 class="card-title">Q 0.0 en compras</h5>
+                <p class="card-text">1500 compras realizadas</p>
+                <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Ventas</div>
+            <div class="card-body">
+                <h5 class="card-title">Q 0.0 en ventas</h5>
+                <p class="card-text">3000 ventas realizadas</p>
+                <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Mantenimiento preventivo</div>
+            <div class="card-body">
+                <h5 class="card-title">Q 0.0 en mantenimiento preventivo</h5>
+                <p class="card-text">3000 realizadas</p>
+                <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Ganancias</div>
+            <div class="card-body">
+                <h5 class="card-title">Q 0.0 en ganancias</h5>
+                <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
+                <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Garantías pérdidas</div>
+            <div class="card-body">
+                <h5 class="card-title">Q 0.0 en pérdidas</h5>
+                <!-- <p class="card-text">With supporting text below as a natural lead-in to additional content.</p> -->
+                <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-header">Productos en stock</div>
+            <div class="card-body">
+                <h5 class="card-title">Q 0.0 en inversión</h5>
+                <p class="card-text">1500 productos en stock</p>
+                <!-- <a href="#" class="btn btn-primary">Go somewhere</a> -->
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row my-5 d-flex justify-content-center align-items-center">
+    <div class="chart-container" style="height:50rem; width:50rem">
+        <canvas id="grafica"></canvas>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/inicio/main.js' %}" type="module"></script>
 {% endblock %}

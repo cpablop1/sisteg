@@ -8,6 +8,9 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 
 from .models import TipoPago
+from apps.compra.models import Compra
+from apps.servicio.models import Servicio, Garantia, TipoServicio
+from apps.producto.models import Producto
 
 @login_required(login_url='autenticacion')
 def vista_inicio(request):
@@ -58,9 +61,6 @@ def listar_tipo_pago(request):
             )
         # Preparamos la visualización de las páginas
         if paginador.num_pages > 5:
-            print('\n-----------------')
-            print(paginador.num_pages)
-            print('-----------------\n')
             start = int(pagina)
             end = int(pagina) + 5
             if end > paginador.num_pages:
@@ -85,4 +85,46 @@ def listar_tipo_pago(request):
     data['res'] = res
     data['msg'] = msg
     # Retornamos los datos
+    return JsonResponse(data)
+
+def estadistica(request):
+    compra = ''
+    servicio = ''
+    producto  = ''
+    data = {}
+    data['compra'] = []
+    data['servicio'] = []
+    data['grafica'] = []
+
+    try:
+        # Preparamos los datos de compra
+        compra = Compra.objects.all()
+        total = sum(co.subtotal for co in compra)
+        cantidad = compra.count()
+        data['compra'].append({
+            'total': f'Q {total} en compras',
+            'cantidad': f'{cantidad} realizadas'
+        })
+        # Preparamos los datos de servicio
+        tipo_servicio = TipoServicio.objects.all()
+        for tp in tipo_servicio:
+            servicio = Servicio.objects.filter(tipo_servicio_id = tp.id)
+            total = sum(ser.subtotal for ser in servicio)
+            cantidad = servicio.count()
+            data['servicio'].append({
+                'tipo_servicio': tp.descripcion,
+                'total': f'Q {total} en {tp.descripcion}',
+                'cantidad': f'{cantidad} realizadas'
+            })
+        # Preparamos los datos para la gráfica
+        for tp in tipo_servicio:
+            servicio = Servicio.objects.filter(tipo_servicio_id = tp.id)
+            cantidad = servicio.count()
+            data['grafica'].append({
+                'descripcion': tp.descripcion,
+                'cantidad': cantidad
+            })
+    except:
+        pass
+
     return JsonResponse(data)
