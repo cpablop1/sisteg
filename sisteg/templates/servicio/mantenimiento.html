@@ -1,0 +1,14 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+
+{% block contenido %}
+{% include 'servicio/listar_mantenimiento.html' %}
+{% include 'servicio/agregar_mantenimiento.html' %}
+{% include 'servicio/detalle_mantenimiento.html' %}
+{% include 'servicio/garantia_mantenimiento.html' %}
+{% endblock %}
+
+{% block script %}
+<script src="{% static 'js/servicio/main_mantenimiento.js' %}" type="module"></script>
+{% endblock %}

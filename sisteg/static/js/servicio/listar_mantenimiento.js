@@ -1,4 +1,4 @@
-export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar': '' }) {
+export function listar(data_p = {'tipo_servicio': 'mantenimiento', 'pagina': 1, 'buscar': '' }) {
     let params = new URLSearchParams(data_p).toString();
     fetch(`/servicio/listar-servicios/?${params}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar');
@@ -30,6 +30,21 @@ export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar'
         });
 
         Array.from(data.data, (servicio, indice) => {
+            let editar = '';
+            let eliminar = '';
+            let garantia = '';
+            
+            // Solo mostrar editar y eliminar si el servicio no está finalizado
+            if (!servicio.estado_servicio) {
+                editar = `<i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar_servicio_id="${servicio.id}" title="Editar mantenimiento"></i>`;
+                eliminar = `<i class="fa-solid fa-trash-can btn btn-danger btn-sm" eliminar_servicio_id="${servicio.id}" title="Eliminar mantenimiento"></i>`;
+            }
+            
+            // Botón de garantía solo para servicios finalizados
+            if (servicio.estado_servicio) {
+                garantia = `<i class="fa-solid fa-shield-halved btn btn-info btn-sm" garantia_servicio servicio_id="${servicio.id}" garantia_id="0" title="Gestionar garantía"></i>`;
+            }
+            
             fila += `
                 <tr>
                     <th scope="row">${indice + 1}</th>
@@ -43,6 +58,9 @@ export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar'
                     <td>${servicio.fecha_actualizacion}</td>
                     <td><i class="fa-solid fa-circle-info btn btn-info btn-sm" servicio_id="${servicio.id}" title="Ver detalle"></i></td>
                     <td><i class="fa-solid fa-print btn btn-info btn-sm" ticket_servicio_id="${servicio.id}" title="Imprimir ticket"></i></td>
+                    <td>${editar}</td>
+                    <td>${eliminar}</td>
+                    <td>${garantia}</td>
                 </tr>`;
         });
 

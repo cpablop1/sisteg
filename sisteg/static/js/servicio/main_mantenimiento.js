@@ -1,22 +1,23 @@
 import * as alerta from '../alertas/alertas.js';
-import { cambiar } from './cambiar.js';
-import { agregar } from './agregar.js';
-import { listar } from './listar.js';
-import { validacion } from './validacion.js';
-import { listarProductos } from './listarProductos.js';
+import { cambiar } from './cambiar_mantenimiento.js';
+import { agregar } from './agregar_mantenimiento.js';
+import { listar } from './listar_mantenimiento.js';
+import { validacion } from './validacion_mantenimiento.js';
 import { eliminarServicio } from './eliminarServicio.js';
-import { confirmarServicio } from './confirmarServicio.js';
 import { listarDetalleServicio } from './listarDetalleServicio.js';
 import { editarServicio } from './EditarServicio.js';
 import { ticketPdf } from './ticketPdf.js';
 import { garantiaServicio } from './garantiaServicio.js';
 import { verGarantia } from './verGarantia.js';
 import { eliminarGarantia } from './eliminarGarantia.js';
+import { selectCliente } from './selectCliente.js';
+import { selectTipoPago } from './selectTipoPago.js';
 import { selectTipoServicio } from './selectTipoServicio.js';
+import { selectRolUsuario } from './selectRolUsuario.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
-    titulo.innerHTML = `<i class="fa-solid fa-cart-shopping"></i> Venta`;
+    titulo.innerHTML = `<i class="fa-solid fa-wrench"></i> Mantenimiento`;
     listar();
 }
 
@@ -24,62 +25,23 @@ window.listar = (data) => {
     listar(data);
 }
 
-window.listarProductos = (data) => {
-    listarProductos(data);
-}
-
-// Evento para buscar productos
-document.getElementById('buscar_productos').addEventListener('input', e => {
-    let buscar = e.target.value.trim();
-    if (buscar.length > 0) {
-        listarProductos({ 'pagina': 1, 'buscar': buscar });
-    } else {
-        listarProductos();
-    }
-});
-
-// Evento para cambiar de vista entre el carrito y el listado de servicios
+// Evento para cambiar de vista entre el formulario y el listado
 document.getElementById('agregar').addEventListener('click', e => {
     cambiar();
-    // Cargar solo tipos de servicio de venta
+    // Cargar selects necesarios
+    selectCliente();
+    selectTipoPago();
     selectTipoServicio();
+    selectRolUsuario();
 });
 
-// Evento para mostrar modal de buscar productos
-document.getElementById('btn-buscar-productos').addEventListener('click', e => {
-    new bootstrap.Modal(document.getElementById('mdl_buscar_productos')).show();
-    setTimeout(() => listarProductos(), 500);
-});
-
-// Evento para agregar productos al carrito
-document.getElementById('tbl_listar_productos').addEventListener('click', e => {
-    let producto_id = parseInt(e.target.getAttribute('agregar'))
-    let form = document.getElementById('form_agregar');
-
-    if (producto_id) {
-        if (validacion(form)) {
-            agregar(form, producto_id);
-        } else {
-            alerta.warning('Complete el formulario para continuar.');
-        }
-    }
-});
-
-// Evento para buscar ventas
+// Evento para buscar servicios de mantenimiento
 document.getElementById('buscar').addEventListener('input', e => {
     let buscar = e.target.value.trim();
     if (buscar.length > 0) {
-        listar({ 'tipo_servicio': 'venta', 'pagina': 1, 'buscar': buscar });
+        listar({ 'tipo_servicio': 'mantenimiento', 'pagina': 1, 'buscar': buscar });
     } else {
         listar();
-    }
-});
-
-// Evento para eliminar elementos del servicio
-document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
-    let detalle_servicio_id = parseInt(e.target.getAttribute('detalle_servicio_id'));
-    if (detalle_servicio_id) {
-        eliminarServicio({ 'detalle_servicio_id': detalle_servicio_id });
     }
 });
 
@@ -88,48 +50,6 @@ document.getElementById('eliminar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     if (servicio_id) {
         eliminarServicio({ 'servicio_id': servicio_id });
-    }
-});
-
-// Evento para confirmar la servicio
-document.getElementById('confirmar_servicio').addEventListener('click', e => {
-    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
-    let cliente_id = parseInt(document.getElementById('cliente_id').value);
-    let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
-
-    if (servicio_id) {
-        confirmarServicio({ servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id });
-    }
-
-})
-
-// Evento para actualizar cantidad en carrito de servicio
-document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
-    // Verificar que es un input de cantidad
-    if (e.target.type !== 'number' || !e.target.hasAttribute('producto_id')) {
-        return;
-    }
-    
-    let form = document.getElementById('form_agregar');
-    let cantidad = parseInt(e.target.value);
-    let producto_id = parseInt(e.target.getAttribute('producto_id'));
-    
-    // Verificar que tenemos los datos necesarios
-    if (!producto_id || isNaN(cantidad)) {
-        return;
-    }
-    
-    if (validacion(form)) {
-        if (e.keyCode == 13) {
-            if (cantidad > 0) {
-                console.log('Actualizando cantidad:', cantidad, 'para producto:', producto_id);
-                agregar(form, producto_id, cantidad);
-            } else {
-                alerta.danger('La cantidad debe ser mayor a 0.');
-            }
-        }
-    } else {
-        alerta.warning('Complete el formulario para continuar.');
     }
 });
 
@@ -147,7 +67,16 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
     }
 });
 
-// El botón crear_servicio fue eliminado - solo se usa confirmar_servicio para ventas
+// Evento para crear servicio de mantenimiento
+document.getElementById('crear_servicio').addEventListener('click', e => {
+    let form = document.getElementById('form_agregar');
+
+    if (validacion(form)) {
+        agregar(form);
+    } else {
+        alerta.warning('Complete el formulario para continuar.');
+    }
+});
 
 // Evento para editar servicio
 document.getElementById('tbl_listar').addEventListener('click', e => {
@@ -157,13 +86,11 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
     }
 });
 
-// Evento para editar servicio
+// Evento para actualizar servicio
 document.getElementById('actualizar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     let form = document.getElementById('form_agregar');
     if (servicio_id) {
-        //editarServicio(servicio_id);
-        console.log(servicio_id);
         agregar(form);
         cambiar();
         setTimeout(() => {
@@ -209,7 +136,6 @@ document.getElementById('garantia_servicio').addEventListener('click', e => {
     }
 });
 
-
 // Evento para agregar garantía
 document.getElementById('crear_garantia').addEventListener('click', e => {
     garantiaServicio();
@@ -219,9 +145,15 @@ document.getElementById('crear_garantia').addEventListener('click', e => {
 document.getElementById('tbl_garantia').addEventListener('click', e => {
     let detalle_garantia_id = parseInt(e.target.getAttribute('detalle_garantia_id'));
     let garantia_id = parseInt(e.target.getAttribute('garantia_id'));
-    console.log(garantia_id);
     if (detalle_garantia_id){
         eliminarGarantia({detalle_garantia_id: detalle_garantia_id});
         setTimeout(() => verGarantia(garantia_id), 500);
     }
+});
+
+// Evento para actualizar subtotal cuando cambia el costo del servicio
+document.getElementById('costo_servicio').addEventListener('input', e => {
+    let costo = parseFloat(e.target.value) || 0;
+    document.getElementById('subtotal').textContent = `Q. ${costo.toFixed(2)}`;
+    document.getElementById('ganancia').textContent = `Q. ${costo.toFixed(2)}`;
 });

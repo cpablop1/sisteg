@@ -1,28 +1,33 @@
 import * as alerta from '../alertas/alertas.js';
-import { editarServicio } from './EditarServicio.js';
 
-export function eliminarServicio(datos) {
-    let formData = new FormData()
-    let servicio_id = document.getElementById('actualizar_servicio').getAttribute('servicio_id');
-    Object.entries(datos).forEach(([clave, valor]) => {
-        formData.append(clave, valor);
-    });
+export function eliminarServicio(data) {
+    const formData = new FormData();
+    
+    if (data.detalle_servicio_id) {
+        formData.append('detalle_servicio_id', data.detalle_servicio_id);
+    }
+    if (data.servicio_id) {
+        formData.append('servicio_id', data.servicio_id);
+    }
+    
     fetch('/servicio/eliminar-servicio/', {
         method: 'POST',
-        headers: {
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-        },
         body: formData
-    }).then(res => {
-        return res.json();
-    }).then(data => {
+    })
+    .then(res => res.json())
+    .then(data => {
         if (data.res) {
             alerta.success(data.msg);
-            setTimeout(() => {
-                editarServicio(servicio_id);
-            }, 500);
+            // Recargar la lista
+            if (typeof window.listar === 'function') {
+                window.listar();
+            }
         } else {
             alerta.danger(data.msg);
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alerta.danger('Error al eliminar el servicio');
     });
 }

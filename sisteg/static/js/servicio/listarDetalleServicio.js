@@ -1,27 +1,25 @@
 export function listarDetalleServicio(servicio_id) {
     fetch(`/servicio/listar-carrito/?servicio_id=${servicio_id}`).then(res => res.json()).then(data => {
-        let tabla = document.getElementById('tbl_detalle_servicio');
-        let fila = '';
-        if (data.data.length !== 0) {
-            Array.from(data.data, elemento => {
+        if (data.res && data.data) {
+            let tabla = document.getElementById('tbl_detalle_servicio');
+            let fila = '';
+            
+            Array.from(data.data, (detalle, indice) => {
                 fila += `
                     <tr>
-                        <td>${elemento.cantidad}</td>
-                        <td>${elemento.producto}</td>
-                        <td>${elemento.marca}</td>
-                        <td>${elemento.precio}</td>
-                        <td>${elemento.costo}</td>
-                        <td>${elemento.ganancia}</td>
-                        <td>${elemento.total}</td>
+                        <th scope="row">${indice + 1}</th>
+                        <td>${detalle.producto}</td>
+                        <td>Q. ${detalle.costo}</td>
+                        <td>Q. ${detalle.precio}</td>
+                        <td>${detalle.cantidad}</td>
+                        <td>Q. ${detalle.total}</td>
+                        <td>Q. ${detalle.ganancia}</td>
                     </tr>`;
             });
+            
+            tabla.childNodes[3].innerHTML = fila;
         }
-        document.getElementById('subtotal_detalle_servicio').innerHTML = `Subtotal Q ${data.subtotal}`;
-        document.getElementById('ganancia_detalle_servicio').innerHTML = `Ganancia Q ${data.ganancia}`;
-        document.getElementById('descripcion').innerHTML = `<b>Descripción:</b> ${data.observacion}`;
-        document.getElementById('cliente').innerHTML = `<b>Cliente:</b> ${data.cliente}`;
-        document.getElementById('contacto').innerHTML = `<b>Contacto:</b> ${data.contacto}`;
-        document.getElementById('mano_obra').innerHTML = `<b>Mano de obra:</b> Q ${data.costo_servicio}`;
-        tabla.childNodes[3].innerHTML = fila;
+    }).catch(error => {
+        console.error('Error al cargar detalle del servicio:', error);
     });
 }

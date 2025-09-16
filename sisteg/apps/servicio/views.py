@@ -37,6 +37,10 @@ def vista_servicio(request):
 def vista_venta(request):
     return render(request, 'venta/venta.html')
 
+@login_required(login_url='autenticacion')
+def vista_mantenimiento(request):
+    return render(request, 'servicio/mantenimiento.html')
+
 # Función para agregar cliente
 @login_required(login_url='autenticacion')
 def agregar_cliente(request):
@@ -356,24 +360,37 @@ def agregar_servicio(request):
                         cantidad_nueva = int(cantidad)
                     else:
                         cantidad_nueva = cantidad
-                    total = precio * cantidad_nueva
+                    
+                    # Usar precio del producto de la base de datos si el precio enviado es 0
+                    precio_final = precio if precio > 0 else producto.precio
+                    costo_final = costo if costo > 0 else producto.costo
+                    
+                    total = precio_final * cantidad_nueva
+                    ganancia_unitaria = precio_final - costo_final
+                    ganancia_total = ganancia_unitaria * cantidad_nueva
+                    
                     # Creamos los nevos valores del los costo y precio del servicio
                     # Actualizamos detalle de venta
                     existe_detalle.update(
                         cantidad = cantidad_nueva,
-                        costo = costo,
-                        precio = precio,
+                        costo = costo_final,
+                        precio = precio_final,
                         total = total,
-                        ganancia = precio - costo,
+                        ganancia = ganancia_total,
                         stock = stock
                     )
                 else: # En caso contrario agregar el producto al carrito (venta)
+                    total_nuevo = producto.precio * cantidad
+                    ganancia_unitaria_nueva = producto.precio - producto.costo
+                    ganancia_total_nueva = ganancia_unitaria_nueva * cantidad
+                    
+                    
                     detalle = DetalleServicio.objects.create(
                         precio = producto.precio,
                         costo = producto.costo,
                         cantidad = cantidad,
-                        total = producto.precio,
-                        ganancia = producto.precio - producto.costo,
+                        total = total_nuevo,
+                        ganancia = ganancia_total_nueva,
                         stock = stock,
                         producto_id = producto,
                         servicio_id = existe_servicio[0]
@@ -396,8 +413,13 @@ def agregar_servicio(request):
                 res = True
                 msg = 'Carrito actualizado.'
             else: # En caso contrario
+                total_servicio = producto.precio * cantidad
+                ganancia_unitaria_servicio = producto.precio - producto.costo
+                ganancia_total_servicio = ganancia_unitaria_servicio * cantidad
+                
+                
                 servicio = Servicio.objects.create( # Creamos el servicio
-                    subtotal = producto.precio,
+                    subtotal = total_servicio,
                     cliente_id = Cliente.objects.get(id = cliente_id),
                     usuario_id = User.objects.get(id = request.user.id),
                     tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id),
@@ -408,8 +430,8 @@ def agregar_servicio(request):
                     precio = producto.precio,
                     costo = producto.costo,
                     cantidad = cantidad,
-                    total = producto.precio,
-                    ganancia = producto.precio - producto.costo,
+                    total = total_servicio,
+                    ganancia = ganancia_total_servicio,
                     stock = stock,
                     producto_id = producto,
                     servicio_id = servicio
@@ -725,6 +747,9 @@ def listar_servicios(request):
         if id: # Verificamos si necesitamos un servicio en expecífico
             servicios = Servicio.objects.filter(id = id)
         else: # Sino se lista todos menos los de tipo ventas
+            # Obtener tipo_servicio del parámetro GET
+            tipo_servicio = request.GET.get('tipo_servicio', '').strip()
+            
             if request.rol_usuario == 'tecnico': # Filtramos los registros is el usuario es ténico
                 servicios = []
                 # Obtener todos los servicios asociados al usuario técnico
@@ -733,8 +758,22 @@ def listar_servicios(request):
                 servicio_ids = servicio_usuario.values_list('servicio_id', flat=True)
                 # Filtrar todos los servicios cuyos IDs están en la lista
                 servicios = Servicio.objects.filter(id__in=servicio_ids)
+                
+                # Filtrar por tipo de servicio si se especifica
+                if tipo_servicio:
+                    if tipo_servicio == 'venta':
+                        servicios = servicios.filter(tipo_servicio_id=1)
+                    elif tipo_servicio == 'mantenimiento':
+                        servicios = servicios.filter(tipo_servicio_id=2)
             else:
                 servicios = Servicio.objects.all()
+                
+                # Filtrar por tipo de servicio si se especifica
+                if tipo_servicio:
+                    if tipo_servicio == 'venta':
+                        servicios = servicios.filter(tipo_servicio_id=1)
+                    elif tipo_servicio == 'mantenimiento':
+                        servicios = servicios.filter(tipo_servicio_id=2)
         if len(buscar) > 0: # Verificamos si hay búsquedad
             servicios = servicios.filter(
                 Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
