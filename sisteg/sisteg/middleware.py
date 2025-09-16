@@ -12,7 +12,7 @@ class GlobalDataMiddleware:
                 rol = RolUsuario.objects.get(usuario_id = usuario_id) # Luego obtenemos el rol del usuario autenticado
                 request.rol_usuario = rol.rol_id.rol  # Asigna al request
             except:
-                request.rol_usuario = 'Sin rol'
+                request.rol_usuario = request.user.username
         else:
             request.rol_usuario = 'Sin rol'
         return self.get_response(request)

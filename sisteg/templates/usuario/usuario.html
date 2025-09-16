@@ -1,0 +1,13 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+
+{% block contenido %}
+{% include 'usuario/listar.html' %}
+{% include 'usuario/agregar.html' %}
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/usuario/main.js' %}" type="module"></script>
+{% endblock %}

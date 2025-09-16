@@ -1,0 +1,34 @@
+<form class="border rounded shadow-lg p-5 mt-5" id="form_agregar" hidden>
+    {% csrf_token %}
+    <input type="hidden" name="id" id="id">
+    <div class="mb-3">
+        <label for="username" class="form-label">Usuario</label>
+        <input type="text" class="form-control" name="username" id="username" maxlength="150" required>
+    </div>
+    <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" name="password" id="password" maxlength="128">
+        <div class="form-text">Dejar vacío para mantener la contraseña actual (solo en edición)</div>
+    </div>
+    <div class="mb-3">
+        <label for="first_name" class="form-label">Nombres</label>
+        <input type="text" class="form-control" name="first_name" id="first_name" maxlength="150">
+    </div>
+    <div class="mb-3">
+        <label for="last_name" class="form-label">Apellidos</label>
+        <input type="text" class="form-control" name="last_name" id="last_name" maxlength="150">
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Correo</label>
+        <input type="email" class="form-control" name="email" id="email" maxlength="254">
+    </div>
+    <div class="mb-3">
+        <label for="rol" class="form-label">Rol</label>
+        <select class="form-select" name="rol" id="rol" required>
+            <option value="">Cargando roles...</option>
+        </select>
+    </div>
+    <div class="mb-3 d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </div>
+</form>
