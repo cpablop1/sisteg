@@ -150,3 +150,30 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Configuración de correos electrónicos
+# Para desarrollo - los correos se muestran en la consola
+""" if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+else: """
+    # Para producción - configuración SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail SMTP
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'cpablop1@gmail.com'  # Reemplazar con tu correo Gmail
+EMAIL_HOST_PASSWORD = 'rnyi cjsf moxx ersl'  # Contraseña de aplicación de Gmail
+
+# Configuración alternativa para Brevo (recomendado para demos)
+# EMAIL_HOST = 'smtp-relay.brevo.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'tu_correo@ejemplo.com'
+# EMAIL_HOST_PASSWORD = 'tu_password_brevo'
+
+# Configuración del remitente por defecto
+DEFAULT_FROM_EMAIL = 'SISTEG <noreply@sisteg.com>'
+SERVER_EMAIL = 'SISTEG <noreply@sisteg.com>'
+
+# Configuración adicional para recuperación de contraseñas
+PASSWORD_RESET_TIMEOUT = 86400  # 24 horas en segundos
