@@ -1184,7 +1184,7 @@ def garantia_servicio(request):
         garantia[0].subtotal = subtotal
         garantia[0].save()
 
-        return JsonResponse({'res': res, 'msg': msg, 'garantia_id': garantia[0].id})
+        return JsonResponse({'res': res, 'msg': msg, 'garantia_id': garantia[0].id, 'servicio_id': servicio_id})
     
 # Endponint para ver garantía
 def listar_garantia(request):

@@ -3,7 +3,6 @@ export function listarDetalleServicio(servicio_id) {
         let tabla = document.getElementById('tbl_detalle_servicio');
         let fila = '';
         let garantia_servicio = document.getElementById('garantia_servicio');
-        console.log(data);
         if (data.data.length !== 0) {
             Array.from(data.data, elemento => {
                 fila += `

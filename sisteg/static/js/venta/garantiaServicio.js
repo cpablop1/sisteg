@@ -1,4 +1,5 @@
 import * as alerta from '../alertas/alertas.js';
+import { listarDetalleServicio } from './listarDetalleServicio.js';
 import { verGarantia } from './verGarantia.js';
 
 export function garantiaServicio() {
@@ -18,6 +19,7 @@ export function garantiaServicio() {
             console.log(data);
             setTimeout(() => {
                 verGarantia(data.garantia_id);
+                listarDetalleServicio(data.servicio_id);
             }, 500);
         } else {
             alerta.danger(data.msg);

@@ -5,7 +5,6 @@ export function verGarantia(garantia_id) {
         form.reset();
         select_producto.innerHTML = '';
         if (data.res) {
-            console.log(data);
             // Mostramos los datos de la garantía
             form.elements['observacion'].value = data.observacion;
             form.elements['servicio_id'].value = data.servicio_id;

@@ -196,14 +196,14 @@ document.getElementById('garantia_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'))
     let garantia_id = parseInt(e.target.getAttribute('garantia_id'))
     document.getElementById('form_garantia').reset();
+    let crear_garantia = document.getElementById('crear_garantia');
     if (servicio_id) {
         new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
         if (garantia_id) {
             setTimeout(() => verGarantia(garantia_id), 500);
         } else {
-            let crear_garantia = document.getElementById('crear_garantia');
             document.getElementById('servicio_id').value = servicio_id;
-            document.getElementById('tbl_garantia').innerHTML = '';
+            document.getElementById('tbl_garantia').childNodes[3].innerHTML = '';
             crear_garantia.innerHTML = '<i class="fa-solid fa-square-plus"></i> Crear';
             crear_garantia.classList.remove('btn-warning');
             crear_garantia.classList.add('btn-primary');
