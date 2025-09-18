@@ -36,3 +36,4 @@ export function verGarantia(garantia_id) {
         console.error('Error al cargar garantía:', error);
     });
 }
+

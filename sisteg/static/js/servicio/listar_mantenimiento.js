@@ -53,6 +53,7 @@ export function listar(data_p = {'tipo_servicio': 'mantenimiento', 'pagina': 1, 
                     <td>${servicio.tipo_pago}</td>
                     <td>${servicio.usuario_id}</td>
                     <td>${servicio.tipo_servicio}</td>
+                    <td>${servicio.tecnico}</td>
                     <td><span class="badge ${servicio.estado_servicio ? 'bg-success' : 'bg-warning'}">${servicio.estado}</span></td>
                     <td>${servicio.fecha_ingreso}</td>
                     <td>${servicio.fecha_actualizacion}</td>
@@ -60,7 +61,6 @@ export function listar(data_p = {'tipo_servicio': 'mantenimiento', 'pagina': 1, 
                     <td><i class="fa-solid fa-print btn btn-info btn-sm" ticket_servicio_id="${servicio.id}" title="Imprimir ticket"></i></td>
                     <td>${editar}</td>
                     <td>${eliminar}</td>
-                    <td>${garantia}</td>
                 </tr>`;
         });
 

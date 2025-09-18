@@ -45,12 +45,34 @@ def listar_tipo_pago(request):
             
         if select:
             paginas = tipo_pago
+            # Para select, no necesitamos paginación
+            data["num_pages"] = 1
+            data["has_next"] = False
+            data["has_previous"] = False
+            data["count"] = tipo_pago.count()
         else:
             # Paginamos las categorías
             paginador = Paginator(tipo_pago, 10)
             # Obtenemos la página
             paginas = paginador.get_page(pagina)
-            # Preparamos el listado
+            # Preparamos la visualización de las páginas
+            if paginador.num_pages > 5:
+                start = int(pagina)
+                end = int(pagina) + 5
+                if end > paginador.num_pages:
+                    start = paginador.num_pages - 4
+                    end = paginador.num_pages + 1
+                for i in range(start, end):
+                    data["page_range"].append(i)
+            else:
+                for i in range(paginador.num_pages):
+                    data["page_range"].append(i + 1)
+            data["num_pages"] = paginador.num_pages
+            data["has_next"] = paginas.has_next()
+            data["has_previous"] = paginas.has_previous()
+            data["count"] = paginador.count
+            
+        # Preparamos el listado
         for tip in paginas:
             data['data'].append(
                 {
@@ -61,22 +83,6 @@ def listar_tipo_pago(request):
                     'usuario': tip.usuario_id.username
                 }
             )
-        # Preparamos la visualización de las páginas
-        if paginador.num_pages > 5:
-            start = int(pagina)
-            end = int(pagina) + 5
-            if end > paginador.num_pages:
-                start = paginador.num_pages - 4
-                end = paginador.num_pages + 1
-            for i in range(start, end):
-                data["page_range"].append(i)
-        else:
-            for i in range(paginador.num_pages):
-                data["page_range"].append(i + 1)
-        data["num_pages"] = paginador.num_pages
-        data["has_next"] = paginas.has_next()
-        data["has_previous"] = paginas.has_previous()
-        data["count"] = paginador.count
 
         # Preparamos mensajes de respuesta
         res = True

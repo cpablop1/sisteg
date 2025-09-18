@@ -4,12 +4,11 @@ export function validacion(form) {
     let tipo_servicio_id = form['tipo_servicio_id'];
     let rol_usuario_id = form['rol_usuario_id'];
     let observacion = form['observacion'];
-    let costo_servicio = form['costo_servicio'];
     
     let valido = [];
     
     // Limpiar clases de validación
-    [cliente_id, tipo_pago_id, tipo_servicio_id, rol_usuario_id, observacion, costo_servicio].forEach(field => {
+    [cliente_id, tipo_pago_id, tipo_servicio_id, rol_usuario_id, observacion].forEach(field => {
         if (field) {
             field.classList.remove('is-invalid');
         }
@@ -57,12 +56,7 @@ export function validacion(form) {
         valido.push(false);
     }
     
-    // Validar costo del servicio
-    if (costo_servicio.value.trim().length === 0 || parseFloat(costo_servicio.value) <= 0) {
-        costo_servicio.classList.add('is-invalid');
-        costo_servicio.focus();
-        valido.push(false);
-    }
+    // El costo del servicio se maneja en la vista del técnico, no aquí
     
     return valido.length === 0;
 }

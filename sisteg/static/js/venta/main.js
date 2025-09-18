@@ -202,6 +202,8 @@ document.getElementById('garantia_servicio').addEventListener('click', e => {
             setTimeout(() => verGarantia(garantia_id), 500);
         } else {
             let crear_garantia = document.getElementById('crear_garantia');
+            document.getElementById('servicio_id').value = servicio_id;
+            document.getElementById('tbl_garantia').innerHTML = '';
             crear_garantia.innerHTML = '<i class="fa-solid fa-square-plus"></i> Crear';
             crear_garantia.classList.remove('btn-warning');
             crear_garantia.classList.add('btn-primary');

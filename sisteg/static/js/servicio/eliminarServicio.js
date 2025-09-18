@@ -10,6 +10,10 @@ export function eliminarServicio(data) {
         formData.append('servicio_id', data.servicio_id);
     }
     
+    // Agregar token CSRF
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    formData.append('csrfmiddlewaretoken', csrfToken);
+    
     fetch('/servicio/eliminar-servicio/', {
         method: 'POST',
         body: formData

@@ -1,6 +1,6 @@
 import * as alerta from '../alertas/alertas.js';
 import { cambiar } from './cambiar_mantenimiento.js';
-import { agregar } from './agregar_mantenimiento.js';
+import { agregar, actualizar } from './agregar_mantenimiento.js';
 import { listar } from './listar_mantenimiento.js';
 import { validacion } from './validacion_mantenimiento.js';
 import { eliminarServicio } from './eliminarServicio.js';
@@ -54,7 +54,7 @@ document.getElementById('eliminar_servicio').addEventListener('click', e => {
 });
 
 // Evento para evetar el submit en formulario
-document.getElementById('form_agregar').addEventListener('submit', e => {
+document.getElementById('form_mantenimiento').addEventListener('submit', e => {
     e.preventDefault();
 });
 
@@ -69,7 +69,7 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 
 // Evento para crear servicio de mantenimiento
 document.getElementById('crear_servicio').addEventListener('click', e => {
-    let form = document.getElementById('form_agregar');
+    let form = document.getElementById('form_mantenimiento');
 
     if (validacion(form)) {
         agregar(form);
@@ -89,9 +89,10 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 // Evento para actualizar servicio
 document.getElementById('actualizar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
-    let form = document.getElementById('form_agregar');
+    let form = document.getElementById('form_mantenimiento');
     if (servicio_id) {
-        agregar(form);
+        console.log(servicio_id);
+        actualizar(form, servicio_id);
         cambiar();
         setTimeout(() => {
             listar();
@@ -118,20 +119,22 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
     }
 });
 
-// Evento para mostra modal de garantía
-document.getElementById('garantia_servicio').addEventListener('click', e => {
-    let servicio_id = parseInt(e.target.getAttribute('servicio_id'))
-    let garantia_id = parseInt(e.target.getAttribute('garantia_id'))
-    document.getElementById('form_garantia').reset();
-    if (servicio_id) {
-        new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
-        if (garantia_id) {
-            setTimeout(() => verGarantia(garantia_id), 500);
-        } else {
-            let crear_garantia = document.getElementById('crear_garantia');
-            crear_garantia.innerHTML = '<i class="fa-solid fa-square-plus"></i> Crear';
-            crear_garantia.classList.remove('btn-warning');
-            crear_garantia.classList.add('btn-primary');
+// Evento para mostra modal de garantía (usando event delegation)
+document.addEventListener('click', e => {
+    if (e.target.hasAttribute('garantia_servicio')) {
+        let servicio_id = parseInt(e.target.getAttribute('servicio_id'))
+        let garantia_id = parseInt(e.target.getAttribute('garantia_id'))
+        document.getElementById('form_garantia').reset();
+        if (servicio_id) {
+            new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
+            if (garantia_id) {
+                setTimeout(() => verGarantia(garantia_id), 500);
+            } else {
+                let crear_garantia = document.getElementById('crear_garantia');
+                crear_garantia.innerHTML = '<i class="fa-solid fa-square-plus"></i> Crear';
+                crear_garantia.classList.remove('btn-warning');
+                crear_garantia.classList.add('btn-primary');
+            }
         }
     }
 });
@@ -151,9 +154,4 @@ document.getElementById('tbl_garantia').addEventListener('click', e => {
     }
 });
 
-// Evento para actualizar subtotal cuando cambia el costo del servicio
-document.getElementById('costo_servicio').addEventListener('input', e => {
-    let costo = parseFloat(e.target.value) || 0;
-    document.getElementById('subtotal').textContent = `Q. ${costo.toFixed(2)}`;
-    document.getElementById('ganancia').textContent = `Q. ${costo.toFixed(2)}`;
-});
+// El costo del servicio se maneja en la vista del técnico, no aquí

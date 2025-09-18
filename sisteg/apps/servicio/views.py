@@ -225,6 +225,10 @@ def agregar_servicio(request):
         costo_servicio = request.POST.get('costo_servicio', '0').strip()
         precio = request.POST.get('precio', '0').strip()
         costo = request.POST.get('costo', '0').strip()
+        print('\n--------------------------------')
+        print(f'servicio_id: {servicio_id}')
+        #return JsonResponse({'res': True, 'msg': servicio_id})
+        print('---------------------------------\n')
 
         # Validación para rol_usuario_id
         if not rol_usuario_id:
@@ -543,10 +547,11 @@ def listar_carrito(request):
             data['tipo_servicio_id'] = servicio[0].tipo_servicio_id.id
             data['observacion'] = servicio[0].observacion
             data['costo_servicio'] = servicio[0].costo_servicio
-            data['rol_usuario_id'] = ServicioUsuario.objects.filter(servicio_id = servicio[0].id)[0].usuario_id.id
+            data['garantia_de_prueba'] = 213212312525645
+            #data['rol_usuario_id'] = ServicioUsuario.objects.filter(servicio_id = servicio[0].id)[0].usuario_id.id
             try:
                 data['garantia_id'] = Garantia.objects.get(servicio_id = servicio[0].id).id
-            except:
+            except Exception as e:
                 data['garantia_id'] = False
                 
             # Preparamos mensajes de respuesta
@@ -555,7 +560,6 @@ def listar_carrito(request):
         else:
             msg = 'El carrito está vació.'
     except Exception as e:
-        print(e)
         res = False
 
     data['res'] = res
@@ -758,13 +762,12 @@ def listar_servicios(request):
                 servicio_ids = servicio_usuario.values_list('servicio_id', flat=True)
                 # Filtrar todos los servicios cuyos IDs están en la lista
                 servicios = Servicio.objects.filter(id__in=servicio_ids)
-                
                 # Filtrar por tipo de servicio si se especifica
                 if tipo_servicio:
                     if tipo_servicio == 'venta':
                         servicios = servicios.filter(tipo_servicio_id=1)
                     elif tipo_servicio == 'mantenimiento':
-                        servicios = servicios.filter(tipo_servicio_id=2)
+                        servicios = servicios.exclude(tipo_servicio_id=1)  # Excluir solo ventas, mostrar todo lo demás
             else:
                 servicios = Servicio.objects.all()
                 
@@ -773,7 +776,7 @@ def listar_servicios(request):
                     if tipo_servicio == 'venta':
                         servicios = servicios.filter(tipo_servicio_id=1)
                     elif tipo_servicio == 'mantenimiento':
-                        servicios = servicios.filter(tipo_servicio_id=2)
+                        servicios = servicios.exclude(tipo_servicio_id=1)  # Excluir solo ventas, mostrar todo lo demás
         if len(buscar) > 0: # Verificamos si hay búsquedad
             servicios = servicios.filter(
                 Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
@@ -788,6 +791,30 @@ def listar_servicios(request):
         paginas = paginador.get_page(pagina)
         # Preparamos el listado
         for ser in paginas:
+            # Obtener observación si existe
+            observacion = ''
+            try:
+                if hasattr(ser, 'observacion') and ser.observacion:
+                    observacion = ser.observacion
+            except:
+                observacion = ''
+            
+            # Obtener rol_usuario_id si existe
+            rol_usuario_id = ''
+            tecnico = ''
+            try:
+                servicio_usuario = ServicioUsuario.objects.filter(servicio_id=ser.id).first()
+                if servicio_usuario:
+                    # Obtener el usuario_id del ServicioUsuario
+                    usuario_id = servicio_usuario.usuario_id.id
+                    rol_usuario_id = usuario_id
+                    tecnico = servicio_usuario.usuario_id.username
+                else:
+                    print("No se encontró ServicioUsuario para este servicio")
+            except Exception as e:
+                print(f"Error al obtener rol_usuario_id: {e}")
+                rol_usuario_id = ''
+            
             data['data'].append(
                 {
                     'id': ser.id,
@@ -795,12 +822,18 @@ def listar_servicios(request):
                     'fecha_ingreso': ser.fecha_ingreso,
                     'fecha_actualizacion': ser.fecha_actualizacion,
                     'tipo_pago': ser.tipo_pago_id.descripcion,
+                    'tipo_pago_id': ser.tipo_pago_id.id,
                     'usuario_id': ser.usuario_id.username,
                     'cliente': f'{ser.cliente_id.nombres} {ser.cliente_id.apellidos}',
+                    'cliente_id': ser.cliente_id.id,
                     'tipo_servicio': ser.tipo_servicio_id.descripcion,
                     'tipo_servicio_id': ser.tipo_servicio_id.id,
                     'estado': 'Finalizado' if ser.estado else 'Abierto',
-                    'estado_servicio': ser.estado
+                    'estado_servicio': ser.estado,
+                    'observacion': observacion,
+                    'rol_usuario_id': rol_usuario_id,
+                    'tecnico': tecnico,
+                    'costo_servicio': ser.costo_servicio if hasattr(ser, 'costo_servicio') else 0
                 }
             )
         # Preparamos la visualización de las páginas
@@ -1025,6 +1058,15 @@ def garantia_servicio(request):
         detalle_servicio_id = request.POST.get('detalle_servicio_id', '').strip()
         garantia_id = request.POST.get('garantia_id', '').strip()
         detalle_garantia_id = request.POST.get('detalle_garantia_id', '').strip()
+        print('\n--------------------------')
+        print(f'observacion: {observacion}')
+        print(f'es_perdida: {es_perdida}')
+        print(f'servicio_id: {servicio_id}')
+        print(f'cantidad: {cantidad}')
+        print(f'garantia_id: {garantia_id}')
+        print(f'detalle_servicio_id: {detalle_servicio_id}')
+        print(f'detalle_garantia_id: {detalle_garantia_id}')
+        print('--------------------------\n')
         
         # Validadmos es_perdida
         if es_perdida == 'on':
@@ -1070,16 +1112,6 @@ def garantia_servicio(request):
             print('\nERROR con detalle_garantia_id')
             print(error)
             detalle_garantia_id = None
-
-        print('\n--------------------------')
-        print(f'observacion: {observacion}')
-        print(f'es_perdida: {es_perdida}')
-        print(f'servicio_id: {servicio_id}')
-        print(f'cantidad: {cantidad}')
-        print(f'garantia_id: {garantia_id}')
-        print(f'detalle_servicio_id: {detalle_servicio_id}')
-        print(f'detalle_garantia_id: {detalle_garantia_id}')
-        print('--------------------------\n')
         
         # Accedemos al servicio
         try:

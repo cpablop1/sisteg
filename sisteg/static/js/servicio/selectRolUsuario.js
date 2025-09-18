@@ -1,5 +1,5 @@
 export function selectRolUsuario() {
-    fetch('/autenticacion/listar-usuarios-con-roles/').then(res => res.json()).then(data => {
+    return fetch('/autenticacion/listar-usuarios-con-roles/').then(res => res.json()).then(data => {
         if (data.res && data.data) {
             const select = document.getElementById('rol_usuario_id');
             if (select) {
@@ -11,7 +11,9 @@ export function selectRolUsuario() {
                 });
             }
         }
+        return data;
     }).catch(error => {
         console.error('Error al cargar usuarios con roles:', error);
+        throw error;
     });
 }
