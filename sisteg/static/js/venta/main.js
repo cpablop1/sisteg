@@ -153,9 +153,14 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 
 // Evento para editar servicio
 document.getElementById('tbl_listar').addEventListener('click', e => {
+    console.log('Click en tabla detectado, elemento:', e.target);
+    console.log('Atributo editar_servicio_id:', e.target.getAttribute('editar_servicio_id'));
     let servicio_id = parseInt(e.target.getAttribute('editar_servicio_id'));
     if (servicio_id) {
+        console.log('Llamando a editarServicio con ID:', servicio_id);
         editarServicio(servicio_id);
+    } else {
+        console.log('No se encontró servicio_id para editar');
     }
 });
 

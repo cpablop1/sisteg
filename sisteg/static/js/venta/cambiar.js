@@ -5,8 +5,8 @@ import { listar as listado } from './listar.js';
 import { selectTipoServicio } from "./selectTipoServicio.js";
 
 // Función para cambiar de vista entre el formulario y el listado de ventas
-export function cambiar() {
-    console.log('Ejecutando función cambiar()');
+export function cambiar(selectedClienteId = null) {
+    console.log('Ejecutando función cambiar() con selectedClienteId:', selectedClienteId);
     
     // Obtener elementos del DOM con verificación robusta
     const btn_agregar = document.getElementById('agregar');
@@ -75,9 +75,19 @@ export function cambiar() {
         
         // Cargar datos para el formulario
         setTimeout(() => {
-            selectCliente();
             selectTipoPago();
             selectTipoServicio();
+            
+            // Solo cargar selectCliente si no hay datos en el carrito (modo creación)
+            const carrito = document.getElementById('tbl_listar_carrito');
+            const tieneDatos = carrito && carrito.querySelector('tbody tr');
+            
+            if (!tieneDatos) {
+                console.log('Modo creación - cargando selectCliente');
+                selectCliente();
+            } else {
+                console.log('Modo edición - ya hay datos en carrito, omitiendo selectCliente');
+            }
         }, 100);
     }
 }
