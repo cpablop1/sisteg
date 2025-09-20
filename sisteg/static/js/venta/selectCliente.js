@@ -21,6 +21,52 @@ function initializeSelect2(selectElement, selectedValue = null) {
             }
         });
         
+        // Enfocar automáticamente el campo de búsqueda cuando se abre el dropdown
+        $(selectElement).on('select2:opening', function() {
+            setTimeout(() => {
+                const searchField = $('.select2-search__field, .select2-search input, .select2-container--open .select2-search__field');
+                if (searchField.length > 0) {
+                    searchField.focus();
+                    searchField.trigger('focus');
+                    searchField[0].focus();
+                    console.log('Campo de búsqueda enfocado');
+                } else {
+                    console.log('No se encontró el campo de búsqueda');
+                }
+            }, 200);
+        });
+        
+        // También intentar con el evento select2:open como respaldo
+        $(selectElement).on('select2:open', function() {
+            setTimeout(() => {
+                const searchField = $('.select2-search__field, .select2-search input, .select2-container--open .select2-search__field');
+                if (searchField.length > 0) {
+                    searchField.focus();
+                    searchField.trigger('focus');
+                    searchField[0].focus();
+                    console.log('Campo de búsqueda enfocado (respaldo)');
+                }
+            }, 100);
+        });
+        
+        // Intentar enfoque con múltiples métodos después de que se abra completamente
+        $(selectElement).on('select2:open', function() {
+            setTimeout(() => {
+                const searchField = $('.select2-search__field, .select2-search input, .select2-container--open .select2-search__field');
+                if (searchField.length > 0) {
+                    // Método 1: focus() de jQuery
+                    searchField.focus();
+                    // Método 2: focus() nativo
+                    searchField[0].focus();
+                    // Método 3: trigger focus
+                    searchField.trigger('focus');
+                    // Método 4: click para asegurar enfoque
+                    searchField.click();
+                    console.log('Enfoque múltiple aplicado');
+                }
+            }, 300);
+        });
+        
         // Establecer valor seleccionado después de la inicialización
         if (selectedValue) {
             $(selectElement).val(selectedValue).trigger('change');
