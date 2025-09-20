@@ -8,7 +8,6 @@ export function editarServicio(id) {
     cambiar();
     
     // Cargar selects
-    selectCliente();
     selectTipoPago();
     selectTipoServicio();
     
@@ -21,9 +20,10 @@ export function editarServicio(id) {
                 let servicio = data.data[0];
                 
                 setTimeout(() => {
-                    // Llenar formulario
+                    // Recargar select de cliente con el valor correcto
+                    selectCliente(servicio.cliente_id);
                     
-                    document.getElementById('cliente_id').value = servicio.cliente_id || '';
+                    // Llenar otros campos del formulario
                     document.getElementById('tipo_pago_id').value = servicio.tipo_pago_id || '';
                     document.getElementById('tipo_servicio_id').value = servicio.tipo_servicio_id || '';
                     document.getElementById('rol_usuario_id').value = servicio.rol_usuario_id || '';
