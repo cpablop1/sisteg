@@ -738,15 +738,18 @@ def listar_servicios(request):
     msg = 'Error al listar servicios.'
     data = {}
     data['data'] = []
+    data['detalle_servicio'] = []
     data["page_range"] = []
     id = request.GET.get('id', None) or None
     buscar = request.GET.get('buscar', '').strip() or ''
     pagina = request.GET.get('pagina', 1) or 1
     servicios = ''
+    detalle_servicio = ''
 
     try:
         if id: # Verificamos si necesitamos un servicio en expecífico
             servicios = Servicio.objects.filter(id = id)
+            detalle_servicio = DetalleServicio.objects.filter(servicio_id = id)
         else: # Sino se lista todos menos los de tipo ventas
             # Obtener tipo_servicio del parámetro GET
             tipo_servicio = request.GET.get('tipo_servicio', '').strip()
@@ -834,6 +837,25 @@ def listar_servicios(request):
                     'costo_servicio': ser.costo_servicio if hasattr(ser, 'costo_servicio') else 0
                 }
             )
+            # Preparamos los detalles del servicio
+            #data['detalle_servicio'] = list(detalle_servicio)
+            print('\n--------------------------------')
+            print(len(detalle_servicio))
+            print('--------------------------------\n')
+            if len(detalle_servicio) > 0:
+                for ds in detalle_servicio:
+                    data['detalle_servicio'].append(
+                        {
+                            'id': ds.id,
+                            'producto': ds.producto_id.descripcion,
+                            'cantidad': ds.cantidad,
+                            'precio': ds.precio,
+                            'costo': ds.costo,
+                            'ganancia': ds.ganancia,
+                            'total': ds.total,
+                            'producto_id': ds.producto_id.id
+                        }
+                    )
         # Preparamos la visualización de las páginas
         if paginador.num_pages > 5:
             start = int(pagina)

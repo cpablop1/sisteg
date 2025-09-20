@@ -13,9 +13,9 @@ export function editarServicio(id) {
     selectRolUsuario().then(() => {
         // Ahora cargar los datos del servicio
         fetch(`/servicio/listar-servicios/?id=${id}`).then(res => res.json()).then(data => {
+            console.log(data)
             if (data.res && data.data.length > 0) {
                 let servicio = data.data[0];
-
                 setTimeout(() => {
                     // Recargar select de cliente con el valor correcto
                     selectCliente(servicio.cliente_id);
@@ -33,6 +33,24 @@ export function editarServicio(id) {
                     document.getElementById('crear_servicio').hidden = true;
                     document.getElementById('actualizar_servicio').hidden = false;
                     document.getElementById('actualizar_servicio').setAttribute('servicio_id', id);
+
+                    // Listamos los detalles del servicio
+                    let tabla = document.getElementById('tbl_listar_carrito');
+                    let fila = '';
+                    if (data.detalle_servicio.length !== 0) {
+                        Array.from(data.detalle_servicio, elemento => {
+                            fila += `
+                    <tr>
+                        <td scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.producto_id}" id="cantidad${elemento.producto_id}"></td>
+                        <td>${elemento.producto}</td>
+                        <td><input type="number" step="0.1" value="${elemento.costo}" class="form-control" producto_id="${elemento.producto_id}" id="costo${elemento.producto_id}"></td>
+                        <td><input type="number" step="0.1" value="${elemento.precio}" class="form-control" producto_id="${elemento.producto_id}" id="precio${elemento.producto_id}"></td>
+                        <td>${elemento.total}</td>
+                        <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}"></i></td>
+                    </tr>`;
+                        });
+                    }
+                    tabla.childNodes[3].innerHTML = fila;
                 }, 500);
             }
         }).catch(error => {
