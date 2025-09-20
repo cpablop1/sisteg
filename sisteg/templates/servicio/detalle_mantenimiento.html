@@ -1,4 +1,5 @@
-<div class="modal fade" id="mdl_detalle_servicio" tabindex="-1" aria-labelledby="mdl_detalle_servicioLabel" aria-hidden="true">
+<div class="modal fade" id="mdl_detalle_servicio" tabindex="-1" aria-labelledby="mdl_detalle_servicioLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -6,19 +7,24 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div>
+                    <p id="cliente"></p>
+                    <p id="contacto"></p>
+                    <p id="mano_obra"></p>
+                    <p id="descripcion"></p>
+                </div>
                 <div class="row">
                     <div class="col-12">
                         <div class="table-responsive">
                             <table class="table" id="tbl_detalle_servicio">
                                 <thead>
                                     <tr class="text-center">
-                                        <th scope="col">#</th>
-                                        <th scope="col">Descripción</th>
-                                        <th scope="col">Costo</th>
-                                        <th scope="col">Precio</th>
                                         <th scope="col">Cantidad</th>
-                                        <th scope="col">Total</th>
+                                        <th scope="col">Descripción</th>
+                                        <th scope="col">Precio</th>
+                                        <th scope="col">Costo</th>
                                         <th scope="col">Ganancia</th>
+                                        <th scope="col">Total</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -27,10 +33,11 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <div class="modal-footer justify-content-end me-md-3">
+                <button class="btn btn-warning" id="garantia_servicio"><i class="fa-solid fa-square-plus"></i> Agregar garantía</button>
+                <h4 class="bg-light p-2" id="ganancia_detalle_servicio">Q 0.0</h4>
+                <h4 class="bg-light p-2" id="subtotal_detalle_servicio">Q 0.0</h4>
             </div>
         </div>
     </div>
 </div>
-

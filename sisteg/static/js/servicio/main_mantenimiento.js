@@ -119,22 +119,22 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
     }
 });
 
-// Evento para mostra modal de garantía (usando event delegation)
-document.addEventListener('click', e => {
-    if (e.target.hasAttribute('garantia_servicio')) {
-        let servicio_id = parseInt(e.target.getAttribute('servicio_id'))
-        let garantia_id = parseInt(e.target.getAttribute('garantia_id'))
-        document.getElementById('form_garantia').reset();
-        if (servicio_id) {
-            new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
-            if (garantia_id) {
-                setTimeout(() => verGarantia(garantia_id), 500);
-            } else {
-                let crear_garantia = document.getElementById('crear_garantia');
-                crear_garantia.innerHTML = '<i class="fa-solid fa-square-plus"></i> Crear';
-                crear_garantia.classList.remove('btn-warning');
-                crear_garantia.classList.add('btn-primary');
-            }
+// Evento para mostra modal de garantía
+document.getElementById('garantia_servicio').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'))
+    let garantia_id = parseInt(e.target.getAttribute('garantia_id'))
+    document.getElementById('form_garantia').reset();
+    let crear_garantia = document.getElementById('crear_garantia');
+    if (servicio_id) {
+        new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
+        if (garantia_id) {
+            setTimeout(() => verGarantia(garantia_id), 500);
+        } else {
+            document.getElementById('servicio_id').value = servicio_id;
+            document.getElementById('tbl_garantia').childNodes[3].innerHTML = '';
+            crear_garantia.innerHTML = '<i class="fa-solid fa-square-plus"></i> Crear';
+            crear_garantia.classList.remove('btn-warning');
+            crear_garantia.classList.add('btn-primary');
         }
     }
 });
@@ -148,10 +148,9 @@ document.getElementById('crear_garantia').addEventListener('click', e => {
 document.getElementById('tbl_garantia').addEventListener('click', e => {
     let detalle_garantia_id = parseInt(e.target.getAttribute('detalle_garantia_id'));
     let garantia_id = parseInt(e.target.getAttribute('garantia_id'));
+    console.log(garantia_id);
     if (detalle_garantia_id){
         eliminarGarantia({detalle_garantia_id: detalle_garantia_id});
         setTimeout(() => verGarantia(garantia_id), 500);
     }
 });
-
-// El costo del servicio se maneja en la vista del técnico, no aquí

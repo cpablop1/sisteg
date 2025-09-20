@@ -1,59 +1,67 @@
-<div class="modal fade" id="mdl_garantia" tabindex="-1" aria-labelledby="mdl_garantiaLabel" aria-hidden="true">
+<div class="modal fade" id="mdl_garantia" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content shadow-lg p-3 mb-5 bg-body rounded">
             <div class="modal-header">
-                <h5 class="modal-title" id="mdl_garantiaLabel">Gestión de Garantía</h5>
+                <h1>Gestión de garantía</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
+                <div class="mt-2 alerta"></div>
                 <form id="form_garantia">
-                    {% csrf_token %}
-                    <input type="hidden" name="servicio_id" id="servicio_id">
-                    <input type="hidden" name="garantia_id" id="garantia_id">
-                    <div class="row">
-                        <div class="col-12 col-md-6">
-                            <label for="observacion" class="form-label">Observaciones de la garantía:</label>
-                            <textarea class="form-control" rows="3" name="observacion" id="observacion"
-                                placeholder="Describe el problema o motivo de la garantía"></textarea>
-                        </div>
-                        <div class="col-12 col-md-6">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="es_perdida" id="es_perdida">
-                                <label class="form-check-label" for="es_perdida">
-                                    ¿Es pérdida total?
-                                </label>
-                            </div>
-                        </div>
+                    <div class="mb-3">
+                        <label for="observacion" class="form-label">Obersevaciones sobre la garantía:</label>
+                        <textarea name="observacion" id="observacion" class="form-control" rows="5"></textarea>
                     </div>
-                    <div class="row my-2">
-                        <div class="col-12">
-                            <div class="table-responsive">
-                                <table class="table" id="tbl_garantia">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th scope="col">#</th>
-                                            <th scope="col">Producto</th>
-                                            <th scope="col">Marca</th>
-                                            <th scope="col">Cantidad</th>
-                                            <th scope="col">Precio</th>
-                                            <th scope="col">Total</th>
-                                            <th scope="col">Acción</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
+                    <div class="mb-3">
+                        <label for="servicio_id" class="form-label">Id servicio:</label>
+                        <input type="text" name="servicio_id" id="servicio_id" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="garantia_id" class="form-label">Id garantía:</label>
+                        <input type="text" name="garantia_id" id="garantia_id" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <div class="row">
+                            <div class="col-12 col-md-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="es_perdida" id="es_perdida">
+                                    <label class="form-check-label" for="es_perdida">Marque si fue una pérdida</label>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="cantidad" class="form-label">Ingrese la cantidad:</label>
+                                <input type="number" step="1" class="form-control" name="cantidad" id="cantidad">
+                            </div>
+                            <div class="col-12 col-md-4">
+                                <label for="detalle_servicio_id" class="form-label">Seleccione los productos:</label>
+                                <select name="detalle_servicio_id" id="detalle_servicio_id"
+                                    class="form-control"></select>
                             </div>
                         </div>
                     </div>
                 </form>
+                <div class="table-responsive">
+                    <table class="table" id="tbl_garantia">
+                        <thead>
+                            <tr class="text-center">
+                                <th scope="col">Cantidad</th>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Marca</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Costo</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Eliminar</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="crear_garantia">
-                    <i class="fa-solid fa-square-plus"></i> Crear
-                </button>
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <div class="modal-footer justify-content-end me-md-3">
+                <button id="crear_garantia" class="btn"></button>
+                <h4 class="bg-light p-2" id="subtotal_garantia">Q 0.0</h4>
             </div>
         </div>
     </div>
 </div>
-

@@ -1,24 +1,30 @@
 import * as alerta from '../alertas/alertas.js';
+import { listarDetalleServicio } from './listarDetalleServicio.js';
+import { verGarantia } from './verGarantia.js';
 
 export function garantiaServicio() {
-    const form = document.getElementById('form_garantia');
-    const formData = new FormData(form);
-    
+    let form = document.getElementById('form_garantia');
+    let formData = new FormData(form)
     fetch('/servicio/garantia-servicio/', {
         method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
         body: formData
-    })
-    .then(res => res.json())
-    .then(data => {
+    }).then(res => {
+        return res.json();
+    }).then(data => {
         if (data.res) {
             alerta.success(data.msg);
-            form.reset();
+            console.log(data);
+            setTimeout(() => {
+                verGarantia(data.garantia_id);
+                listarDetalleServicio(data.servicio_id);
+            }, 500);
         } else {
             alerta.danger(data.msg);
         }
+    }).catch(error => {
+        console.log(error);
     })
-    .catch(error => {
-        console.error('Error:', error);
-        alerta.danger('Error al procesar la garantía');
-    });
 }
