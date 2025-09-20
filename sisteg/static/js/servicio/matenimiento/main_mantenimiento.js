@@ -1,21 +1,21 @@
-import * as alerta from '../alertas/alertas.js';
+import * as alerta from '../../alertas/alertas.js';
 import { cambiar } from './cambiar_mantenimiento.js';
 import { agregar, actualizar } from './agregar_mantenimiento.js';
 import { listar } from './listar_mantenimiento.js';
 import { validacion } from './validacion_mantenimiento.js';
-import { eliminarServicio } from './eliminarServicio.js';
-import { listarDetalleServicio } from './listarDetalleServicio.js';
-import { editarServicio } from './EditarServicio.js';
-import { ticketPdf } from './ticketPdf.js';
-import { garantiaServicio } from './garantiaServicio.js';
-import { verGarantia } from './verGarantia.js';
-import { eliminarGarantia } from './eliminarGarantia.js';
-import { selectCliente } from './selectCliente.js';
-import { selectTipoPago } from './selectTipoPago.js';
-import { selectTipoServicio } from './selectTipoServicio.js';
-import { selectRolUsuario } from './selectRolUsuario.js';
-import { validacionCliente } from './validacionCliente.js';
-import { agregarCliente } from './agregarCliente.js';
+import { eliminarServicio } from '../eliminarServicio.js';
+import { listarDetalleServicio } from '../listarDetalleServicio.js';
+import { editarServicio } from '../EditarServicio.js';
+import { ticketPdf } from '../ticketPdf.js';
+import { garantiaServicio } from '../garantiaServicio.js';
+import { verGarantia } from '../verGarantia.js';
+import { eliminarGarantia } from '../eliminarGarantia.js';
+import { selectCliente } from '../selectCliente.js';
+import { selectTipoPago } from '../selectTipoPago.js';
+import { selectTipoServicio } from '../selectTipoServicio.js';
+import { selectRolUsuario } from '../selectRolUsuario.js';
+import { validacionCliente } from '../validacionCliente.js';
+import { agregarCliente } from '../agregarCliente.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -84,6 +84,7 @@ document.getElementById('crear_servicio').addEventListener('click', e => {
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('editar_servicio_id'));
     if (servicio_id) {
+        cambiar();
         editarServicio(servicio_id);
     }
 });

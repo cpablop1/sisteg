@@ -13,7 +13,7 @@ import { ticketPdf } from './ticketPdf.js';
 window.onload = () => {
     let titulo = document.getElementById('titulo');
     titulo.innerHTML = `<i class="fa-solid fa-gear"></i> Servicio`;
-    document.getElementById('agregar').hidden = true;
+    document.getElementById('agregar').innerHTML = '';
     listar();
 }
 
@@ -114,6 +114,7 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 // Evento para mostrar servicio a editar
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('editar_servicio_id'));
+    console.log(servicio_id);
     if (servicio_id) {
         cambiar();
         editarServicio(servicio_id);

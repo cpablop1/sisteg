@@ -25,6 +25,7 @@ class Servicio(models.Model):
     subtotal = models.FloatField(default = 0)
     costo_servicio = models.FloatField(default = 0)
     observacion = models.TextField()
+    nota = models.TextField()
     estado = models.BooleanField(default = 0)
     fecha_ingreso = models.DateTimeField(auto_now_add = True)
     fecha_actualizacion = models.DateTimeField(auto_now = True)

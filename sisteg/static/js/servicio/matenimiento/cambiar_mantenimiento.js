@@ -1,13 +1,11 @@
-import { selectCliente } from './selectCliente.js';
-import { selectTipoPago } from './selectTipoPago.js';
-import { selectTipoServicio } from './selectTipoServicio.js';
-import { selectRolUsuario } from './selectRolUsuario.js';
+import { selectCliente } from '../selectCliente.js';
+import { selectTipoPago } from '../selectTipoPago.js';
+import { selectTipoServicio } from '../selectTipoServicio.js';
+import { selectRolUsuario } from '../selectRolUsuario.js';
 import { listar as listado } from './listar_mantenimiento.js';
 
 // Función para cambiar de vista entre el formulario y el listado de mantenimiento
-export function cambiar() {
-    console.log('Ejecutando función cambiar() - Mantenimiento');
-    
+export function cambiar() {    
     // Obtener elementos del DOM con verificación robusta
     const btn_agregar = document.getElementById('agregar');
     const form_agregar = document.getElementById('form_agregar');
@@ -59,7 +57,6 @@ export function cambiar() {
     
     if (estaOcultoListado) {
         // Mostrar listado, ocultar formulario
-        console.log('Mostrando listado - Mantenimiento');
         btn_agregar.innerHTML = '<i class="fa-solid fa-square-plus"></i>';
         listar.style.display = 'block';
         listar.hidden = false;
@@ -68,7 +65,6 @@ export function cambiar() {
         listado();
     } else {
         // Mostrar formulario, ocultar listado
-        console.log('Mostrando formulario - Mantenimiento');
         btn_agregar.innerHTML = '<i class="fa-solid fa-list"></i>';
         listar.style.display = 'none';
         listar.hidden = true;

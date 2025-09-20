@@ -29,9 +29,6 @@ function initializeSelect2(selectElement, selectedValue = null) {
                     searchField.focus();
                     searchField.trigger('focus');
                     searchField[0].focus();
-                    console.log('Campo de búsqueda enfocado');
-                } else {
-                    console.log('No se encontró el campo de búsqueda');
                 }
             }, 200);
         });
@@ -44,7 +41,6 @@ function initializeSelect2(selectElement, selectedValue = null) {
                     searchField.focus();
                     searchField.trigger('focus');
                     searchField[0].focus();
-                    console.log('Campo de búsqueda enfocado (respaldo)');
                 }
             }, 100);
         });
@@ -62,7 +58,6 @@ function initializeSelect2(selectElement, selectedValue = null) {
                     searchField.trigger('focus');
                     // Método 4: click para asegurar enfoque
                     searchField.click();
-                    console.log('Enfoque múltiple aplicado');
                 }
             }, 300);
         });
@@ -97,13 +92,10 @@ export function selectCliente(selectedValue = null) {
                 
                 function tryInitialize() {
                     if (initializeSelect2(selectElement, selectedValue)) {
-                        console.log('Select2 inicializado correctamente con valor:', selectedValue);
                     } else if (attempts < maxAttempts) {
                         attempts++;
-                        console.log(`Intento ${attempts} de inicializar Select2...`);
                         setTimeout(tryInitialize, 100);
                     } else {
-                        console.warn('No se pudo inicializar Select2 después de varios intentos. El select funcionará sin búsqueda.');
                         // Establecer valor manualmente si Select2 no funciona
                         if (selectedValue) {
                             selectElement.value = selectedValue;

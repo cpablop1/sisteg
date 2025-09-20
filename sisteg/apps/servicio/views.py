@@ -222,13 +222,10 @@ def agregar_servicio(request):
         cantidad = request.POST.get('cantidad', '1')
         stock = request.POST.get('stock', '').strip()
         observacion = request.POST.get('observacion', '').strip()
+        nota = request.POST.get('nota', '').strip()
         costo_servicio = request.POST.get('costo_servicio', '0').strip()
         precio = request.POST.get('precio', '0').strip()
         costo = request.POST.get('costo', '0').strip()
-        print('\n--------------------------------')
-        print(f'servicio_id: {servicio_id}')
-        #return JsonResponse({'res': True, 'msg': servicio_id})
-        print('---------------------------------\n')
 
         # Validación para rol_usuario_id
         if not rol_usuario_id:
@@ -546,8 +543,8 @@ def listar_carrito(request):
             data['contacto'] = servicio[0].cliente_id.telefono
             data['tipo_servicio_id'] = servicio[0].tipo_servicio_id.id
             data['observacion'] = servicio[0].observacion
+            data['nota'] = servicio[0].nota
             data['costo_servicio'] = servicio[0].costo_servicio
-            data['garantia_de_prueba'] = 213212312525645
             #data['rol_usuario_id'] = ServicioUsuario.objects.filter(servicio_id = servicio[0].id)[0].usuario_id.id
             try:
                 data['garantia_id'] = Garantia.objects.get(servicio_id = servicio[0].id).id
@@ -825,6 +822,7 @@ def listar_servicios(request):
                     'tipo_pago_id': ser.tipo_pago_id.id,
                     'usuario_id': ser.usuario_id.username,
                     'cliente': f'{ser.cliente_id.nombres} {ser.cliente_id.apellidos}',
+                    'telefono': ser.cliente_id.telefono,
                     'cliente_id': ser.cliente_id.id,
                     'tipo_servicio': ser.tipo_servicio_id.descripcion,
                     'tipo_servicio_id': ser.tipo_servicio_id.id,

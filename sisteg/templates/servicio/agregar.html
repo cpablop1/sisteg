@@ -30,9 +30,16 @@
     </div>
     <div class="row my-2">
         <div class="col-12 col-md-12">
-            <label for="observacion" class="form-label">Espacio para agregar observaciones del servicio:</label>
+            <label for="observacion" class="form-label">Detalles inicales:</label>
             <textarea class="form-control" rows="3" name="observacion" id="observacion"
-                placeholder="Espacio para observaciones o detalles (Opcional)"></textarea>
+                placeholder="Espacio para observaciones o detalles (Opcional)" readonly></textarea>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="col-12 col-md-12">
+            <label for="nota" class="form-label">Nota del técnico:</label>
+            <textarea class="form-control" rows="3" name="nota" id="nota"
+                placeholder="Área para agregar las observaciones del técnico">Observaciones del técnico</textarea>
         </div>
     </div>
     <div class="row my-2">
@@ -47,6 +54,12 @@
             <div>
                 <label for="subtotal" class="form-label text-center">Subtotal del servicio:</label>
                 <h4 class="bg-light p-2 text-center" id="subtotal">Q. 00</h3>
+            </div>
+        </div>
+        <div class="col-12 col-md-6 d-flex justify-content-end align-items-center">
+            <div>
+                <label for="ganancia" class="form-label text-center">Ganancia:</label>
+                <h4 class="bg-success text-white p-2 text-center" id="ganancia">Q. 00</h3>
             </div>
         </div>
         <div>
@@ -82,6 +95,8 @@
         <button type="button" class="btn btn-warning mx-2" id="actualizar_servicio"><i
                 class="fa-solid fa-arrow-rotate-right"></i>
             Actualizar servicio</button>
+        <button type="button" class="btn btn-primary mx-2" id="crear_servicio" hidden><i class="fa-solid fa-square-check"></i>
+            Crear Mantenimiento</button>
     </div>
 </form>
 

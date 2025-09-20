@@ -1,4 +1,4 @@
-import * as alerta from '../alertas/alertas.js';
+import * as alerta from '../../alertas/alertas.js';
 
 export function agregar(form) {
     let formData = new FormData(form);

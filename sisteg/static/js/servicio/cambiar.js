@@ -16,7 +16,7 @@ export function cambiar() {
         listar.hidden = false;
         form_agregar.hidden = true;
     } else {
-        btn_agregar.innerHTML = '<i class="fa-solid fa-list"></i>';
+        btn_agregar.innerHTML = '<a href="/servicio" class="decoration-none text-dark"><i class="fa-solid fa-circle-left"></i></a>';
         listar.hidden = true;
         form_agregar.hidden = false;
     }

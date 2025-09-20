@@ -21,6 +21,8 @@ export function listarDetalleServicio(servicio_id) {
             document.getElementById('contacto').innerHTML = `<b>Contacto:</b> ${data.contacto}`;
             document.getElementById('mano_obra').innerHTML = `<b>Mano de obra:</b> ${data.costo_servicio}`;
             document.getElementById('descripcion').innerHTML = `<b>Descripción:</b> ${data.observacion}`;
+            document.getElementById('nota_tecnico').innerHTML = `<b>Nota del técnico:</b> ${data.nota}`;
+        
             garantia_servicio.setAttribute('servicio_id', data.carrito_id);
             if (data.garantia_id) {
                 garantia_servicio.classList.remove('btn-warning');
