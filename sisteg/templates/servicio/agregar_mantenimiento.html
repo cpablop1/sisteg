@@ -5,7 +5,10 @@
             <div class="row">
                 <div class="col-12 col-md-3 text-center">
                     <label for="cliente_id" class="form-label">Cliente:</label>
-                    <select name="cliente_id" id="cliente_id" class="form-select"></select>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <select name="cliente_id" id="cliente_id" class="form-select"></select>
+                        <i class="fa-solid fa-square-plus btn btn-primary btn-lg" id="agregar_cliente"></i>
+                    </div>
                 </div>
                 <div class="col-12 col-md-3 text-center">
                     <label for="tipo_pago_id" class="form-label">Tipo de pago:</label>
@@ -48,9 +51,11 @@
             </div>
 
             <div class="mb-3 d-flex justify-content-end">
-                <button type="button" class="btn btn-primary mx-2" id="crear_servicio"><i class="fa-solid fa-square-check"></i>
+                <button type="button" class="btn btn-primary mx-2" id="crear_servicio"><i
+                        class="fa-solid fa-square-check"></i>
                     Crear Mantenimiento</button>
-                <button type="button" class="btn btn-primary mx-2" id="actualizar_servicio" hidden><i class="fa-solid fa-square-check"></i>
+                <button type="button" class="btn btn-primary mx-2" id="actualizar_servicio" hidden><i
+                        class="fa-solid fa-square-check"></i>
                     Actualizar Mantenimiento</button>
                 <button type="button" class="btn btn-secondary" id="eliminar_servicio"><i class="fa-solid fa-trash"></i>
                     Vaciar</button>

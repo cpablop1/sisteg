@@ -13,6 +13,8 @@ import { garantiaServicio } from './garantiaServicio.js';
 import { verGarantia } from './verGarantia.js';
 import { eliminarGarantia } from './eliminarGarantia.js';
 import { selectTipoServicio } from './selectTipoServicio.js';
+import { validacionCliente } from './validacionCliente.js';
+import { agregarCliente } from './agregarCliente.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -225,5 +227,18 @@ document.getElementById('tbl_garantia').addEventListener('click', e => {
     if (detalle_garantia_id){
         eliminarGarantia({detalle_garantia_id: detalle_garantia_id});
         setTimeout(() => verGarantia(garantia_id), 500);
+    }
+});
+
+// Evento para mostrar modal de agregar cliente
+document.getElementById('agregar_cliente').addEventListener('click', e => {
+    new bootstrap.Modal(document.getElementById('mdl_agregar_cliente')).show();
+});
+
+// Evento para guardar cliente
+document.getElementById('guardar_cliente').addEventListener('click', e => {
+    let form = document.getElementById('form_agregar_cliente');
+    if (validacionCliente(form)) {
+        agregarCliente(form);
     }
 });
