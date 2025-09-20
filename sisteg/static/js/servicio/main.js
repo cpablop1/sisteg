@@ -68,8 +68,10 @@ document.getElementById('buscar').addEventListener('input', e => {
 // Evento para eliminar elementos del servicio
 document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
     let detalle_servicio_id = parseInt(e.target.getAttribute('detalle_servicio_id'));
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     if (detalle_servicio_id) {
         eliminarServicio({ 'detalle_servicio_id': detalle_servicio_id });
+        editarServicio(servicio_id);
     }
 });
 

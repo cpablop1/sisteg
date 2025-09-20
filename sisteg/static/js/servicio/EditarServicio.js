@@ -13,9 +13,9 @@ export function editarServicio(id) {
     selectRolUsuario().then(() => {
         // Ahora cargar los datos del servicio
         fetch(`/servicio/listar-servicios/?id=${id}`).then(res => res.json()).then(data => {
-            console.log(data)
             if (data.res && data.data.length > 0) {
                 let servicio = data.data[0];
+                console.log(data)
                 setTimeout(() => {
                     // Recargar select de cliente con el valor correcto
                     selectCliente(servicio.cliente_id);
@@ -28,6 +28,7 @@ export function editarServicio(id) {
                     document.getElementById('nota').value = servicio.nota || '';
                     document.getElementById('subtotal').textContent = `Q. ${servicio.subtotal || '0.00'}`;
                     document.getElementById('ganancia').textContent = `Q. ${servicio.costo_servicio || '0.00'}`;
+                    document.getElementById('costo_servicio').value = servicio.costo_servicio || '';
 
                     // Mostrar botón de actualizar
                     document.getElementById('crear_servicio').hidden = true;
@@ -39,14 +40,28 @@ export function editarServicio(id) {
                     let fila = '';
                     if (data.detalle_servicio.length !== 0) {
                         Array.from(data.detalle_servicio, elemento => {
+                            let stock = '';
+                            if (elemento.stock) {
+                                stock = `<div class="form-check text-center">
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" checked>
+                                    <label class="form-check-label" for="stock">Descontar</label>
+                                </div>`;
+                            } else {
+                                stock = `<div class="form-check text-center">
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}">
+                                    <label class="form-check-label" for="stock">No descontar</label>
+                                </div>`;
+                            }
                             fila += `
-                    <tr>
-                        <td scope="row"><input type="number" class="form-control" value="${elemento.cantidad}" producto_id="${elemento.producto_id}" id="cantidad${elemento.producto_id}"></td>
+                    <tr class="text-center">
+                        <td scope="row"><input type="number" class="form-control text-center" value="${elemento.cantidad}" id="cantidad${elemento.producto_id}"></td>
                         <td>${elemento.producto}</td>
-                        <td><input type="number" step="0.1" value="${elemento.costo}" class="form-control" producto_id="${elemento.producto_id}" id="costo${elemento.producto_id}"></td>
-                        <td><input type="number" step="0.1" value="${elemento.precio}" class="form-control" producto_id="${elemento.producto_id}" id="precio${elemento.producto_id}"></td>
+                        <td>${stock}</td>
+                        <td><input type="number" step="0.1" value="${elemento.costo}" class="form-control text-center" id="costo${elemento.producto_id}"></td>
+                        <td><input type="number" step="0.1" value="${elemento.precio}" class="form-control text-center" id="precio${elemento.producto_id}"></td>
                         <td>${elemento.total}</td>
-                        <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}"></i></td>
+                        <td><i class="fa-solid fa-arrow-rotate-right btn btn-info" producto_id="${elemento.producto_id}"></i></td>
+                        <td><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}" servicio_id="${id}"></i></td>
                     </tr>`;
                         });
                     }

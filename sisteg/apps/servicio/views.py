@@ -402,7 +402,7 @@ def agregar_servicio(request):
                 todos_detalle = DetalleServicio.objects.filter(servicio_id = existe_servicio[0].id)
                 subtotal = sum(dc.total for dc in todos_detalle)
                 subtotal += costo_servicio
-                subtotal += existe_servicio[0].costo_servicio
+                #subtotal += existe_servicio[0].costo_servicio
                 # Actualizamos la venta
                 existe_servicio.update(
                     subtotal = subtotal,
@@ -461,6 +461,7 @@ def agregar_servicio(request):
             datos = {
                 'subtotal': subtotal,
                 'observacion': observacion,
+                'nota': nota,
                 'costo_servicio': costo_servicio,
                 'cliente_id': Cliente.objects.get(id = cliente_id),
                 'tipo_pago_id': TipoPago.objects.get(id = tipo_pago_id),
@@ -832,16 +833,13 @@ def listar_servicios(request):
                     'estado': 'Finalizado' if ser.estado else 'Abierto',
                     'estado_servicio': ser.estado,
                     'observacion': observacion,
+                    'nota': ser.nota,
                     'rol_usuario_id': rol_usuario_id,
                     'tecnico': tecnico,
                     'costo_servicio': ser.costo_servicio if hasattr(ser, 'costo_servicio') else 0
                 }
             )
             # Preparamos los detalles del servicio
-            #data['detalle_servicio'] = list(detalle_servicio)
-            print('\n--------------------------------')
-            print(len(detalle_servicio))
-            print('--------------------------------\n')
             if len(detalle_servicio) > 0:
                 for ds in detalle_servicio:
                     data['detalle_servicio'].append(
@@ -852,6 +850,7 @@ def listar_servicios(request):
                             'precio': ds.precio,
                             'costo': ds.costo,
                             'ganancia': ds.ganancia,
+                            'stock': ds.stock,
                             'total': ds.total,
                             'producto_id': ds.producto_id.id
                         }
@@ -1016,6 +1015,13 @@ def ticket_pdf(request):
             Table([
                 [
                     Paragraph(f"{servicio.observacion}", styles['center'])
+                ]
+            ])
+        )
+        elements.append(
+            Table([
+                [
+                    Paragraph(f"{servicio.nota}", styles['center'])
                 ]
             ])
         )

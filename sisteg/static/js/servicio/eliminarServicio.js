@@ -22,10 +22,6 @@ export function eliminarServicio(data) {
     .then(data => {
         if (data.res) {
             alerta.success(data.msg);
-            // Recargar la lista
-            if (typeof window.listar === 'function') {
-                window.listar();
-            }
         } else {
             alerta.danger(data.msg);
         }
