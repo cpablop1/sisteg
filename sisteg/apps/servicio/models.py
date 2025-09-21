@@ -27,6 +27,7 @@ class Servicio(models.Model):
     observacion = models.TextField()
     nota = models.TextField()
     estado = models.BooleanField(default = 0)
+    cotizacion = models.BooleanField(default = False)
     fecha_ingreso = models.DateTimeField(auto_now_add = True)
     fecha_actualizacion = models.DateTimeField(auto_now = True)
     factura_emitida = models.BooleanField(default = False)

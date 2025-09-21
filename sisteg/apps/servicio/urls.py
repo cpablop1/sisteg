@@ -18,4 +18,5 @@ urlpatterns = [
     path('garantia-servicio/', views.garantia_servicio, name='garantia_servicio'),
     path('listar-garantia/', views.listar_garantia, name='listar_garantia'),
     path('eliminar-garantia/', views.eliminar_garantia, name='eliminar_garantia'),
+    path('cotizacion/', views.vista_cotizacion, name='cotizacion'),
 ]

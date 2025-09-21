@@ -1,0 +1,71 @@
+<form class="border rounded shadow-lg p-5 mt-5" id="form_agregar" hidden>
+    {% csrf_token %}
+    <div class="row">
+        <div class="col-12 col-md-3 text-center">
+            <label for="cliente_id" class="form-label">Cliente:</label>
+            <div class="d-flex justify-content-center align-items-center">
+                <select name="cliente_id" id="cliente_id" class="form-select" style="width: 100%;"></select>
+                <i class="fa-solid fa-square-plus btn btn-primary btn-lg" id="agregar_cliente"></i>
+            </div>
+        </div>
+        <div class="col-12 col-md-3 text-center">
+            <label for="tipo_pago_id" class="form-label">Tipo de pago:</label>
+            <select name="tipo_pago_id" id="tipo_pago_id" class="form-select"></select>
+        </div>
+        <div class="col-12 col-md-3 text-center">
+            <label for="tipo_servicio_id" class="form-label">Tipo de servicio:</label>
+            <select name="tipo_servicio_id" id="tipo_servicio_id" class="form-select"></select>
+        </div>
+        <div class="col-12 col-md-3">
+            <div class="d-flex flex-column text-center">
+                <label for="btn-buscar-productos" class="form-label">Agregar productos:</label>
+                <span class="btn btn-light" id="btn-buscar-productos">
+                    <i class="fa-solid fa-magnifying-glass p-1"></i>
+                    Buscar
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="col-12 col-md-12">
+            <p id="telefono"></p>
+        </div>
+    </div>
+    <div class="row my-2">
+        <div class="col-12 col-md-6 d-flex justify-content-end align-items-center">
+            <div>
+                <label for="subtotal" class="form-label text-center">Subtotal del servicio:</label>
+                <h4 class="bg-light p-2 text-center" id="subtotal">Q. 00</h3>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="table-responsive">
+                <table class="table" id="tbl_listar_carrito">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">Cantidad</th>
+                            <th scope="col">Producto</th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Total</th>
+                            <th scope="col">Eliminar</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-3 d-flex justify-content-end">
+        <button type="button" class="btn btn-primary mx-2" id="confirmar_servicio"><i
+                class="fa-solid fa-square-check"></i> Confirmar venta</button>
+        <button type="button" class="btn btn-primary mx-2" id="actualizar_servicio" hidden><i class="fa-solid fa-square-check"></i>
+            Actualizar venta</button>
+        <button type="button" class="btn btn-secondary" id="eliminar_servicio"><i class="fa-solid fa-trash"></i>
+            Vaciar</button>
+    </div>
+</form>
+
+{% include 'compra/buscar_productos.html' %}

@@ -1,0 +1,48 @@
+<div class="modal fade" id="mdl_agregar_cliente" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear cliente</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form_agregar_cliente">
+                    <div class="mb-3">
+                        <label for="nombres" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" name="id" id="id" hidden>
+                        <input type="text" class="form-control" name="nombres" id="nombres" maxlength="150">
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellidos" class="form-label">Apellidos</label>
+                        <input type="text" class="form-control" name="apellidos" id="apellidos" maxlength="150">
+                    </div>
+                    <div class="mb-3">
+                        <label for="nit" class="form-label">NIT</label>
+                        <input type="text" class="form-control" name="nit" id="nit" maxlength="15">
+                    </div>
+                    <div class="mb-3">
+                        <label for="cui" class="form-label">CUI</label>
+                        <input type="text" class="form-control" name="cui" id="cui" maxlength="15">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" name="telefono" id="telefono" maxlength="15">
+                    </div>
+                    <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" name="direccion" id="direccion" maxlength="250">
+                    </div>
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo</label>
+                        <input type="email" class="form-control" name="correo" id="correo" maxlength="250">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer justify-content-end me-md-3">
+                <button class="btn btn-primary" id="guardar_cliente"><i class="fa-solid fa-floppy-disk"></i>
+                    Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>

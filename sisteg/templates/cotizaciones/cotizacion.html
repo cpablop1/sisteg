@@ -1,0 +1,15 @@
+{% extends 'layout/layout.html' %}
+
+{% load static %}
+
+{% block contenido %}
+{% include 'cotizaciones/listar.html' %}
+{% include 'cotizaciones/agregar.html' %}
+{% include 'cotizaciones/detalle_cotizacion.html' %}
+{% include 'cotizaciones/agregar_cliente.html' %}
+{% endblock %}
+
+
+{% block script %}
+<script src="{% static 'js/cotizaciones/main.js' %}" type="module"></script>
+{% endblock %}

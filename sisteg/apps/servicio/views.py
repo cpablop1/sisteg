@@ -16,14 +16,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 from django.http import HttpResponse
-#from reportlab.pdfgen import canvas
 from io import BytesIO
 
 from reportlab.lib.pagesizes import mm, landscape
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph, Spacer, SimpleDocTemplate, Table
-#from reportlab.lib.units import inch
-#from reportlab.lib import colors
 
 @login_required(login_url='autenticacion')
 def vista_cliente(request):
@@ -40,6 +37,10 @@ def vista_venta(request):
 @login_required(login_url='autenticacion')
 def vista_mantenimiento(request):
     return render(request, 'servicio/mantenimiento.html')
+
+@login_required(login_url='autenticacion')
+def vista_cotizacion(request):
+    return render(request, 'cotizaciones/cotizacion.html')
 
 # Función para agregar cliente
 @login_required(login_url='autenticacion')
@@ -221,6 +222,7 @@ def agregar_servicio(request):
         rol_usuario_id = request.POST.get('rol_usuario_id', '').strip()
         cantidad = request.POST.get('cantidad', '1')
         stock = request.POST.get('stock', '').strip()
+        cotiza = request.POST.get('cotiza', '').strip()
         observacion = request.POST.get('observacion', '').strip()
         nota = request.POST.get('nota', '').strip()
         costo_servicio = request.POST.get('costo_servicio', '0').strip()
@@ -285,6 +287,19 @@ def agregar_servicio(request):
         except (ValueError, TypeError):
             stock = True
         
+        # Validación para stock si es true o false
+        if not cotiza:
+            cotiza = False
+
+        try:
+            cotiza = int(cotiza)
+            if cotiza == 1:
+                cotiza = True
+            else:
+                cotiza = False
+        except (ValueError, TypeError):
+            cotiza = False
+        
         # Validación de la cantidad que siempre sea un entero positivo
         if cantidad.strip() == '': # Si la cantidad es una cadena vacía le asignamos valor 1
             cantidad = 1
@@ -348,7 +363,7 @@ def agregar_servicio(request):
             if servicio_id:
                 existe_servicio = Servicio.objects.filter(id = servicio_id)
             else:
-                if (request.rol_usuario == 'recepcionista' and (tipo_servicio_id != 1)):
+                if (request.rol_usuario == 'recepcionista' and (tipo_servicio_id != 1) and (cotiza == False)):
                     return JsonResponse({'res': False, 'msg': 'No puedes agregar productos a un servicio de tipo mantenimiento'})
                 existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = tipo_servicio_id)
 
@@ -421,6 +436,7 @@ def agregar_servicio(request):
                 
                 servicio = Servicio.objects.create( # Creamos el servicio
                     subtotal = total_servicio,
+                    cotizacion = cotiza,
                     cliente_id = Cliente.objects.get(id = cliente_id),
                     usuario_id = User.objects.get(id = request.user.id),
                     tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id),
@@ -462,6 +478,7 @@ def agregar_servicio(request):
                 'subtotal': subtotal,
                 'observacion': observacion,
                 'nota': nota,
+                'cotizacion': cotiza,
                 'costo_servicio': costo_servicio,
                 'cliente_id': Cliente.objects.get(id = cliente_id),
                 'tipo_pago_id': TipoPago.objects.get(id = tipo_pago_id),
