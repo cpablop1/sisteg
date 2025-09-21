@@ -46,8 +46,8 @@ class DetalleServicio(models.Model):
     servicio_id = models.ForeignKey(Servicio, on_delete = models.CASCADE)
 
 class ServicioUsuario(models.Model):
-    usuario_id = models.ForeignKey(User, on_delete = models.PROTECT)
-    servicio_id = models.ForeignKey(Servicio, on_delete = models.PROTECT)
+    usuario_id = models.ForeignKey(User, on_delete = models.PROTECT, related_name='servicios_tecnicos')
+    servicio_id = models.ForeignKey(Servicio, on_delete = models.PROTECT, related_name='tecnicos')
 
 class Garantia(models.Model):
     subtotal = models.FloatField(default = 0)

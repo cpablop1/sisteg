@@ -783,7 +783,8 @@ def listar_servicios(request):
                 Q(usuario_id__username__icontains = buscar) |# Si hay buscamos por usuario
                 Q(cliente_id__nombres__icontains = buscar) |# Si hay buscamos por nombre del cliente
                 Q(cliente_id__apellidos__icontains = buscar) |# Si hay buscamos por apellidos del cliente
-                Q(tipo_servicio_id__descripcion__icontains = buscar) # Si hay buscamos por tipo servicio
+                Q(tipo_servicio_id__descripcion__icontains = buscar) | # Si hay buscamos por tipo servicio
+                Q(tecnicos__usuario_id__username__icontains = buscar) # Si hay buscamos por técnico
             )
             
         # Paginamos los servicios

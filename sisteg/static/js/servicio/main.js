@@ -9,6 +9,9 @@ import { finalizarServicio } from './finalizarServicio.js';
 import { listarDetalleServicio } from './listarDetalleServicio.js';
 import { editarServicio } from './EditarServicio.js';
 import { ticketPdf } from './ticketPdf.js';
+import { verGarantia } from './verGarantia.js';
+import { garantiaServicio } from './garantiaServicio.js';
+import { eliminarGarantia } from './eliminarGarantia.js';
 
 window.onload = () => {
     let titulo = document.getElementById('titulo');
@@ -116,7 +119,6 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 // Evento para mostrar servicio a editar
 document.getElementById('tbl_listar').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('editar_servicio_id'));
-    console.log(servicio_id);
     if (servicio_id) {
         cambiar();
         editarServicio(servicio_id);
@@ -154,15 +156,51 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
     if (servicio_id) {
         ticketPdf(servicio_id);
     }
-}); 
+});
 
+// Evento para mostra modal de garantía
+document.getElementById('garantia_servicio').addEventListener('click', e => {
+    let servicio_id = parseInt(e.target.getAttribute('servicio_id'))
+    let garantia_id = parseInt(e.target.getAttribute('garantia_id'))
+    document.getElementById('form_garantia').reset();
+    let crear_garantia = document.getElementById('crear_garantia');
+    if (servicio_id) {
+        new bootstrap.Modal(document.getElementById('mdl_garantia')).show();
+        if (garantia_id) {
+            setTimeout(() => verGarantia(garantia_id), 500);
+        } else {
+            document.getElementById('servicio_id').value = servicio_id;
+            document.getElementById('tbl_garantia').childNodes[3].innerHTML = '';
+            crear_garantia.innerHTML = '<i class="fa-solid fa-square-plus"></i> Crear';
+            crear_garantia.classList.remove('btn-warning');
+            crear_garantia.classList.add('btn-primary');
+        }
+    }
+});
+
+// Evento para agregar garantía
+document.getElementById('crear_garantia').addEventListener('click', e => {
+    garantiaServicio();
+});
+
+// Evento para eliminar un detalle de garantía
+document.getElementById('tbl_garantia').addEventListener('click', e => {
+    let detalle_garantia_id = parseInt(e.target.getAttribute('detalle_garantia_id'));
+    let garantia_id = parseInt(e.target.getAttribute('garantia_id'));
+    console.log(garantia_id);
+    if (detalle_garantia_id) {
+        eliminarGarantia({ detalle_garantia_id: detalle_garantia_id });
+        setTimeout(() => verGarantia(garantia_id), 500);
+    }
+});
 
 // Evento para finalizar la servicio
 document.getElementById('finalizar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     let cliente_id = parseInt(document.getElementById('cliente_id').value);
     let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
-
+    console.log('Finaliando servicio');
+    console.log(servicio_id);
     if (servicio_id) {
         finalizarServicio({ servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id });
     }

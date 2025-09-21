@@ -24,8 +24,8 @@ export function listarDetalleServicio(servicio_id) {
             document.getElementById('descripcion').innerHTML = `<b>Descripción:</b> ${data.observacion}`;
             document.getElementById('nota_tecnico').innerHTML = `<b>Nota del técnico:</b> ${data.nota}`;
         
-            //garantia_servicio.setAttribute('servicio_id', data.carrito_id);
-            /* if (data.garantia_id) {
+            garantia_servicio.setAttribute('servicio_id', data.carrito_id);
+            if (data.garantia_id) {
                 garantia_servicio.classList.remove('btn-warning');
                 garantia_servicio.classList.add('btn-info');
                 garantia_servicio.setAttribute('garantia_id', data.garantia_id);
@@ -35,7 +35,7 @@ export function listarDetalleServicio(servicio_id) {
                 garantia_servicio.classList.add('btn-warning')
                 garantia_servicio.removeAttribute('garantia_id')
                 garantia_servicio.innerHTML = `<i class="fa-solid fa-square-plus"></i> Agregar garantía`;
-            } */
+            }
             tabla.childNodes[3].innerHTML = fila;
         }
     }).catch(error => {

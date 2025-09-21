@@ -48,7 +48,7 @@ export function listar(data_p = {'tipo_servicio': 'mantenimiento', 'pagina': 1, 
                     <td>${servicio.tipo_pago}</td>
                     <td>${servicio.usuario_id}</td>
                     <td>${servicio.tipo_servicio}</td>
-                    <td>${servicio.estado}</td>
+                    <td><span class="badge ${servicio.estado_servicio ? 'bg-success' : 'bg-warning'}">${servicio.estado}</span></td>
                     <td>${servicio.fecha_ingreso}</td>
                     <td>${servicio.fecha_actualizacion}</td>
                     <td><i class="fa-solid fa-circle-info btn btn-info btn-sm" servicio_id="${servicio.id}"></i></td>

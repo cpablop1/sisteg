@@ -34,6 +34,7 @@ export function editarServicio(id) {
                     document.getElementById('crear_servicio').hidden = true;
                     document.getElementById('actualizar_servicio').hidden = false;
                     document.getElementById('actualizar_servicio').setAttribute('servicio_id', id);
+                    document.getElementById('finalizar_servicio').setAttribute('servicio_id', servicio.id);
 
                     // Listamos los detalles del servicio
                     let tabla = document.getElementById('tbl_listar_carrito');
