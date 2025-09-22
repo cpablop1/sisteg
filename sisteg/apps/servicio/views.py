@@ -428,6 +428,8 @@ def agregar_servicio(request):
                 # Actualizamos la venta
                 existe_servicio.update(
                     subtotal = subtotal,
+                    observacion = observacion,
+                    nota = nota,
                     costo_servicio = costo_servicio,
                     cliente_id = cliente_id,
                     tipo_pago_id = tipo_pago_id,
@@ -443,6 +445,8 @@ def agregar_servicio(request):
                 
                 servicio = Servicio.objects.create( # Creamos el servicio
                     subtotal = total_servicio,
+                    observacion = observacion,
+                    nota = nota,
                     cotizacion = cotiza,
                     cliente_id = Cliente.objects.get(id = cliente_id),
                     usuario_id = User.objects.get(id = request.user.id),
@@ -468,6 +472,10 @@ def agregar_servicio(request):
                 msg = 'Servicio agregada.'
                 servicio_id = servicio.id
         else:
+            print('\n---------------------------')
+            print(f'---- {observacion}')
+            print(f'---- {nota}')
+            print('---------------------------\n')
             servicio_usuario_id = None
             if tipo_servicio_id == 1:
                 return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.', 'servicio_id': servicio_id})

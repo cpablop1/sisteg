@@ -23,10 +23,12 @@ export function editarServicio(servicio_id) {
             document.getElementById('tipo_pago_id').value = data.data[0].tipo_pago_id;
             document.getElementById('tipo_servicio_id').value = data.data[0].tipo_servicio_id;
             document.getElementById('observacion').value = data.data[0].observacion;
+            document.getElementById('nota').value = data.data[0].nota;
             document.getElementById('rol_usuario_id').value = data.data[0].rol_usuario_id;
             document.getElementById('actualizar_cotizacion').setAttribute('servicio_id', data.data[0].id);
             document.getElementById('subtotal').innerHTML = `Q ${data.data[0].subtotal}`;
             document.getElementById('telefono').innerHTML = `<b>Contacto:</b> ${data.data[0].telefono}`;
+            document.getElementById('costo_servicio').value = data.data[0].costo_servicio;
             document.getElementById('id').value = data.data[0].id;
 
             if (data.detalle_servicio.length != 0) {
