@@ -1,5 +1,6 @@
 import * as alerta from '../alertas/alertas.js';
 import { cambiar } from "./cambiar.js";
+import { listar } from './listar.js';
 
 export function confirmarServicio(data) {
     fetch(`/servicio/confirmar-servicio/`, {
@@ -12,6 +13,7 @@ export function confirmarServicio(data) {
         if (data.res) {
             alerta.success(data.msg);
             cambiar();
+            listar();
         } else {
             alerta.danger(data.msg);
         }

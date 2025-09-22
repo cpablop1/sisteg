@@ -1,43 +1,47 @@
 import { cambiar } from "./cambiar.js";
 import { selectCliente } from "./selectCliente.js";
+import { selectRolUsuario } from "./selectRolUsuario.js";
 
 export function editarServicio(servicio_id) {
-    console.log('Iniciando edición de servicio:', servicio_id);
-    fetch(`/servicio/listar-carrito/?servicio_id=${servicio_id}`).then(res => res.json()).then(data => {
-        console.log('Datos del servicio recibidos:', data);
-        console.log('Cliente ID a seleccionar:', data.cliente_id);
-        console.log('Tipo de cliente_id:', typeof data.cliente_id);
-        console.log('Cliente_id es null?', data.cliente_id === null);
-        console.log('Cliente_id es undefined?', data.cliente_id === undefined);
-        
+    fetch(`/servicio/listar-servicios/?id=${servicio_id}`).then(res => res.json()).then(data => {
         // Cambiamos de vista primero, indicando que es modo edición
-        cambiar(data.cliente_id);
-        
+        //cambiar(data.cliente_id);
         // Obtener buttons
-        document.getElementById('confirmar_servicio').hidden = true;
-        document.getElementById('crear_servicio').hidden = true;
-        document.getElementById('eliminar_servicio').hidden = true;
-        document.getElementById('actualizar_servicio').hidden = false;
-        
+        console.log(data);
+        let tabla = document.getElementById('tbl_listar_carrito');
+        let fila = '';
+        document.getElementById('crear_cotizacion').hidden = true;
+        document.getElementById('eliminar_cotizacion').hidden = false;
+        document.getElementById('actualizar_cotizacion').hidden = false;
+        document.getElementById('finalizar_cotizacion').hidden = false;
+
         // Mostrar datos y recargar select con el cliente correcto
         setTimeout(() => {
             // Recargar select de cliente con el valor correcto
-            selectCliente(data.cliente_id);
-            
-            document.getElementById('tipo_pago_id').value = data.tipo_pago_id;
-            document.getElementById('tipo_servicio_id').value = data.tipo_servicio_id;
-            document.getElementById('observacion').value = data.observacion;
-            document.getElementById('rol_usuario_id').value = data.rol_usuario_id;
-            document.getElementById('actualizar_servicio').setAttribute('servicio_id', data.carrito_id);
-            document.getElementById('subtotal').innerHTML = `Q ${data.subtotal}`;
-            document.getElementById('telefono').innerHTML = `<b>Contacto:</b> ${data.contacto}`;
-            
-            // Verificar el estado del select después de un tiempo
-            setTimeout(() => {
-                const selectElement = document.getElementById('cliente_id');
-                console.log('Valor del select después de la edición:', selectElement.value);
-                console.log('Select2 está activo:', $(selectElement).hasClass('select2-hidden-accessible'));
-            }, 1000);
-        }, 200);
+            selectCliente(data.data[0].cliente_id);
+
+            document.getElementById('tipo_pago_id').value = data.data[0].tipo_pago_id;
+            document.getElementById('tipo_servicio_id').value = data.data[0].tipo_servicio_id;
+            document.getElementById('observacion').value = data.data[0].observacion;
+            document.getElementById('rol_usuario_id').value = data.data[0].rol_usuario_id;
+            document.getElementById('actualizar_cotizacion').setAttribute('servicio_id', data.data[0].id);
+            document.getElementById('subtotal').innerHTML = `Q ${data.data[0].subtotal}`;
+            document.getElementById('telefono').innerHTML = `<b>Contacto:</b> ${data.data[0].telefono}`;
+            document.getElementById('id').value = data.data[0].id;
+
+            if (data.detalle_servicio.length != 0) {
+                Array.from(data.detalle_servicio, elemento => {
+                    fila += `
+                    <tr>
+                        <th scope="row"><input type="number" class="form-control text-center" value="${elemento.cantidad}" producto_id="${elemento.producto_id}"></th>
+                        <td>${elemento.producto}</td>
+                        <td class="text-center">${elemento.precio}</td>
+                        <td class="text-center">${elemento.total}</td>
+                        <td class="text-center"><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}" servicio_id="${data.data[0].id}"></i></td>
+                    </tr>`;
+                });
+            }
+            tabla.childNodes[3].innerHTML = fila;
+        }, 500);
     });
 }

@@ -1,5 +1,5 @@
 import * as alerta from '../alertas/alertas.js';
-import { listarCarrito } from './listarCarrito.js';
+import { editarServicio } from './EditarServicio.js';
 
 export function eliminarServicio(datos) {
     let formData = new FormData()
@@ -17,9 +17,6 @@ export function eliminarServicio(datos) {
     }).then(data => {
         if (data.res) {
             alerta.success(data.msg);
-            setTimeout(() => {
-                listarCarrito();
-            }, 500);
         } else {
             alerta.danger(data.msg);
         }

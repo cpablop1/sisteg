@@ -1,4 +1,4 @@
-export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar': '' }) {
+export function listar(data_p = {'cotiza': 1, 'pagina': 1, 'buscar': '' }) {
     let params = new URLSearchParams(data_p).toString();
     fetch(`/servicio/listar-servicios/?${params}`).then(res => res.json()).then(data => {
         let tabla = document.getElementById('tbl_listar');
@@ -43,6 +43,7 @@ export function listar(data_p = {'tipo_servicio': 'venta', 'pagina': 1, 'buscar'
                     <td>${servicio.fecha_actualizacion}</td>
                     <td><i class="fa-solid fa-circle-info btn btn-info btn-sm" servicio_id="${servicio.id}" title="Ver detalle"></i></td>
                     <td><i class="fa-solid fa-print btn btn-info btn-sm" ticket_servicio_id="${servicio.id}" title="Imprimir ticket"></i></td>
+                    <td><i class="fa-solid fa-pen-to-square btn btn-warning btn-sm" editar_servicio_id="${servicio.id}"></i></td>
                 </tr>`;
         });
 

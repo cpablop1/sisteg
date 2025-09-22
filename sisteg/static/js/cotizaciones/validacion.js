@@ -2,6 +2,7 @@ export function validacion(form) {
     let cliente_id = form['cliente_id'];
     let tipo_pago_id = form['tipo_pago_id'];
     let tipo_servicio_id = form['tipo_servicio_id'];
+    console.log(tipo_servicio_id.value);
     let valido = [];
 
     // Limpiar clases de validación
@@ -27,13 +28,6 @@ export function validacion(form) {
 
     // Validar tipo de servicio
     if (tipo_servicio_id.value.trim().length === 0) {
-        tipo_servicio_id.classList.add('is-invalid');
-        tipo_servicio_id.focus();
-        valido.push(false);
-    }
-
-    // Validar que sea venta (id = 1)
-    if (tipo_servicio_id.value !== '1') {
         tipo_servicio_id.classList.add('is-invalid');
         tipo_servicio_id.focus();
         valido.push(false);

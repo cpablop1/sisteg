@@ -101,6 +101,7 @@ def listar_cliente(request):
     id = request.GET.get('id', None) or None
     buscar = request.GET.get('buscar', '').strip() or ''
     pagina = request.GET.get('pagina', 1) or 1
+    select = request.GET.get('select', '').strip()
     clientes = ''
 
     try:
@@ -116,11 +117,13 @@ def listar_cliente(request):
         else:
             # Obtenemos todas los clientes
             clientes = Cliente.objects.all()
-            
-        # Paginamos los clientes
-        paginador = Paginator(clientes, 10)
-        # Obtenemos la página
-        paginas = paginador.get_page(pagina)
+        if select:
+            paginas = clientes
+        else:
+            # Paginamos los clientes
+            paginador = Paginator(clientes, 10)
+            # Obtenemos la página
+            paginas = paginador.get_page(pagina)
         # Preparamos el listado
         for prov in paginas:
             data['data'].append(
@@ -138,28 +141,32 @@ def listar_cliente(request):
                     'usuario': prov.usuario_id.username
                 }
             )
-        # Preparamos la visualización de las páginas
-        if paginador.num_pages > 5:
-            start = int(pagina)
-            end = int(pagina) + 5
-            if end > paginador.num_pages:
-                start = paginador.num_pages - 4
-                end = paginador.num_pages + 1
-            for i in range(start, end):
-                data["page_range"].append(i)
-        else:
-            for i in range(paginador.num_pages):
-                data["page_range"].append(i + 1)
-        data["num_pages"] = paginador.num_pages
-        data["has_next"] = paginas.has_next()
-        data["has_previous"] = paginas.has_previous()
-        data["count"] = paginador.count
+        if not select:
+            # Preparamos la visualización de las páginas
+            if paginador.num_pages > 5:
+                start = int(pagina)
+                end = int(pagina) + 5
+                if end > paginador.num_pages:
+                    start = paginador.num_pages - 4
+                    end = paginador.num_pages + 1
+                for i in range(start, end):
+                    data["page_range"].append(i)
+            else:
+                for i in range(paginador.num_pages):
+                    data["page_range"].append(i + 1)
+            data["num_pages"] = paginador.num_pages
+            data["has_next"] = paginas.has_next()
+            data["has_previous"] = paginas.has_previous()
+            data["count"] = paginador.count
 
         # Preparamos mensajes de respuesta
         res = True
         msg = 'Listado de clientes.'
-    except:
+    except Exception as error:
         res = False
+        print('\n----------------------')
+        print(error)
+        print('----------------------\n')
 
     data['res'] = res
     data['msg'] = msg
@@ -365,7 +372,7 @@ def agregar_servicio(request):
             else:
                 if (request.rol_usuario == 'recepcionista' and (tipo_servicio_id != 1) and (cotiza == False)):
                     return JsonResponse({'res': False, 'msg': 'No puedes agregar productos a un servicio de tipo mantenimiento'})
-                existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = tipo_servicio_id)
+                existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = tipo_servicio_id, cotizacion = False)
 
             if existe_servicio.exists(): # Si es así
                 # Verificar si existe el producto en carrito
@@ -459,12 +466,13 @@ def agregar_servicio(request):
                 # Prepamos respuesta
                 res = True
                 msg = 'Servicio agregada.'
+                servicio_id = servicio.id
         else:
             servicio_usuario_id = None
             if tipo_servicio_id == 1:
-                return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.'})
+                return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.', 'servicio_id': servicio_id})
             if not rol_usuario_id:
-                return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.'})
+                return JsonResponse({'res': False, 'msg': 'El servicio debe ser asignado a un ténico.', 'servicio_id': servicio_id})
             # Actualizar subtotal
             detalle_servicio = ''
             subtotal = 0
@@ -506,8 +514,8 @@ def agregar_servicio(request):
                     'servicio_id': servicio[0]
                 }
             )
-            return JsonResponse({'res': True, 'msg': msg})
-    return JsonResponse({'res': res, 'msg': msg})
+            return JsonResponse({'res': True, 'msg': msg, 'servicio_id': servicio[0].id})
+    return JsonResponse({'res': res, 'msg': msg, 'servicio_id': servicio_id})
 
 # Función para listar carrito
 @login_required(login_url='autenticacion')
@@ -531,7 +539,7 @@ def listar_carrito(request):
             servicio = Servicio.objects.filter(id = servicio_id)
         else:
             # Evaluamos si es una venta el servicio
-            servicio = Servicio.objects.filter(usuario_id = request.user, estado = False, tipo_servicio_id = 1)
+            servicio = Servicio.objects.filter(usuario_id = request.user, estado = False, tipo_servicio_id = 1, cotizacion = False)
 
         if servicio:
             carrito = DetalleServicio.objects.filter(servicio_id = servicio[0].id)
@@ -645,6 +653,7 @@ def confirmar_servicio(request):
             
             # Asignación correcta
             servicio.estado = True
+            servicio.cotizacion = False
             servicio.cliente_id = cliente
             servicio.tipo_pago_id = tipo_pago
             servicio.save()
@@ -709,7 +718,7 @@ def eliminar_servicio(request):
                 detalle_servicio_total = DetalleServicio.objects.filter(servicio_id = servicio.id).count()
                 # Si solo tiene un detalle el servicio
                 if detalle_servicio_total == 1:
-                    if request.rol_usuario == 'tecnico':
+                    if (servicio.tipo_servicio_id.id != 1):
                         detalle_servicio.delete()
                         subtotal = servicio.costo_servicio
                         servicio.subtotal = subtotal
@@ -728,6 +737,7 @@ def eliminar_servicio(request):
                     servicio.save()
                     # Mensaje de respuesta
                     msg = 'Carrito actualizado.'
+                    servicio_id = servicio.id
                 # Preparamos variables de respuesta
             elif servicio_id is not None:
                 # Obtenemos el servicio
@@ -741,12 +751,12 @@ def eliminar_servicio(request):
                 msg = 'Carrito vaciado.'
             res = True
         except Exception as ex:
-            print('\n--------------------------------')
-            print(ex)
-            print('--------------------------------\n')
+            print('\n------------------------')
+            print(f'Error: {ex}')
+            print('------------------------\n')
             res = False
             msg = 'Hubo un error al eliminar el registro, actualice la página y vuelve a intentarlo.'
-    return JsonResponse({'res': res, 'msg': msg})
+    return JsonResponse({'res': res, 'msg': msg, 'servicio_id': servicio_id})
 
 # Función para listar servicios
 @login_required(login_url='autenticacion')
@@ -761,8 +771,21 @@ def listar_servicios(request):
     id = request.GET.get('id', None) or None
     buscar = request.GET.get('buscar', '').strip() or ''
     pagina = request.GET.get('pagina', 1) or 1
+    cotiza = request.GET.get('cotiza', '').strip()
     servicios = ''
     detalle_servicio = ''
+
+    # Validación del cotiza
+    if not cotiza:
+        cotiza = False
+    try:
+        cotiza = int(cotiza)
+        if cotiza == 1:
+            cotiza = True
+        else:
+            cotiza = False
+    except:
+        cotiza = False
 
     try:
         if id: # Verificamos si necesitamos un servicio en expecífico
@@ -779,7 +802,8 @@ def listar_servicios(request):
                 # Extraer los IDs de los servicios en una lista
                 servicio_ids = servicio_usuario.values_list('servicio_id', flat=True)
                 # Filtrar todos los servicios cuyos IDs están en la lista
-                servicios = Servicio.objects.filter(id__in=servicio_ids)
+                servicios = Servicio.objects.filter(id__in=servicio_ids, cotizacion = cotiza)
+
                 # Filtrar por tipo de servicio si se especifica
                 if tipo_servicio:
                     if tipo_servicio == 'venta':
@@ -787,7 +811,12 @@ def listar_servicios(request):
                     elif tipo_servicio == 'mantenimiento':
                         servicios = servicios.exclude(tipo_servicio_id=1)  # Excluir solo ventas, mostrar todo lo demás
             else:
-                servicios = Servicio.objects.all()
+                #servicios = Servicio.objects.all()
+                # Filtramos las cotizaciones
+                servicios = Servicio.objects.filter(cotizacion = cotiza)
+                print('\n---------------------------------------')
+                print(servicios)
+                print('---------------------------------------\n')
                 
                 # Filtrar por tipo de servicio si se especifica
                 if tipo_servicio:
