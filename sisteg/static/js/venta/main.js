@@ -124,7 +124,6 @@ document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     if (validacion(form)) {
         if (e.keyCode == 13) {
             if (cantidad > 0) {
-                console.log('Actualizando cantidad:', cantidad, 'para producto:', producto_id);
                 agregar(form, producto_id, cantidad);
             } else {
                 alerta.danger('La cantidad debe ser mayor a 0.');
@@ -153,14 +152,9 @@ document.getElementById('tbl_listar').addEventListener('click', e => {
 
 // Evento para editar servicio
 document.getElementById('tbl_listar').addEventListener('click', e => {
-    console.log('Click en tabla detectado, elemento:', e.target);
-    console.log('Atributo editar_servicio_id:', e.target.getAttribute('editar_servicio_id'));
     let servicio_id = parseInt(e.target.getAttribute('editar_servicio_id'));
     if (servicio_id) {
-        console.log('Llamando a editarServicio con ID:', servicio_id);
         editarServicio(servicio_id);
-    } else {
-        console.log('No se encontró servicio_id para editar');
     }
 });
 
@@ -169,8 +163,6 @@ document.getElementById('actualizar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     let form = document.getElementById('form_agregar');
     if (servicio_id) {
-        //editarServicio(servicio_id);
-        console.log(servicio_id);
         agregar(form);
         cambiar();
         setTimeout(() => {
@@ -228,7 +220,6 @@ document.getElementById('crear_garantia').addEventListener('click', e => {
 document.getElementById('tbl_garantia').addEventListener('click', e => {
     let detalle_garantia_id = parseInt(e.target.getAttribute('detalle_garantia_id'));
     let garantia_id = parseInt(e.target.getAttribute('garantia_id'));
-    console.log(garantia_id);
     if (detalle_garantia_id){
         eliminarGarantia({detalle_garantia_id: detalle_garantia_id});
         setTimeout(() => verGarantia(garantia_id), 500);

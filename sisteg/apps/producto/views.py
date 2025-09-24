@@ -105,9 +105,6 @@ def listar_categoria(request):
             )
         # Preparamos la visualización de las páginas
         if paginador.num_pages > 5:
-            print('\n-----------------')
-            print(paginador.num_pages)
-            print('-----------------\n')
             start = int(pagina)
             end = int(pagina) + 5
             if end > paginador.num_pages:

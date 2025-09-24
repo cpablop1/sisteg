@@ -266,8 +266,6 @@ def agregar_compra(request):
                 # Prepamos respuesta
                 res = True
                 msg = 'Compra agregada.'
-        else:
-            print(producto)
 
     return JsonResponse({'res': res, 'msg': msg})
 
@@ -338,9 +336,6 @@ def eliminar_compra(request):
 def listar_carrito(request):
     # Capturar id de compra
     compra_id = request.GET.get('compra_id', None) or None
-    print('\n------------------------------------')
-    print(f'Compra id: {compra_id}')
-    print('------------------------------------\n')
     # Mensajes de respuesta
     res = False
     msg = 'Error al listar carrito.'
@@ -530,8 +525,6 @@ def listar_compras(request):
         res = True
         msg = 'Listado de compras.'
     except Exception as e:
-        print(f'\nSe generó un error a listar las compras.')
-        print(f'El error es: {e}\n')
         res = False
 
     data['res'] = res

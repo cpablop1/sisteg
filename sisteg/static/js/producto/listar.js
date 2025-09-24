@@ -32,7 +32,6 @@ export function listar(data_p = { 'pagina': 1, 'buscar': '' }) {
 
 
         Array.from(data.data, (producto, indice) => {
-            console.log(producto);
             // Comprobamos si el producto tiene una imagen
             if (producto.img1 != '') {
                 img = `/media/${producto.img1}`;

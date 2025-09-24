@@ -20,7 +20,6 @@ export function finalizarServicio(data) {
             alerta.danger(data.msg);
         }
     }).catch(error => {
-        console.log(error);
         alerta.danger('Hubo un error en el servidor.');
     });
 }

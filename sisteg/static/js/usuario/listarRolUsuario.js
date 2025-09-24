@@ -23,10 +23,8 @@ export function listarRolUsuario() {
         .then(res => res.json())
         .then(data => {
             if (data.res) {
-                console.log('Roles cargados:', data.data);
                 return data;
             } else {
-                console.error('Error al cargar roles:', data.msg);
                 return data;
             }
         })

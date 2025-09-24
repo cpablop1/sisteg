@@ -70,6 +70,6 @@ export function agregar(form, producto_id, cantidad) {
             alerta.danger(data.msg);
         }
     }).catch(error => {
-        console.log(error);
+        alerta.danger('Error en el servidor.');
     });
 }

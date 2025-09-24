@@ -15,7 +15,6 @@ export function editarServicio(id) {
         fetch(`/servicio/listar-servicios/?id=${id}`).then(res => res.json()).then(data => {
             if (data.res && data.data.length > 0) {
                 let servicio = data.data[0];
-                console.log(data)
                 setTimeout(() => {
                     // Recargar select de cliente con el valor correcto
                     selectCliente(servicio.cliente_id);
@@ -44,12 +43,12 @@ export function editarServicio(id) {
                             let stock = '';
                             if (elemento.stock) {
                                 stock = `<div class="form-check text-center">
-                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" checked>
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" checked disabled>
                                     <label class="form-check-label" for="stock">Descontar</label>
                                 </div>`;
                             } else {
                                 stock = `<div class="form-check text-center">
-                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}">
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" disabled>
                                     <label class="form-check-label" for="stock">No descontar</label>
                                 </div>`;
                             }

@@ -6,7 +6,6 @@ export function ticketPdf(servicio_id) {
         }
         return res.blob();
     }).then(data => {
-        console.log(data);
         // Crear URL del blob
         const blobUrl = URL.createObjectURL(data);
 

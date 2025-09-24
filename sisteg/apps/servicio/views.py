@@ -164,9 +164,6 @@ def listar_cliente(request):
         msg = 'Listado de clientes.'
     except Exception as error:
         res = False
-        print('\n----------------------')
-        print(error)
-        print('----------------------\n')
 
     data['res'] = res
     data['msg'] = msg
@@ -472,10 +469,6 @@ def agregar_servicio(request):
                 msg = 'Servicio agregada.'
                 servicio_id = servicio.id
         else:
-            print('\n---------------------------')
-            print(f'---- {observacion}')
-            print(f'---- {nota}')
-            print('---------------------------\n')
             servicio_usuario_id = None
             if tipo_servicio_id == 1:
                 return JsonResponse({'res': False, 'msg': 'Una venta debe tener al menos un producto.', 'servicio_id': servicio_id})
@@ -759,9 +752,6 @@ def eliminar_servicio(request):
                 msg = 'Carrito vaciado.'
             res = True
         except Exception as ex:
-            print('\n------------------------')
-            print(f'Error: {ex}')
-            print('------------------------\n')
             res = False
             msg = 'Hubo un error al eliminar el registro, actualice la página y vuelve a intentarlo.'
     return JsonResponse({'res': res, 'msg': msg, 'servicio_id': servicio_id})
@@ -810,7 +800,7 @@ def listar_servicios(request):
                 # Extraer los IDs de los servicios en una lista
                 servicio_ids = servicio_usuario.values_list('servicio_id', flat=True)
                 # Filtrar todos los servicios cuyos IDs están en la lista
-                servicios = Servicio.objects.filter(id__in=servicio_ids, cotizacion = cotiza)
+                servicios = Servicio.objects.filter(id__in=servicio_ids, cotizacion = cotiza).order_by('-id')
 
                 # Filtrar por tipo de servicio si se especifica
                 if tipo_servicio:
@@ -821,10 +811,7 @@ def listar_servicios(request):
             else:
                 #servicios = Servicio.objects.all()
                 # Filtramos las cotizaciones
-                servicios = Servicio.objects.filter(cotizacion = cotiza)
-                print('\n---------------------------------------')
-                print(servicios)
-                print('---------------------------------------\n')
+                servicios = Servicio.objects.filter(cotizacion = cotiza).order_by('-id')
                 
                 # Filtrar por tipo de servicio si se especifica
                 if tipo_servicio:
@@ -866,9 +853,8 @@ def listar_servicios(request):
                     rol_usuario_id = usuario_id
                     tecnico = servicio_usuario.usuario_id.username
                 else:
-                    print("No se encontró ServicioUsuario para este servicio")
+                    pass
             except Exception as e:
-                print(f"Error al obtener rol_usuario_id: {e}")
                 rol_usuario_id = ''
             
             data['data'].append(
@@ -931,8 +917,6 @@ def listar_servicios(request):
         res = True
         msg = 'Listado de servicios.'
     except Exception as e:
-        print(f'\nSe generó un error a listar las servicios.')
-        print(f'El error es: {e}\n')
         res = False
 
     data['res'] = res
@@ -1023,7 +1007,8 @@ def ticket_pdf(request):
     
     # Encabezado de la empresa
     elements.append(Paragraph("ELECTROSISTEMAS GÓMEZ", styles['title']))
-    elements.append(Paragraph("RFC: {:010}".format(servicio.id), styles['header']))
+    codigo = 'COTIZACIÓN' if servicio.cotizacion else 'COMPROBANTE'
+    elements.append(Paragraph(codigo + " RFC: {:010}".format(servicio.id), styles['header']))
     elements.append(Paragraph("Régimen fiscal: 2046:Pequeño Contribuyente", styles['normal']))
     elements.append(Paragraph("Emitido en: Calle Al Cementario 4-14 Zona 1, Zacualpa, Quiché, ", styles['normal']))
     elements.append(Paragraph("Tel. 7736-6271", styles['normal']))
@@ -1117,7 +1102,7 @@ def ticket_pdf(request):
     #elements.append(Spacer(1, 10))
     
     # Pie de página
-    elements.append(Paragraph("¡GRACIAS POR SU COMPRA!", styles['title']))
+    elements.append(Paragraph("¡GRACIAS POR SU PREFERENCIA!", styles['title']))
     
     # Construir PDF
     doc.build(elements)
@@ -1139,15 +1124,6 @@ def garantia_servicio(request):
         detalle_servicio_id = request.POST.get('detalle_servicio_id', '').strip()
         garantia_id = request.POST.get('garantia_id', '').strip()
         detalle_garantia_id = request.POST.get('detalle_garantia_id', '').strip()
-        print('\n--------------------------')
-        print(f'observacion: {observacion}')
-        print(f'es_perdida: {es_perdida}')
-        print(f'servicio_id: {servicio_id}')
-        print(f'cantidad: {cantidad}')
-        print(f'garantia_id: {garantia_id}')
-        print(f'detalle_servicio_id: {detalle_servicio_id}')
-        print(f'detalle_garantia_id: {detalle_garantia_id}')
-        print('--------------------------\n')
         
         # Validadmos es_perdida
         if es_perdida == 'on':
@@ -1190,8 +1166,6 @@ def garantia_servicio(request):
         try:
             detalle_garantia_id = int(detalle_garantia_id)
         except Exception as error:
-            print('\nERROR con detalle_garantia_id')
-            print(error)
             detalle_garantia_id = None
         
         # Accedemos al servicio
@@ -1259,9 +1233,6 @@ def garantia_servicio(request):
                 JsonResponse({'res': False, 'msg': 'Hubo un error al agregar detalle de garantía'})
         # Actualizamos el subtotal de la garantía
         subtotal = sum(dg.total for dg in DetalleGarantia.objects.filter(garantia_id = garantia[0].id))
-        print('\n-------------------------------')
-        print(f'Subtotal: {subtotal}')
-        print('-------------------------------\n')
         garantia[0].subtotal = subtotal
         garantia[0].save()
 

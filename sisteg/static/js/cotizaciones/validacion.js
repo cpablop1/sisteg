@@ -2,7 +2,6 @@ export function validacion(form) {
     let cliente_id = form['cliente_id'];
     let tipo_pago_id = form['tipo_pago_id'];
     let tipo_servicio_id = form['tipo_servicio_id'];
-    console.log(tipo_servicio_id.value);
     let valido = [];
 
     // Limpiar clases de validación

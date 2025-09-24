@@ -103,7 +103,6 @@ document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     if (validacion(form)) {
         if (e.keyCode == 13){
             if (cantidad) {
-                console.log(cantidad);
                 agregar(form, producto_id, cantidad)
             } else {
                 alerta.danger('Ingrese una cantidad válida.');

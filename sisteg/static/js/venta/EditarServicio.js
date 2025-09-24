@@ -2,14 +2,7 @@ import { cambiar } from "./cambiar.js";
 import { selectCliente } from "./selectCliente.js";
 
 export function editarServicio(servicio_id) {
-    console.log('Iniciando edición de servicio:', servicio_id);
     fetch(`/servicio/listar-carrito/?servicio_id=${servicio_id}`).then(res => res.json()).then(data => {
-        console.log('Datos del servicio recibidos:', data);
-        console.log('Cliente ID a seleccionar:', data.cliente_id);
-        console.log('Tipo de cliente_id:', typeof data.cliente_id);
-        console.log('Cliente_id es null?', data.cliente_id === null);
-        console.log('Cliente_id es undefined?', data.cliente_id === undefined);
-        
         // Cambiamos de vista primero, indicando que es modo edición
         cambiar(data.cliente_id);
         
@@ -35,8 +28,6 @@ export function editarServicio(servicio_id) {
             // Verificar el estado del select después de un tiempo
             setTimeout(() => {
                 const selectElement = document.getElementById('cliente_id');
-                console.log('Valor del select después de la edición:', selectElement.value);
-                console.log('Select2 está activo:', $(selectElement).hasClass('select2-hidden-accessible'));
             }, 1000);
         }, 200);
     });

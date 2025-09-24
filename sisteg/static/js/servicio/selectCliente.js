@@ -74,7 +74,6 @@ function initializeSelect2(selectElement, selectedValue = null) {
 
 export function selectCliente(selectedValue = null) {
     fetch('/servicio/listar-cliente/?select=select').then(res => res.json()).then(data => {
-        console.log(data);
         if (data.res && data.data) {
             const selectElement = document.getElementById('cliente_id');
             if (selectElement) {

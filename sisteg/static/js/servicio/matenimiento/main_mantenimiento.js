@@ -94,7 +94,6 @@ document.getElementById('actualizar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     let form = document.getElementById('form_mantenimiento');
     if (servicio_id) {
-        console.log(servicio_id);
         actualizar(form, servicio_id);
         cambiar();
         setTimeout(() => {
@@ -151,7 +150,6 @@ document.getElementById('crear_garantia').addEventListener('click', e => {
 document.getElementById('tbl_garantia').addEventListener('click', e => {
     let detalle_garantia_id = parseInt(e.target.getAttribute('detalle_garantia_id'));
     let garantia_id = parseInt(e.target.getAttribute('garantia_id'));
-    console.log(garantia_id);
     if (detalle_garantia_id){
         eliminarGarantia({detalle_garantia_id: detalle_garantia_id});
         setTimeout(() => verGarantia(garantia_id), 500);

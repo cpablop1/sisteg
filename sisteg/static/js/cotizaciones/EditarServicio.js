@@ -4,10 +4,7 @@ import { selectRolUsuario } from "./selectRolUsuario.js";
 
 export function editarServicio(servicio_id) {
     fetch(`/servicio/listar-servicios/?id=${servicio_id}`).then(res => res.json()).then(data => {
-        // Cambiamos de vista primero, indicando que es modo edición
-        //cambiar(data.cliente_id);
         // Obtener buttons
-        console.log(data);
         let tabla = document.getElementById('tbl_listar_carrito');
         let fila = '';
         document.getElementById('crear_cotizacion').hidden = true;
@@ -33,12 +30,27 @@ export function editarServicio(servicio_id) {
 
             if (data.detalle_servicio.length != 0) {
                 Array.from(data.detalle_servicio, elemento => {
+                    let stock = '';
+                    if (elemento.stock) {
+                        stock = `<div class="form-check text-center">
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" checked>
+                                    <label class="form-check-label" for="stock">Descontar</label>
+                                </div>`;
+                    } else {
+                        stock = `<div class="form-check text-center">
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}">
+                                    <label class="form-check-label" for="stock">No descontar</label>
+                                </div>`;
+                    }
                     fila += `
                     <tr>
-                        <th scope="row"><input type="number" class="form-control text-center" value="${elemento.cantidad}" producto_id="${elemento.producto_id}"></th>
+                        <th scope="row"><input type="number" class="form-control text-center" value="${elemento.cantidad}" id="cantidad${elemento.producto_id}"></th>
                         <td>${elemento.producto}</td>
-                        <td class="text-center">${elemento.precio}</td>
+                        <td ${hidden}>${stock}</td>
+                        <td><input type="number" step="0.1" value="${elemento.costo}" class="form-control text-center" id="costo${elemento.producto_id}" ${rol}></td>
+                        <td><input type="number" step="0.1" value="${elemento.precio}" class="form-control text-center" id="precio${elemento.producto_id}" ${rol}></td>
                         <td class="text-center">${elemento.total}</td>
+                        <td><i class="fa-solid fa-arrow-rotate-right btn btn-info" producto_id="${elemento.producto_id}"></i></td>
                         <td class="text-center"><i class="fa-solid fa-trash-can btn btn-danger btn-sm" detalle_servicio_id="${elemento.id}" servicio_id="${data.data[0].id}"></i></td>
                     </tr>`;
                 });

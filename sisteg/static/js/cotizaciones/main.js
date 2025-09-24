@@ -78,7 +78,7 @@ document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     if (detalle_servicio_id) {
         eliminarServicio({ 'detalle_servicio_id': detalle_servicio_id });
-        editarServicio(servicio_id);
+        setTimeout(() => editarServicio(servicio_id),300);
     }
 });
 
@@ -105,7 +105,7 @@ document.getElementById('crear_cotizacion').addEventListener('click', e => {
 })
 
 // Evento para actualizar cantidad en carrito de servicio
-document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
+/* document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     // Verificar que es un input de cantidad
     if (e.target.type !== 'number' || !e.target.hasAttribute('producto_id')) {
         return;
@@ -131,7 +131,7 @@ document.getElementById('tbl_listar_carrito').addEventListener('keyup', e => {
     } else {
         alerta.warning('Complete el formulario para continuar.');
     }
-});
+}); */
 
 // Evento para evetar el submit en formulario
 document.getElementById('form_agregar').addEventListener('submit', e => {
@@ -169,9 +169,9 @@ document.getElementById('finalizar_cotizacion').addEventListener('click', e => {
     let cliente_id = parseInt(document.getElementById('cliente_id').value);
     let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
 
-    if (servicio_id && validacion(form)){
+    if (servicio_id && validacion(form)) {
         confirmarServicio({ servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id });
-    } else{
+    } else {
         alerta.warning('Complete el formulario para continuar.');
     }
 });
@@ -194,5 +194,27 @@ document.getElementById('guardar_cliente').addEventListener('click', e => {
     let form = document.getElementById('form_agregar_cliente');
     if (validacionCliente(form)) {
         agregarCliente(form);
+    }
+});
+
+// Evento para actualizar cantidad, costo y precio en carrito de servicio
+document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
+    let producto_id = parseInt(e.target.getAttribute('producto_id'));
+    if (producto_id) {
+        let form = document.getElementById('form_agregar');
+        let cantidad = parseInt(document.getElementById(`cantidad${producto_id}`).value);
+        let costo = parseFloat(document.getElementById(`costo${producto_id}`).value);
+        let precio = parseFloat(document.getElementById(`precio${producto_id}`).value);
+        let stock = document.getElementById(`stock${producto_id}`).checked ? 1 : 0;
+
+        if (validacion(form)) {
+            if (cantidad && (costo < precio)) {
+                agregar(form, producto_id, cantidad, costo, precio, stock)
+            } else {
+                alerta.danger('Verifique la cantidad que se válida o el costo se que se menor a precio.');
+            }
+        } else {
+            alerta.warning('Complete el formulario para continuar.');
+        }
     }
 });

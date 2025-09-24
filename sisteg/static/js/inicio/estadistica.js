@@ -32,7 +32,6 @@ export function estadistica() {
         });
 
         // Mostrar gráfica
-        console.log(data.grafica);
         let descripcion = []
         let cantidad = [];
         data.grafica.forEach(items => {

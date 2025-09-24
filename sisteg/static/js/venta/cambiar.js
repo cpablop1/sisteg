@@ -6,7 +6,6 @@ import { selectTipoServicio } from "./selectTipoServicio.js";
 
 // Función para cambiar de vista entre el formulario y el listado de ventas
 export function cambiar(selectedClienteId = null) {
-    console.log('Ejecutando función cambiar() con selectedClienteId:', selectedClienteId);
     
     // Obtener elementos del DOM con verificación robusta
     const btn_agregar = document.getElementById('agregar');
@@ -56,7 +55,6 @@ export function cambiar(selectedClienteId = null) {
     
     if (estaOcultoListado) {
         // Mostrar listado, ocultar formulario
-        console.log('Mostrando listado');
         btn_agregar.innerHTML = '<i class="fa-solid fa-square-plus"></i>';
         listar.style.display = 'block';
         listar.hidden = false;
@@ -65,7 +63,6 @@ export function cambiar(selectedClienteId = null) {
         listado();
     } else {
         // Mostrar formulario, ocultar listado
-        console.log('Mostrando formulario');
         btn_agregar.innerHTML = '<i class="fa-solid fa-list"></i>';
         listar.style.display = 'none';
         listar.hidden = true;
@@ -83,10 +80,7 @@ export function cambiar(selectedClienteId = null) {
             const tieneDatos = carrito && carrito.querySelector('tbody tr');
             
             if (!tieneDatos) {
-                console.log('Modo creación - cargando selectCliente');
                 selectCliente();
-            } else {
-                console.log('Modo edición - ya hay datos en carrito, omitiendo selectCliente');
             }
         }, 100);
     }

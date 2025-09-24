@@ -16,7 +16,6 @@ export function garantiaServicio() {
     }).then(data => {
         if (data.res) {
             alerta.success(data.msg);
-            console.log(data);
             setTimeout(() => {
                 verGarantia(data.garantia_id);
                 listarDetalleServicio(data.servicio_id);
@@ -25,6 +24,6 @@ export function garantiaServicio() {
             alerta.danger(data.msg);
         }
     }).catch(error => {
-        console.log(error);
+        alerta.danger('Error en el servidor.');
     })
 }

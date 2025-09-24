@@ -97,8 +97,6 @@ document.getElementById('tbl_listar_carrito').addEventListener('click', e => {
         } else {
             alerta.warning('Complete el formulario para continuar.');
         }
-    } else {
-        console.log('Evento nada que ver...');
     }
 });
 
@@ -187,7 +185,6 @@ document.getElementById('crear_garantia').addEventListener('click', e => {
 document.getElementById('tbl_garantia').addEventListener('click', e => {
     let detalle_garantia_id = parseInt(e.target.getAttribute('detalle_garantia_id'));
     let garantia_id = parseInt(e.target.getAttribute('garantia_id'));
-    console.log(garantia_id);
     if (detalle_garantia_id) {
         eliminarGarantia({ detalle_garantia_id: detalle_garantia_id });
         setTimeout(() => verGarantia(garantia_id), 500);
@@ -199,8 +196,6 @@ document.getElementById('finalizar_servicio').addEventListener('click', e => {
     let servicio_id = parseInt(e.target.getAttribute('servicio_id'));
     let cliente_id = parseInt(document.getElementById('cliente_id').value);
     let tipo_pago_id = parseInt(document.getElementById('tipo_pago_id').value);
-    console.log('Finaliando servicio');
-    console.log(servicio_id);
     if (servicio_id) {
         finalizarServicio({ servicio_id: servicio_id, cliente_id: cliente_id, tipo_pago_id: tipo_pago_id });
     }
