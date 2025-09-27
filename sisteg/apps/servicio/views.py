@@ -369,7 +369,10 @@ def agregar_servicio(request):
             else:
                 if (request.rol_usuario == 'recepcionista' and (tipo_servicio_id != 1) and (cotiza == False)):
                     return JsonResponse({'res': False, 'msg': 'No puedes agregar productos a un servicio de tipo mantenimiento'})
-                existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = tipo_servicio_id, cotizacion = False)
+                elif cotiza:
+                    existe_servicio = Servicio.objects.none()
+                else:
+                    existe_servicio = Servicio.objects.filter(usuario_id = request.user.id, estado = False, tipo_servicio_id = tipo_servicio_id, cotizacion = False)
 
             if existe_servicio.exists(): # Si es así
                 # Verificar si existe el producto en carrito
@@ -432,6 +435,7 @@ def agregar_servicio(request):
                     tipo_pago_id = tipo_pago_id,
                 )
                 # Datos de respuesta
+                servicio_id = existe_servicio[0].id
                 res = True
                 msg = 'Carrito actualizado.'
             else: # En caso contrario
