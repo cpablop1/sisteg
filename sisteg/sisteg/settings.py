@@ -179,5 +179,5 @@ SERVER_EMAIL = 'SISTEG <noreply@sisteg.com>'
 PASSWORD_RESET_TIMEOUT = 86400  # 24 horas en segundos
 
 # Configuración para la API de GEMINI
-GEMINI_API_KEY = 'AQ.Ab8RN6JSoJCJJHRI6rcGHMLbpbZ-P024cJD9GKS8G7cFIfzYfQ' ## Clave secreta (SK)
+GEMINI_API_KEY = 'clave-secreta aquí' ## Clave secreta (SK)
 GEMINI_MODEL  = 'gemini-3.8-flash' ## Versión del model de IA
