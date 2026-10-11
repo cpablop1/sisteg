@@ -1,3 +1,4 @@
+from email.policy import default
 from django.db import models
 from django.contrib.auth.models import User
 from apps.inicio.models import TipoPago
@@ -24,7 +25,9 @@ class TipoServicio(models.Model):
 class Servicio(models.Model):
     subtotal = models.FloatField(default = 0)
     costo_servicio = models.FloatField(default = 0)
+    # Campo para guardar obseraciones del cliente
     observacion = models.TextField()
+    # Campor para guardar las obserciones del técnico
     nota = models.TextField()
     estado = models.BooleanField(default = 0)
     cotizacion = models.BooleanField(default = False)
@@ -35,6 +38,22 @@ class Servicio(models.Model):
     cliente_id = models.ForeignKey(Cliente, on_delete = models.PROTECT)
     usuario_id = models.ForeignKey(User, on_delete = models.PROTECT)
     tipo_pago_id = models.ForeignKey(TipoPago, on_delete = models.PROTECT)
+
+    # Análisis preliminar generado por IA
+    analisis_ia = models.JSONField(
+        blank = True,
+        null = True,
+        default = dict
+    )
+
+    analizado_con_ia = models.BooleanField(
+        default = False
+    )
+
+    fecha_analisis_ia = models.DateTimeField(
+        blank = True,
+        null = True
+    )
 
 class DetalleServicio(models.Model):
     precio = models.FloatField(default = 0)
