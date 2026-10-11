@@ -19,4 +19,6 @@ urlpatterns = [
     path('listar-garantia/', views.listar_garantia, name='listar_garantia'),
     path('eliminar-garantia/', views.eliminar_garantia, name='eliminar_garantia'),
     path('cotizacion/', views.vista_cotizacion, name='cotizacion'),
+    ## Ruta para el endpiont para consumir IA
+    path('api/analizar-descripcion/', views.analizar_descripcion_ia, name='analizar_description_ia'),
 ]

@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 import json
 from django.db import transaction, connection
+from django.views.decorators.http import require_POST
 
 from .models import Cliente, Servicio, DetalleServicio, TipoServicio, ServicioUsuario, Garantia, DetalleGarantia
 from apps.producto.models import Producto
@@ -17,6 +18,18 @@ logger = logging.getLogger(__name__)
 
 from django.http import HttpResponse
 from io import BytesIO
+
+from openai import (
+    APIConnectionError,
+    APIStatusError,
+    APITimeoutError,
+    AuthenticationError,
+    RateLimitError,
+)
+
+from apps.servicio.services.ia_service import (
+    analizar_descripcion_mantenimiento,
+)
 
 from reportlab.lib.pagesizes import mm, landscape
 from reportlab.lib.styles import ParagraphStyle
@@ -1359,3 +1372,185 @@ def eliminar_garantia(request):
             except:
                 return JsonResponse({'res': False, 'msg': 'Error al eliminar registro.'})
         return JsonResponse({'res': False, 'msg': 'Método no permitido.'})
+
+## Endpoint para consmir API de OPENIA
+@login_required
+@require_POST
+def analizar_descripcion_ia(request):
+    """
+    Analiza la descripción antes de crear el Servicio.
+
+    Este endpoint no guarda datos en la base de datos.
+    """
+
+    try:
+        datos = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": "La solicitud no contiene un JSON válido.",
+            },
+            status=400,
+        )
+
+    descripcion = datos.get("descripcion", "")
+
+    if not isinstance(descripcion, str):
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": "La descripción debe ser texto.",
+            },
+            status=400,
+        )
+
+    descripcion = descripcion.strip()
+
+    if len(descripcion) < 15:
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    "Escriba una descripción más detallada. "
+                    "Debe contener al menos 15 caracteres."
+                ),
+            },
+            status=400,
+        )
+
+    if len(descripcion) > 2000:
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    "La descripción no puede superar "
+                    "los 2000 caracteres."
+                ),
+            },
+            status=400,
+        )
+
+    try:
+        analisis = analizar_descripcion_mantenimiento(
+            descripcion
+        )
+
+        return JsonResponse(
+            {
+                "ok": True,
+                "mensaje": "Descripción analizada correctamente.",
+                "analisis": analisis,
+            },
+            status=200,
+        )
+
+    except AuthenticationError:
+        logger.exception(
+            "La clave del servicio de IA no es válida."
+        )
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    "No se pudo autenticar con el servicio de IA. "
+                    "Revise la clave configurada."
+                ),
+            },
+            status=503,
+        )
+
+    except RateLimitError:
+        logger.exception(
+            "Se alcanzó el límite del servicio de IA."
+        )
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    "El servicio de IA alcanzó temporalmente "
+                    "el límite de solicitudes."
+                ),
+            },
+            status=429,
+        )
+
+    except APITimeoutError:
+        logger.exception(
+            "El servicio de IA tardó demasiado."
+        )
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    "El análisis tardó demasiado. "
+                    "Intente nuevamente."
+                ),
+            },
+            status=504,
+        )
+
+    except APIConnectionError:
+        logger.exception(
+            "No se pudo conectar con el servicio de IA."
+        )
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    "No se pudo establecer conexión "
+                    "con el servicio de IA."
+                ),
+            },
+            status=503,
+        )
+
+    except APIStatusError as error:
+        logger.exception(
+            "La API respondió con el estado %s.",
+            error.status_code,
+        )
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    "El servicio de IA no pudo procesar "
+                    "la solicitud."
+                ),
+            },
+            status=502,
+        )
+
+    except ValueError as error:
+        logger.exception(
+            "Error al obtener el análisis estructurado."
+        )
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": str(error),
+            },
+            status=500,
+        )
+
+    except Exception:
+        logger.exception(
+            "Error inesperado durante el análisis."
+        )
+
+        return JsonResponse(
+            {
+                "ok": False,
+                "mensaje": (
+                    "Ocurrió un error inesperado "
+                    "al analizar la descripción."
+                ),
+            },
+            status=500,
+        )
