@@ -17,10 +17,15 @@ import { selectRolUsuario } from '../selectRolUsuario.js';
 import { validacionCliente } from '../validacionCliente.js';
 import { agregarCliente } from '../agregarCliente.js';
 
+// OpenIA
+import { analisisIa } from './analisisIa.js';
+
 window.onload = () => {
     let titulo = document.getElementById('titulo');
     titulo.innerHTML = `<i class="fa-solid fa-wrench"></i> Mantenimiento`;
     listar();
+    // IA
+    analisisIa();
 }
 
 window.listar = (data) => {
