@@ -177,3 +177,7 @@ SERVER_EMAIL = 'SISTEG <noreply@sisteg.com>'
 
 # Configuración adicional para recuperación de contraseñas
 PASSWORD_RESET_TIMEOUT = 86400  # 24 horas en segundos
+
+# Configuración para la API de IA
+OPENAI_API_KEY = 'sk-sistg-openia-32375649' ## Clave secreta (SK)
+OPENAI_MODEL = 'gpt-4o-mini' ## Versión del model de IA
