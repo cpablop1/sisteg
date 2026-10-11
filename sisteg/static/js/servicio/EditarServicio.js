@@ -25,15 +25,27 @@ export function editarServicio(id) {
                     document.getElementById('rol_usuario_id').value = servicio.rol_usuario_id || '';
                     document.getElementById('observacion').value = servicio.observacion || '';
                     document.getElementById('nota').value = servicio.nota || '';
+                    // Cargar análisis generada por IA
+                    if (window.cargarAnalisisIaMantenimiento) {
+                        window.cargarAnalisisIaMantenimiento(
+                            servicio.analisis_ia,
+                            servicio.observacion,
+                            servicio.fecha_analisis_ia
+                        );
+                    }
+                    //--------------------------------
                     document.getElementById('subtotal').textContent = `Q. ${servicio.subtotal || '0.00'}`;
                     document.getElementById('ganancia').textContent = `Q. ${servicio.costo_servicio || '0.00'}`;
-                    document.getElementById('costo_servicio').value = servicio.costo_servicio || '';
-
+                    let costo_servicio = document.getElementById('costo_servicio');
+                    if (costo_servicio) costo_servicio.value = servicio.costo_servicio || 0;
+                    //document.getElementById('costo_servicio').value = servicio.costo_servicio || '';
                     // Mostrar botón de actualizar
                     document.getElementById('crear_servicio').hidden = true;
                     document.getElementById('actualizar_servicio').hidden = false;
                     document.getElementById('actualizar_servicio').setAttribute('servicio_id', id);
-                    document.getElementById('finalizar_servicio').setAttribute('servicio_id', servicio.id);
+                    let finalizar_servicio = document.getElementById('finalizar_servicio');
+                    if (finalizar_servicio) finalizar_servicio.setAttribute('servicio_id', servicio.id)
+                    //document.getElementById('finalizar_servicio').setAttribute('servicio_id', servicio.id);
 
                     // Listamos los detalles del servicio
                     let tabla = document.getElementById('tbl_listar_carrito');
@@ -41,14 +53,15 @@ export function editarServicio(id) {
                     if (data.detalle_servicio.length !== 0) {
                         Array.from(data.detalle_servicio, elemento => {
                             let stock = '';
+                            console.log(elemento.stock);
                             if (elemento.stock) {
                                 stock = `<div class="form-check text-center">
-                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" checked disabled>
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" checked>
                                     <label class="form-check-label" for="stock">Descontar</label>
                                 </div>`;
                             } else {
                                 stock = `<div class="form-check text-center">
-                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}" disabled>
+                                    <input class="form-check-input" type="checkbox" id="stock${elemento.producto_id}">
                                     <label class="form-check-label" for="stock">No descontar</label>
                                 </div>`;
                             }
@@ -65,7 +78,7 @@ export function editarServicio(id) {
                     </tr>`;
                         });
                     }
-                    tabla.childNodes[3].innerHTML = fila;
+                    if (tabla) tabla.childNodes[3].innerHTML = fila;
                 }, 500);
             }
         }).catch(error => {

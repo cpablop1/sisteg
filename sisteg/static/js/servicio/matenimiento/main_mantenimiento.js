@@ -17,7 +17,7 @@ import { selectRolUsuario } from '../selectRolUsuario.js';
 import { validacionCliente } from '../validacionCliente.js';
 import { agregarCliente } from '../agregarCliente.js';
 
-// OpenIA
+// GEMINI
 import { analisisIa } from './analisisIa.js';
 
 window.onload = () => {

@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -16,16 +16,10 @@ from apps.inicio.models import TipoPago
 import logging
 logger = logging.getLogger(__name__)
 
-from django.http import HttpResponse
 from io import BytesIO
 
-from openai import (
-    APIConnectionError,
-    APIStatusError,
-    APITimeoutError,
-    AuthenticationError,
-    RateLimitError,
-)
+from django.utils import timezone
+
 
 from apps.servicio.services.ia_service import (
     analizar_descripcion_mantenimiento,
@@ -34,6 +28,8 @@ from apps.servicio.services.ia_service import (
 from reportlab.lib.pagesizes import mm, landscape
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.platypus import Paragraph, Spacer, SimpleDocTemplate, Table
+
+from google.genai import errors
 
 @login_required(login_url='autenticacion')
 def vista_cliente(request):
@@ -246,6 +242,119 @@ def agregar_servicio(request):
         precio = request.POST.get('precio', '0').strip()
         costo = request.POST.get('costo', '0').strip()
 
+        analisis_ia_texto = request.POST.get('analisis_ia', '').strip()
+        analisis_ia_presente = 'analisis_ia' in request.POST
+        analisis_ia = None
+
+        # Validación JSON para los campos de IA
+        if analisis_ia_presente:
+            if not analisis_ia_texto:
+                return JsonResponse(
+                    {
+                        'res': False,
+                        'msg': 'El análisis de IA recibido está vacío'
+                    },
+                    status = 400
+                )
+
+            try:
+                analisis_ia = json.loads(analisis_ia_texto)
+            except json.JSONDecodeError:
+                return JsonResponse(
+                    {
+                        'res': False,
+                        'msg': 'El análisis de IA no contiene un JSON válido'
+                    },
+                    status = 400
+                )
+
+            if not isinstance(analisis_ia, dict):
+                return JsonResponse(
+                    {
+                        'res': False,
+                        'msg': 'La estructura del análisis de IA no es válida.'
+                    },
+                    status = 400
+                )
+        
+        ## Validar campos del análisis
+        if analisis_ia is not None:
+            campos_requeridos = {
+                'resumen',
+                'categoria',
+                'subcategoria',
+                'prioridad',
+                'posibles_causas',
+                'preguntas_sugeridas',
+                'advertencia',
+            }
+
+            campos_faltantes = campos_requeridos.difference(analisis_ia.keys())
+
+            if campos_faltantes:
+                return JsonResponse(
+                    {
+                        'res': False,
+                        'msg': (
+                            'El análisis de IA está incompleto. '
+                            'Genere nuevamente el análisis.'
+                        )
+                    },
+                    status=400
+                )
+
+            if not isinstance(analisis_ia.get('posibles_causas'), list):
+                return JsonResponse(
+                    {
+                        'res': False,
+                        'msg': (
+                            'Las posibles causas del análisis '
+                            'no tienen una estructura válida.'
+                        )
+                    },
+                    status=400
+                )
+
+            if not isinstance(analisis_ia.get('preguntas_sugeridas'), list):
+                return JsonResponse(
+                    {
+                        'res': False,
+                        'msg': (
+                            'Las preguntas sugeridas del análisis '
+                            'no tienen una estructura válida.'
+                        )
+                    },
+                    status=400
+                )
+
+        # Validar valores permitidos para la prioridad
+        if analisis_ia is not None:
+            prioridades_permitidas = {
+                'Baja',
+                'Media',
+                'Alta',
+                'Crítica',
+            }
+
+            if analisis_ia.get('prioridad') not in prioridades_permitidas:
+                return JsonResponse(
+                    {
+                        'res': False,
+                        'msg': 'La prioridad sugerida por IA no es válida.'
+                    },
+                    status=400
+                )
+        
+        # Prepar los campos de IA
+        datos_ia = {}
+
+        if analisis_ia is not None:
+            datos_ia = {
+                'analisis_ia': analisis_ia,
+                'analizado_con_ia': True,
+                'fecha_analisis_ia': timezone.now(),
+            }
+
         # Validación para rol_usuario_id
         if not rol_usuario_id:
             rol_usuario_id = None
@@ -439,14 +548,19 @@ def agregar_servicio(request):
                 subtotal += costo_servicio
                 #subtotal += existe_servicio[0].costo_servicio
                 # Actualizamos la venta
-                existe_servicio.update(
-                    subtotal = subtotal,
-                    observacion = observacion,
-                    nota = nota,
-                    costo_servicio = costo_servicio,
-                    cliente_id = cliente_id,
-                    tipo_pago_id = tipo_pago_id,
-                )
+                datos_actualizacion = {
+                    'subtotal': subtotal,
+                    'observacion': observacion,
+                    'nota': nota,
+                    'costo_servicio': costo_servicio,
+                    'cliente_id': cliente_id,
+                    'tipo_pago_id': tipo_pago_id,
+                }
+
+                datos_actualizacion.update(datos_ia)
+
+                existe_servicio.update(**datos_actualizacion)
+
                 # Datos de respuesta
                 servicio_id = existe_servicio[0].id
                 res = True
@@ -462,6 +576,11 @@ def agregar_servicio(request):
                     observacion = observacion,
                     nota = nota,
                     cotizacion = cotiza,
+
+                    analisis_ia = analisis_ia or {},
+                    analizado_con_ia = analisis_ia is not None,
+                    fecha_analisis_ia = (timezone.now() if analisis_ia is not None else None),
+
                     cliente_id = Cliente.objects.get(id = cliente_id),
                     usuario_id = User.objects.get(id = request.user.id),
                     tipo_pago_id = TipoPago.objects.get(id = tipo_pago_id),
@@ -510,8 +629,15 @@ def agregar_servicio(request):
                 'tipo_pago_id': TipoPago.objects.get(id = tipo_pago_id),
                 'tipo_servicio_id': TipoServicio.objects.get(id = tipo_servicio_id)
             }
+            # Agregamos los datos del análisis de IA
+            datos.update(datos_ia)
+            # --------------------------------------
             if not servicio_id:
                 datos['usuario_id'] = User.objects.get(id = request.user.id)
+
+            print('\n-----------------------------')
+            print(servicio_id)
+            print('-----------------------------\n')
             
             servicio = Servicio.objects.update_or_create( # Creamos el servicio
                 id = servicio_id,
@@ -894,7 +1020,11 @@ def listar_servicios(request):
                     'nota': ser.nota,
                     'rol_usuario_id': rol_usuario_id,
                     'tecnico': tecnico,
-                    'costo_servicio': ser.costo_servicio if hasattr(ser, 'costo_servicio') else 0
+                    'costo_servicio': ser.costo_servicio if hasattr(ser, 'costo_servicio') else 0,
+                    # Información generada con IA
+                    'analisis_ia': ser.analisis_ia,
+                    'analizado_con_ia': ser.analizado_con_ia,
+                    'fecha_analisis_ia': ser.fecha_analisis_ia.isoformat() if ser.fecha_analisis_ia else None
                 }
             )
             # Preparamos los detalles del servicio
@@ -1445,95 +1575,59 @@ def analizar_descripcion_ia(request):
             status=200,
         )
 
-    except AuthenticationError:
+    except errors.ServerError as error:
         logger.exception(
-            "La clave del servicio de IA no es válida."
+            "El servicio de Gemini no se encuentra disponible."
         )
+
+        codigo_estado = getattr(error, "code", None)
+
+        if codigo_estado is None:
+            codigo_estado = getattr(
+                error,
+                "status_code",
+                None,
+            )
+
+        if (
+            codigo_estado == 503
+            or "503" in str(error)
+            or "UNAVAILABLE" in str(error).upper()
+        ):
+            return JsonResponse(
+                {
+                    "ok": False,
+                    "codigo": "ia_temporalmente_no_disponible",
+                    "mensaje": (
+                        "El servicio de inteligencia artificial está "
+                        "experimentando una alta demanda. "
+                        "Intente nuevamente dentro de unos momentos."
+                    ),
+                },
+                status=503,
+            )
 
         return JsonResponse(
             {
                 "ok": False,
+                "codigo": "error_servidor_ia",
                 "mensaje": (
-                    "No se pudo autenticar con el servicio de IA. "
-                    "Revise la clave configurada."
+                    "El servicio de inteligencia artificial "
+                    "no está disponible temporalmente."
                 ),
             },
             status=503,
-        )
-
-    except RateLimitError:
-        logger.exception(
-            "Se alcanzó el límite del servicio de IA."
-        )
-
-        return JsonResponse(
-            {
-                "ok": False,
-                "mensaje": (
-                    "El servicio de IA alcanzó temporalmente "
-                    "el límite de solicitudes."
-                ),
-            },
-            status=429,
-        )
-
-    except APITimeoutError:
-        logger.exception(
-            "El servicio de IA tardó demasiado."
-        )
-
-        return JsonResponse(
-            {
-                "ok": False,
-                "mensaje": (
-                    "El análisis tardó demasiado. "
-                    "Intente nuevamente."
-                ),
-            },
-            status=504,
-        )
-
-    except APIConnectionError:
-        logger.exception(
-            "No se pudo conectar con el servicio de IA."
-        )
-
-        return JsonResponse(
-            {
-                "ok": False,
-                "mensaje": (
-                    "No se pudo establecer conexión "
-                    "con el servicio de IA."
-                ),
-            },
-            status=503,
-        )
-
-    except APIStatusError as error:
-        logger.exception(
-            "La API respondió con el estado %s.",
-            error.status_code,
-        )
-
-        return JsonResponse(
-            {
-                "ok": False,
-                "mensaje": (
-                    "El servicio de IA no pudo procesar "
-                    "la solicitud."
-                ),
-            },
-            status=502,
         )
 
     except ValueError as error:
         logger.exception(
-            "Error al obtener el análisis estructurado."
+            "La respuesta de la inteligencia artificial no es válida."
         )
 
         return JsonResponse(
             {
                 "ok": False,
+                "codigo": "respuesta_ia_invalida",
                 "mensaje": str(error),
             },
             status=500,
@@ -1541,16 +1635,17 @@ def analizar_descripcion_ia(request):
 
     except Exception:
         logger.exception(
-            "Error inesperado durante el análisis."
+            "Error inesperado al analizar la descripción."
         )
 
         return JsonResponse(
             {
                 "ok": False,
+                "codigo": "error_ia",
                 "mensaje": (
-                    "Ocurrió un error inesperado "
-                    "al analizar la descripción."
+                    "No fue posible completar el análisis "
+                    "con inteligencia artificial."
                 ),
             },
-            status=500,
+            status=503,
         )

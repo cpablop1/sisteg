@@ -35,6 +35,97 @@
                 placeholder="Espacio para observaciones o detalles (Opcional)" readonly></textarea>
         </div>
     </div>
+
+    <!-- Análisis preliminar generada con IA -->
+    <div class="row my-2">
+        <div class="col-12 col-md-12">
+            <div class="card border-info mt-3 d-none" id="panelAnalisisIa">
+                <div class="card-header bg-info text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-robot mr-1"></i>
+                            <strong>Análisis preliminar generado por IA</strong>
+                        </div>
+
+                        <button type="button" class="btn btn-light btn-sm close" id="btnCerrarAnalisisIa"
+                            aria-label="Cerrar">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="mb-3">
+                        <h6 class="font-weight-bold mb-1">
+                            Resumen del problema
+                        </h6>
+
+                        <p class="mb-0 text-justify" id="iaResumen"></p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <h6 class="font-weight-bold mb-1">
+                                Categoría
+                            </h6>
+
+                            <span class="badge bg-primary p-2" id="iaCategoria"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <h6 class="font-weight-bold mb-1">
+                                Subcategoría
+                            </h6>
+
+                            <span class="badge bg-secondary p-2" id="iaSubcategoria"></span>
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <h6 class="font-weight-bold mb-1">
+                                Prioridad sugerida
+                            </h6>
+
+                            <span class="badge bg-secondary p-2" id="iaPrioridad"></span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="font-weight-bold">
+                                <i class="fas fa-search mr-1"></i>
+                                Posibles causas preliminares
+                            </h6>
+
+                            <ul class="pl-4 mb-0" id="iaPosiblesCausas"></ul>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <h6 class="font-weight-bold">
+                                <i class="fas fa-question-circle mr-1"></i>
+                                Preguntas sugeridas para el cliente
+                            </h6>
+
+                            <ul class="pl-4 mb-0" id="iaPreguntasSugeridas"></ul>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-warning mb-0" id="iaAdvertencia"></div>
+                </div>
+
+                <div class="card-footer text-right">
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="btnDescartarAnalisisIa">
+                        <i class="fas fa-trash-alt"></i>
+                        Descartar análisis
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+     <!-- ---------------------------------- -->
+
     <div class="row my-2">
         <div class="col-12 col-md-12">
             <label for="nota" class="form-label">Nota del técnico:</label>

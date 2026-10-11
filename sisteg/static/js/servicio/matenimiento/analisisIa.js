@@ -29,7 +29,25 @@ export function analisisIa() {
      */
     let descripcionAnalizada = "";
 
-    if (!btnAnalizarIa || !descripcionInput) {
+    /* if (!btnAnalizarIa || !descripcionInput) {
+        return;
+    } */
+
+    if (
+        !descripcionInput ||
+        !panelAnalisisIa ||
+        !iaResumen ||
+        !iaCategoria ||
+        !iaSubcategoria ||
+        !iaPrioridad ||
+        !iaPosiblesCausas ||
+        !iaPreguntasSugeridas ||
+        !iaAdvertencia
+    ) {
+        console.warn(
+            "No se encontraron todos los elementos necesarios para mostrar el análisis de IA."
+        );
+
         return;
     }
 
@@ -52,9 +70,17 @@ export function analisisIa() {
         }
     });
 
-    btnAnalizarIa.addEventListener("click", async function () {
+    /* btnAnalizarIa.addEventListener("click", async function () {
         await analizarDescripcionConIa();
-    });
+    }); */
+    if (btnAnalizarIa) {
+        btnAnalizarIa.addEventListener(
+            "click",
+            async function () {
+                await analizarDescripcionConIa();
+            }
+        );
+    }
 
     if (btnCerrarAnalisisIa) {
         btnCerrarAnalisisIa.addEventListener("click", function () {
@@ -165,13 +191,20 @@ export function analisisIa() {
     }
 
     function renderizarAnalisis(analisis) {
-        iaResumen.textContent = analisis.resumen || "Sin resumen";
+        iaResumen.textContent =
+            analisis.resumen || "Sin resumen";
 
         iaCategoria.textContent =
             analisis.categoria || "Sin categoría";
 
+        iaCategoria.className =
+            "badge bg-primary text-white p-2";
+
         iaSubcategoria.textContent =
             analisis.subcategoria || "Sin subcategoría";
+
+        iaSubcategoria.className =
+            "badge bg-secondary text-white p-2";
 
         configurarPrioridad(
             analisis.prioridad || "Sin prioridad"
@@ -224,11 +257,13 @@ export function analisisIa() {
         iaPrioridad.textContent = prioridad;
 
         iaPrioridad.classList.remove(
-            "badge-success",
-            "badge-info",
-            "badge-warning",
-            "badge-danger",
-            "badge-secondary"
+            "bg-success",
+            "bg-info",
+            "bg-warning",
+            "bg-danger",
+            "bg-secondary",
+            "text-dark",
+            "text-white"
         );
 
         const prioridadNormalizada = prioridad
@@ -238,29 +273,44 @@ export function analisisIa() {
 
         switch (prioridadNormalizada) {
             case "baja":
-                iaPrioridad.classList.add("badge-success");
+                iaPrioridad.classList.add(
+                    "bg-success",
+                    "text-white"
+                );
                 break;
 
             case "media":
-                iaPrioridad.classList.add("badge-info");
+                iaPrioridad.classList.add(
+                    "bg-info",
+                    "text-dark"
+                );
                 break;
 
             case "alta":
-                iaPrioridad.classList.add("badge-warning");
+                iaPrioridad.classList.add(
+                    "bg-warning",
+                    "text-dark"
+                );
                 break;
 
             case "crítica":
             case "critica":
-                iaPrioridad.classList.add("badge-danger");
+                iaPrioridad.classList.add(
+                    "bg-danger",
+                    "text-white"
+                );
                 break;
 
             default:
-                iaPrioridad.classList.add("badge-secondary");
+                iaPrioridad.classList.add(
+                    "bg-secondary",
+                    "text-white"
+                );
                 break;
         }
     }
 
-    function activarCarga() {
+    /* function activarCarga() {
         btnAnalizarIa.disabled = true;
 
         btnAnalizarIa.dataset.textoOriginal =
@@ -268,7 +318,7 @@ export function analisisIa() {
 
         btnAnalizarIa.innerHTML = `
             <span
-                class="spinner-border spinner-border-sm mr-1"
+                class="spinner-border spinner-border-sm me-1"
                 role="status"
                 aria-hidden="true"
             ></span>
@@ -276,9 +326,44 @@ export function analisisIa() {
         `;
 
         descripcionInput.readOnly = true;
+    } */
+
+    function activarCarga() {
+        if (!btnAnalizarIa) {
+            return;
+        }
+
+        btnAnalizarIa.disabled = true;
+
+        btnAnalizarIa.dataset.textoOriginal =
+            btnAnalizarIa.innerHTML;
+
+        btnAnalizarIa.innerHTML = `
+                <span
+                    class="spinner-border spinner-border-sm me-1"
+                    role="status"
+                    aria-hidden="true"
+                ></span>
+                Analizando...
+            `;
+
+        descripcionInput.readOnly = true;
     }
 
+    /* function desactivarCarga() {
+        btnAnalizarIa.disabled = false;
+
+        btnAnalizarIa.innerHTML =
+            btnAnalizarIa.dataset.textoOriginal ||
+            '<i class="fas fa-magic"></i> Analizar con IA';
+
+        descripcionInput.readOnly = false;
+    } */
     function desactivarCarga() {
+        if (!btnAnalizarIa) {
+            return;
+        }
+
         btnAnalizarIa.disabled = false;
 
         btnAnalizarIa.innerHTML =
@@ -333,11 +418,13 @@ export function analisisIa() {
     }
 
     function mostrarMensaje(mensaje, tipo) {
-        mensajeAnalisisIa.className =
-            `alert alert-${tipo} mt-3`;
-
-        mensajeAnalisisIa.textContent = mensaje;
-        mensajeAnalisisIa.classList.remove("d-none");
+        if(mensajeAnalisisIa){
+            mensajeAnalisisIa.className =
+                `alert alert-${tipo} mt-3`;
+    
+            mensajeAnalisisIa.textContent = mensaje;
+            mensajeAnalisisIa.classList.remove("d-none");
+        }
     }
 
     function ocultarMensaje() {
@@ -387,6 +474,100 @@ export function analisisIa() {
         return analisisIaActual;
     };
 
+    window.cargarAnalisisIaMantenimiento = function (
+        analisis,
+        descripcionOriginal = "",
+        fechaAnalisis = null
+    ) {
+        let analisisProcesado = analisis;
+
+        // Si el backend envía el JSON como texto, convertirlo en objeto
+        if (typeof analisisProcesado === "string") {
+            try {
+                analisisProcesado = JSON.parse(analisisProcesado);
+            } catch (error) {
+                console.error(
+                    "El análisis guardado no contiene un JSON válido:",
+                    error
+                );
+
+                analisisProcesado = null;
+            }
+        }
+
+        // Si el servicio no tiene análisis de IA, ocultar el panel
+        if (
+            !analisisProcesado ||
+            typeof analisisProcesado !== "object" ||
+            Array.isArray(analisisProcesado) ||
+            Object.keys(analisisProcesado).length === 0
+        ) {
+            analisisIaActual = null;
+            descripcionAnalizada = "";
+
+            limpiarPanel();
+            ocultarMensaje();
+
+            panelAnalisisIa.classList.add("d-none");
+
+            if (btnAnalizarIa) {
+                btnAnalizarIa.innerHTML = `
+                    <i class="fas fa-magic"></i>
+                    Analizar nuevamente
+                `;
+            }
+
+            return;
+        }
+
+        // Guardar el análisis cargado en el estado de JavaScript
+        analisisIaActual = analisisProcesado;
+
+        // Asociar el análisis con la descripción guardada
+        descripcionAnalizada = (
+            descripcionOriginal ||
+            descripcionInput.value ||
+            ""
+        ).trim();
+
+        // Mostrar el análisis en el panel
+        renderizarAnalisis(analisisProcesado);
+
+        // Actualizar el contador del textarea
+        actualizarContador();
+
+        // Cambiar el texto del botón
+        if (btnAnalizarIa) {
+            btnAnalizarIa.innerHTML = `
+                <i class="fas fa-magic"></i>
+                Analizar nuevamente
+            `;
+        }
+
+        // Mostrar mensaje con la fecha del análisis, si existe
+        if (fechaAnalisis) {
+            const fecha = new Date(fechaAnalisis);
+
+            const fechaFormateada = fecha.toLocaleString(
+                "es-GT",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "short"
+                }
+            );
+
+            mostrarMensaje(
+                `Análisis de IA guardado el ${fechaFormateada}.`,
+                "info"
+            );
+        } else {
+            mostrarMensaje(
+                "Se cargó el análisis de IA guardado para este mantenimiento.",
+                "info"
+            );
+        }
+    };
+
     /*
      * Esta función será útil cuando el formulario se limpie
      * después de crear el mantenimiento.
@@ -399,5 +580,12 @@ export function analisisIa() {
         ocultarMensaje();
 
         panelAnalisisIa.classList.add("d-none");
+
+        if (btnAnalizarIa) {
+            btnAnalizarIa.innerHTML = `
+                <i class="fas fa-magic"></i>
+                Analizar con IA
+            `;
+        }
     };
 }

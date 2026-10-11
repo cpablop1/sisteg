@@ -13,11 +13,15 @@ import { verGarantia } from './verGarantia.js';
 import { garantiaServicio } from './garantiaServicio.js';
 import { eliminarGarantia } from './eliminarGarantia.js';
 
+//GEMINI
+import { analisisIa } from './matenimiento/analisisIa.js';
+
 window.onload = () => {
     let titulo = document.getElementById('titulo');
     titulo.innerHTML = `<i class="fa-solid fa-gear"></i> Servicio`;
     document.getElementById('agregar').innerHTML = '';
     listar();
+    analisisIa();
 }
 
 window.listar = (data) => {
