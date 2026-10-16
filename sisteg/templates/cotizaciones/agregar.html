@@ -32,7 +32,7 @@
             <p id="telefono"></p>
         </div>
     </div>
-    <div class="row my-2">
+    <div class="row my-2" hidden>
         <div class="col-12 col-md-12">
             <label for="nota" class="form-label">Nota del técnico:</label>
             <textarea class="form-control" rows="3" name="nota" id="nota"
@@ -40,14 +40,14 @@
                 {%if request.rol_usuario == 'recepcionista'%} readonly {%endif%}>Observaciones del técnico</textarea>
         </div>
     </div>
-    <div class="row my-2">
+    <div class="row my-2" hidden>
         <div class="col-12 col-md-12">
             <label for="observacion" class="form-label">Descripción del mantenimiento:</label>
             <textarea class="form-control" rows="3" name="observacion" id="observacion"
                 placeholder="Describe el trabajo de mantenimiento a realizar (Obligatorio)" {%if request.rol_usuario == 'tecnico'%} readonly {%endif%}></textarea>
         </div>
     </div>
-    <div class="row my-2">
+    <div class="row my-2" hidden>
         <div class="col-12 col-md-4 text-center" {% if request.rol_usuario == 'tecnico' %} hidden {% endif %}>
             <label for="rol_usuario_id" class="form-label">Técnico asignado:</label>
             <select name="rol_usuario_id" id="rol_usuario_id" class="form-select"></select>
@@ -98,9 +98,11 @@
                 <button type="button" class="btn btn-primary mx-2" id="finalizar_cotizacion" hidden><i
                         class="fa-solid fa-square-check"></i>
                     Enviar a venta</button>
-                <button type="button" class="btn btn-warning mx-2" id="actualizar_cotizacion" hidden><i
-                        class="fa-solid fa-square-check"></i>
-                    Actualizar cotización</button>
+                <div hidden>
+                    <button type="button" class="btn btn-warning mx-2" id="actualizar_cotizacion" hidden><i
+                            class="fa-solid fa-square-check"></i>
+                        Actualizar cotización</button>
+                </div>
                 <button type="button" class="btn btn-secondary" id="eliminar_cotizacion" hidden><i
                         class="fa-solid fa-trash"></i>
                     Eliminar</button>

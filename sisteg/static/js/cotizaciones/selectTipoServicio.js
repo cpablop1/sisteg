@@ -5,7 +5,7 @@ export function selectTipoServicio() {
             if (select) {
                 select.innerHTML = '';
                 Array.from(data.data, tipo => {
-                    select.add(new Option(tipo.descripcion, tipo.id));
+                    if (tipo.id == 1) select.add(new Option(tipo.descripcion, tipo.id));
                 });
             }
         }
