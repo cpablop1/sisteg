@@ -161,8 +161,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'  # Gmail SMTP
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'cpablop1@gmail.com'  # Reemplazar con tu correo Gmail
-EMAIL_HOST_PASSWORD = 'rnyi cjsf moxx ersl'  # Contraseña de aplicación de Gmail
+EMAIL_HOST_USER = ''  # Reemplazar con tu correo Gmail
+EMAIL_HOST_PASSWORD = ''  # Contraseña de aplicación de Gmail
 
 # Configuración alternativa para Brevo (recomendado para demos)
 # EMAIL_HOST = 'smtp-relay.brevo.com'
@@ -179,5 +179,5 @@ SERVER_EMAIL = 'SISTEG <noreply@sisteg.com>'
 PASSWORD_RESET_TIMEOUT = 86400  # 24 horas en segundos
 
 # Configuración para la API de GEMINI
-GEMINI_API_KEY = 'AQ.Ab8RN6JSoJCJJHRI6rcGHMLbpbZ-P024cJD9GKS8G7cFIfzYfQ' ## Clave secreta (SK)
+GEMINI_API_KEY = '' ## Clave secreta (SK)
 GEMINI_MODEL  = 'gemini-3.8-flash' ## Versión del model de IA
